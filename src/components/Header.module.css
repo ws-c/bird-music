@@ -1,0 +1,18 @@
+.header {
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar {
+  cursor: pointer;
+}
+
+.switch {
+  cursor: pointer;
+}

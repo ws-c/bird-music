@@ -1,0 +1,58 @@
+.musicCard {
+  height: 270px;
+  width: 424px; /* 外部宽度 */
+  border-radius: 8px; /* 圆角 */
+  overflow: hidden; /* 防止内容溢出 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  text-align: center; /* 内容居中 */
+  position: relative; /* 为 overlay 和播放按钮提供定位 */
+  cursor: pointer;
+}
+
+.cardCover {
+  position: relative; /* 为了绝对定位的覆盖层 */
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.2); /* 半透明背景 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0; /* 默认隐藏 */
+  transition: opacity 0.3s; /* 渐变效果 */
+}
+
+.cardCover:hover .overlay {
+  opacity: 1; /* 鼠标悬停时显示覆盖层 */
+}
+
+.playIcon {
+  font-size: 32px; /* 播放图标大小 */
+  color: white; /* 播放图标颜色 */
+  position: absolute; /* 绝对定位 */
+  bottom: 15px; /* 距离底部 15px */
+  right: 15px; /* 距离右侧 15px */
+  opacity: 0; /* 默认隐藏 */
+  transition: opacity 0.3s; /* 渐变效果 */
+}
+
+.cardCover:hover .playIcon {
+  opacity: 1; /* 鼠标悬停时显示播放图标 */
+}
+
+.title {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap
+}
