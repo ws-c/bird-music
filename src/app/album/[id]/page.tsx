@@ -75,7 +75,7 @@ export default function Home({ params }) {
           <>
             <Flex align="flex-end" gap={35} style={{ width: '700px' }}>
               <img
-                src="https://i.scdn.co/image/ab67616d00001e020774b7bf251583021114dd50"
+                src={album.cover}
                 alt=""
                 style={{
                   width: '270px',

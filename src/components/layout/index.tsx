@@ -1,14 +1,13 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { Affix, Button, Flex, Layout, Menu, Typography } from 'antd'
-import { Content, Footer, Header } from 'antd/es/layout/layout'
+import React from 'react'
+import { Flex, Layout, Menu } from 'antd'
+import { Content, Header } from 'antd/es/layout/layout'
 import Sider from 'antd/es/layout/Sider'
 import { MenuInfo } from 'rc-menu/lib/interface'
 import { useRouter } from 'next/navigation'
 import Icons from '../Icons'
 import Title from 'antd/es/typography/Title'
 import Head from '../Head'
-import useStore from '../../store/useStore'
 const layoutStyle = {
   minHeight: '100vh',
 }
@@ -42,7 +41,6 @@ interface IProps {
 }
 const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   const router = useRouter()
-  const { showPlayer } = useStore()
   const items = [
     {
       label: '主页',
