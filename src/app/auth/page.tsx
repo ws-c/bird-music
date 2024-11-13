@@ -1,24 +1,20 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Form, Input, Button, notification, Tabs } from 'antd'
 import styles from './Auth.module.css'
 import useStore from '../../store/useStore'
 
 export default function Auth() {
-
   const { setShowPlayer } = useStore()
   useEffect(() => {
     // 停止播放等操作
     setShowPlayer(false)
-
   }, [])
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [activeTabKey, setActiveTabKey] = useState('1') // Track the active tab
-  const router = useRouter()
 
   const handleLoginSubmit = async (values) => {
     const { username, password } = values
@@ -33,7 +29,8 @@ export default function Auth() {
     if (res.ok) {
       alert('登录 successful')
       localStorage.setItem('user', username)
-      router.push('/')
+      // 强制刷新，消除路由缓存
+      window.location.href = '/'
     } else {
       const data = await res.json()
       setError(data.message || '登录 failed')
