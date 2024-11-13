@@ -14,7 +14,7 @@ const layoutStyle = {
 
 const headerStyle = {
   background: '#fff',
-  padding: '16px 40px',
+  padding: '16px 20px',
   borderBottom: '1px solid #e8e8e8',
   position: 'sticky',
   top: 0,
@@ -22,7 +22,7 @@ const headerStyle = {
 }
 
 const contentStyle = {
-  padding: '0 48px',
+  padding: '0 28px',
   background: '#fff',
   paddingBottom: '100px',
 }

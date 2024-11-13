@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client'
+import flattenObject from '../../../lib/flattenObject'
 
 const prisma = new PrismaClient()
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      const songs = await prisma.songs.findMany({
-        distinct: ['artist_id'],
+      let songs = await prisma.songs.findMany({
+        distinct: ['artists_id'],
         orderBy: {
           albums: {
             release_date: 'desc', // 按专辑发布日期降序排序
@@ -18,7 +19,7 @@ export default async function handler(req, res) {
             select: {
               cover: true, // 获取专辑封面
               release_date: true, // 获取专辑发布日期
-              title: true, // 获取专辑标题
+              album_title: true, // 获取专辑标题
             },
           },
           artists: {
@@ -28,6 +29,7 @@ export default async function handler(req, res) {
           },
         },
       })
+      songs = songs.map((song) => flattenObject(song))
       res.status(200).json(songs)
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch songs' })

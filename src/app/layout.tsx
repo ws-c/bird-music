@@ -1,7 +1,7 @@
 'use client'
 import '../styles/global.css'
 import { ConfigProvider } from 'antd'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import useStore from '../store/useStore'
 import { Footer } from 'antd/es/layout/layout'
 import Player from '../components/Player'
@@ -22,25 +22,30 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const { showPlayer } = useStore()
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   return (
     <html lang="en">
-      <body>
-        <ConfigProvider
-          theme={{
-            token: {
-              colorPrimary: '#f30074',
-            },
-            components: {},
-          }}
-        >
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#f30074',
+          },
+          components: {},
+        }}
+      >
+        <body>
           {children}
-          {showPlayer && (
+          {isClient && showPlayer && (
             <Footer style={footerStyle}>
-              <Player></Player>
+              <Player />
             </Footer>
           )}
-        </ConfigProvider>
-      </body>
+        </body>
+      </ConfigProvider>
     </html>
   )
 }

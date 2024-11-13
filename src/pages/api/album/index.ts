@@ -21,7 +21,7 @@ export default async function handler(req, res) {
             songs: {
               select: {
                 id: true,
-                title: true,
+                song_title: true,
                 duration: true,
                 file_path: true,
               },

@@ -2,9 +2,9 @@
 import React from 'react'
 import Layout from '../components/layout'
 import { Divider, Typography } from 'antd'
-import MusicCard from '../components/MusicCard'
-import Playlist from '../components/Playlist'
-import SingleList from '../components/SingleList'
+import MusicCard from './components/MusicCard'
+import Playlist from './components/Playlist'
+import SingleList from './components/SingleList'
 
 export default function Home() {
   return (

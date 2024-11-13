@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Button, Flex, Slider } from 'antd'
+import { Avatar, Button, Drawer, Flex, List, Slider } from 'antd'
 import {
   CaretRightOutlined,
   StepBackwardOutlined,
@@ -10,21 +10,21 @@ import {
 import useStore from '../store/useStore'
 import { formatTime } from '../lib/formatTime'
 import Icons from './Icons'
-import useAudioStore from '../store/useAudioStore'
-
+import _ from 'lodash'
+import styles from './SingleList.module.css'
 const Player = () => {
-  const { singleList, currentId, setCurrentId } = useStore()
+  const { singleList, currentId, setCurrentId, isPlaying, setIsPlaying } =
+    useStore()
+  console.log(isPlaying)
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
   )
-  const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [sliderValue, setSliderValue] = useState(0)
   const audioRef = useRef(null)
   useEffect(() => {
-    if (audioRef.current) {
+    if (audioRef.current && isPlaying) {
       audioRef.current.play()
-      setIsPlaying(true) // 更新播放状态
     }
   }, [currentSongIndex])
   useEffect(() => {
@@ -59,6 +59,7 @@ const Player = () => {
       setCurrentId(singleList[newIndex].id) // 使用新索引设置 ID
       return newIndex // 返回新索引
     })
+    setIsPlaying(true)
   }
 
   const handleNext = () => {
@@ -67,10 +68,12 @@ const Player = () => {
       setCurrentId(singleList[newIndex].id) // 使用新索引设置 ID
       return newIndex // 返回新索引
     })
+    setIsPlaying(true)
   }
 
   const togglePlayPause = () => {
-    setIsPlaying((prev) => !prev)
+    setIsPlaying(!isPlaying)
+    console.log('isPlaying', isPlaying)
   }
   const handled = useRef(false)
   const handleSliderChange = (value) => {
@@ -117,6 +120,18 @@ const Player = () => {
       }
     }
   }
+  // 抽屉
+  const [open, setOpen] = useState(false)
+  const showDrawer = () => {
+    setOpen(!open)
+  }
+  const onClose = () => {
+    setOpen(false)
+  }
+  const [onClicked, setOnClicked] = useState(null)
+  useEffect(() => {
+    setOnClicked(currentId)
+  }, [currentId])
   return (
     <Flex
       align="center"
@@ -124,11 +139,21 @@ const Player = () => {
       style={{ position: 'relative', padding: '10px 40px' }}
     >
       <Flex gap={24} justify="center" align="center">
-        <img
-          src={currentSong.albums.cover}
-          alt={currentSong.title}
-          style={{ width: '60px', height: '60px', borderRadius: '8px' }}
-        />
+        <div className="image-container">
+          <img
+            className="cover"
+            src={currentSong.cover}
+            alt={currentSong.song_title}
+            style={{ width: '60px', height: '60px', borderRadius: '8px' }}
+          />
+          <div className="overlay">
+            <Icons
+              type="icon-zhankaiquanpingkuozhan"
+              size={24}
+              rootClassName="overlay-icon"
+            ></Icons>
+          </div>
+        </div>
         <Flex
           vertical
           justify="center"
@@ -138,7 +163,7 @@ const Player = () => {
           }}
         >
           <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
-            {currentSong.title}
+            {currentSong.song_title}
           </span>
           <span
             style={{
@@ -147,7 +172,7 @@ const Player = () => {
               whiteSpace: 'nowrap',
             }}
           >
-            {currentSong.artists.name} - {currentSong.albums.title}
+            {currentSong.name}
           </span>
         </Flex>
       </Flex>
@@ -217,8 +242,59 @@ const Player = () => {
         <span style={{ position: 'relative', top: '-2px', color: '#e5e6eb' }}>
           |
         </span>
-        <MenuOutlined />
+        <MenuOutlined onClick={showDrawer} />
       </Flex>
+      <Drawer
+        style={{ padding: '0 !important' }}
+        title="播放列表"
+        onClose={onClose}
+        open={open}
+        width={320}
+        maskClassName="ant-mask"
+        rootStyle={{ marginTop: '64px', marginBottom: '81px' }}
+      >
+        <List
+          dataSource={singleList}
+          renderItem={(item) => (
+            <List.Item
+              style={{
+                cursor: 'pointer',
+                padding: '0px 8px',
+                marginBottom: '8px',
+              }}
+              className={`item ${onClicked == item.id ? 'clicked' : ''}`}
+              onClick={() => {
+                setCurrentId(item.id)
+                setOnClicked(item.id)
+                setIsPlaying(true)
+              }}
+            >
+              <List.Item.Meta
+                avatar={
+                  <img
+                    src={item.cover}
+                    style={{
+                      position: 'relative',
+                      top: '4px',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '4px',
+                    }}
+                  ></img>
+                }
+                title={item.song_title}
+                description={item.name}
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              />
+              <div>{formatTime(item.duration)}</div>
+            </List.Item>
+          )}
+        />
+      </Drawer>
       <audio
         ref={audioRef}
         src={currentSong.file_path}

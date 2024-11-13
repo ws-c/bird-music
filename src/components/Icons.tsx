@@ -3,7 +3,7 @@ import React from 'react'
 
 const IconFont = createFromIconfontCN({
   // scriptUrl: getUrl('/iconfont/iconfont.js'),
-  scriptUrl: '//at.alicdn.com/t/c/font_4530194_8oprpoypf82.js',
+  scriptUrl: '//at.alicdn.com/t/c/font_4530194_zxwsxy2haqj.js',
 })
 
 function Index(props: {

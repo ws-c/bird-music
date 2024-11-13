@@ -3,12 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
 import Layout from '../../../components/layout'
 import { formatTime } from '../../../lib/formatTime'
-
+import useStore from '../../../store/useStore'
+import styles from '../../../components/SingleList.module.css'
 const columns = [
   {
     title: '歌曲',
-    dataIndex: 'title',
-    key: 'title',
+    dataIndex: 'song_title',
+    key: 'song_title',
     width: '20%',
   },
   {
@@ -27,21 +28,28 @@ const columns = [
 ]
 
 export default function Home({ params }) {
+  const {
+    setCurrentId,
+    setShowPlayer,
+    currentId,
+    setIsPlaying,
+    setSingleList,
+  } = useStore()
   const { id } = params
   const [album, setAlbum] = useState({})
-  const [songList, setSongList] = useState([])
   const [loading, setLoading] = useState(true)
-
+  const [curSingleList, setCurSingleList] = useState([])
   useEffect(() => {
     const fetchAlbum = async () => {
       try {
         const response = await fetch(`/api/album?id=${id}`)
         const data = await response.json()
         setAlbum(data)
-        setSongList(
+        setCurSingleList(
           data.songs.map((song) => ({
             ...song,
             name: data.artists.name,
+            cover: data.cover,
           }))
         )
       } catch (error) {
@@ -55,10 +63,6 @@ export default function Home({ params }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const showModal = () => {
-    setIsModalOpen(true)
-  }
-
   const handleOk = () => {
     setIsModalOpen(false)
   }
@@ -66,6 +70,10 @@ export default function Home({ params }) {
   const handleCancel = () => {
     setIsModalOpen(false)
   }
+  const [onClicked, setOnClicked] = useState(null)
+  useEffect(() => {
+    setOnClicked(currentId)
+  }, [currentId])
   return (
     <Layout curActive="/">
       <div style={{ marginTop: '50px' }}>
@@ -88,7 +96,7 @@ export default function Home({ params }) {
                   level={3}
                   style={{ margin: '0', letterSpacing: '1px' }}
                 >
-                  {album.title}
+                  {album.album_title}
                 </Typography.Title>
                 <Typography.Title
                   level={3}
@@ -106,14 +114,14 @@ export default function Home({ params }) {
                     position: 'relative',
                     margin: '20px 0',
                     height: '90px',
+                    width: '350px',
                     overflow: 'hidden',
                   }}
                 >
                   {album.desc.split('\n').map((line, index) => (
-                    <span key={index}>
+                    <p key={index} style={{ margin: '0 0 4 0' }}>
                       {line}
-                      <br />
-                    </span>
+                    </p>
                   ))}
                   {String(album.desc).length > 120 && (
                     <Button
@@ -134,33 +142,50 @@ export default function Home({ params }) {
                     </Button>
                   )}
                 </Typography.Text>
-                <Button type="primary" style={{ width: '25%' }}>
+                <Button
+                  type="primary"
+                  style={{ width: '25%' }}
+                  onClick={() => {
+                    setCurrentId(curSingleList[0].id),
+                      setSingleList(curSingleList)
+                    setShowPlayer(true),
+                      setOnClicked(curSingleList[0].id),
+                      setIsPlaying(true)
+                  }}
+                >
                   播放全部
                 </Button>
               </Flex>
             </Flex>
             <Table
               rowKey={(record) => record.id}
-              dataSource={songList}
+              dataSource={curSingleList}
               columns={columns}
-              style={{ marginTop: '50px' }}
+              style={{ marginTop: '50px', width: '80%' }}
               pagination={false}
+              onRow={(record) => ({
+                onClick: () => {
+                  setCurrentId(record.id), setSingleList(curSingleList)
+                  setShowPlayer(true),
+                    setOnClicked(record.id),
+                    setIsPlaying(true)
+                },
+              })}
+              rowClassName={(record) =>
+                `item ${onClicked == record.id ? 'clicked' : ''}`
+              }
             />
             <Modal
-              title={album.title}
+              title={album.album_title}
               open={isModalOpen}
               onOk={handleOk}
               onCancel={handleCancel}
               footer={null}
               width={800}
-              style={{ overflowY: 'auto', maxHeight: '600px' }}
             >
               <Typography.Text type="secondary">
                 {album.desc.split('\n').map((line, index) => (
-                  <span key={index}>
-                    {line}
-                    <br />
-                  </span>
+                  <p key={index}>{line}</p>
                 ))}
               </Typography.Text>
             </Modal>

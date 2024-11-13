@@ -20,22 +20,22 @@ model playlist {
 }
 
 model songs {
-  id        Int     @id @default(autoincrement())
-  title     String  @db.VarChar(255)
-  duration  Int?
-  file_path String  @db.Text
-  albums_id Int
-  artist_id Int
-  albums    albums  @relation(fields: [albums_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "songs_ibfk_1")
-  artists   artists @relation(fields: [artist_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "songs_ibfk_2")
+  id         Int     @id @default(autoincrement())
+  song_title String  @db.VarChar(255)
+  duration   Int?
+  file_path  String  @db.Text
+  albums_id  Int
+  artists_id Int
+  albums     albums  @relation(fields: [albums_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "songs_ibfk_1")
+  artists    artists @relation(fields: [artists_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "songs_ibfk_2")
 
   @@index([albums_id], map: "albums_id")
-  @@index([artist_id], map: "artist_id")
+  @@index([artists_id], map: "artist_id")
 }
 
 model albums {
   id           Int       @id @default(autoincrement())
-  title        String    @db.VarChar(255)
+  album_title  String    @db.VarChar(255)
   desc         String?   @db.VarChar(2000)
   artist_id    Int?
   release_date DateTime? @db.Date

@@ -55,7 +55,7 @@ const MusicCard = () => {
                     color: 'white',
                   }}
                 >
-                  {item.title}
+                  {item.album_title}
                 </div>
                 <Typography.Text className={styles.title}>
                   {item.desc}
