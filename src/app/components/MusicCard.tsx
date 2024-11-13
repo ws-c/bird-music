@@ -40,7 +40,7 @@ const MusicCard = () => {
                 src={item.cover}
                 style={{
                   objectFit: 'cover',
-                  height: 270,
+                  height: 300,
                   width: '100%',
                   filter: 'brightness(0.95)',
                 }}
