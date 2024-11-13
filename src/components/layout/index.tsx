@@ -14,7 +14,6 @@ const layoutStyle = {
 
 const headerStyle = {
   background: '#fff',
-  padding: '16px 20px',
   borderBottom: '1px solid #e8e8e8',
   position: 'sticky',
   top: 0,
@@ -25,6 +24,9 @@ const contentStyle = {
   padding: '0 28px',
   background: '#fff',
   paddingBottom: '100px',
+  overflowY: 'auto',
+  flex: 1, // 使 Content 区域占满剩余的空间
+  maxHeight: 'calc(100vh - 64px)', // 计算剩余空间，去掉 header 的高度
 }
 
 const siderStyle = {
@@ -108,6 +110,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       <Layout
         style={{
           marginLeft: '240px',
+          minHeight: '100vh',
         }}
       >
         <Header style={headerStyle}>

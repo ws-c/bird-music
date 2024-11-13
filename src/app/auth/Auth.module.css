@@ -1,0 +1,64 @@
+/* Auth.module.css */
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f9f9f9;
+}
+.Authcontainer{
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-out;
+}
+.tabHeader {
+  font-size: 24px;
+  font-weight: bold;
+  color: #444;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.formInput {
+  margin-bottom: 1.5rem;
+}
+
+.formButton {
+  background-color: #6e7fdb;
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.formButton:hover {
+  background-color: #4c5ba6;
+}
+
+.errorText {
+  color: red;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Animation for smooth fade in */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -6,7 +6,12 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     if (!req.query.id) {
       try {
-        const albums = await prisma.albums.findMany()
+        const albums = await prisma.albums.findMany({
+          take: 3,
+          orderBy: {
+            release_date: 'desc',
+          },
+        })
         res.status(200).json(albums)
       } catch (error) {
         res.status(500).json({ error: 'Failed to fetch albums' })
@@ -18,14 +23,7 @@ export default async function handler(req, res) {
             id: Number(req.query.id),
           },
           include: {
-            songs: {
-              select: {
-                id: true,
-                song_title: true,
-                duration: true,
-                file_path: true,
-              },
-            },
+            songs: true,
             artists: {
               select: {
                 id: true,

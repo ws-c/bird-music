@@ -4,7 +4,7 @@ import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
 import Layout from '../../../components/layout'
 import { formatTime } from '../../../utils/formatTime'
 import useStore from '../../../store/useStore'
-import { useRouter } from 'next/navigation'
+import flattenObject from '../../../utils/flattenObject'
 const columns = [
   {
     title: '歌曲',
@@ -19,6 +19,12 @@ const columns = [
     width: '10%',
   },
   {
+    title: '专辑',
+    dataIndex: 'album_title',
+    key: 'name',
+    width: '10%',
+  },
+  {
     title: '时长',
     dataIndex: 'duration',
     key: 'duration',
@@ -28,7 +34,6 @@ const columns = [
 ]
 
 export default function Home({ params }) {
-  const router = useRouter()
   const {
     setCurrentId,
     setShowPlayer,
@@ -37,25 +42,23 @@ export default function Home({ params }) {
     setSingleList,
   } = useStore()
   const { id } = params
-  const [album, setAlbum] = useState({})
+  const [artist, setArtist] = useState({})
   const [loading, setLoading] = useState(true)
   const [curSingleList, setCurSingleList] = useState([])
   useEffect(() => {
     const fetchAlbum = async () => {
       try {
-        const response = await fetch(`/api/album?id=${id}`)
+        const response = await fetch(`/api/artist?id=${id}`)
         const data = await response.json()
-        setAlbum(data)
-        await setCurSingleList(
+        setArtist(data)
+        setCurSingleList(
           data.songs.map((song) => ({
-            ...song,
-            name: data.artists.name,
-            cover: data.cover,
-            album_title: data.album_title,
+            ...flattenObject(song),
+            name: data.name,
           }))
         )
       } catch (error) {
-        console.error('Error fetching album:', error)
+        console.error('Error fetching artist:', error)
       } finally {
         setLoading(false)
       }
@@ -94,7 +97,7 @@ export default function Home({ params }) {
                 }}
               >
                 <img
-                  src={album.cover}
+                  src={artist.image_url}
                   alt=""
                   style={{
                     height: '270px',
@@ -105,22 +108,10 @@ export default function Home({ params }) {
               </div>
               <Flex vertical>
                 <Typography.Title
-                  level={3}
+                  level={2}
                   style={{ margin: '0', letterSpacing: '1px' }}
                 >
-                  {album.album_title}
-                </Typography.Title>
-                <Typography.Title
-                  level={3}
-                  style={{
-                    margin: '0',
-                    letterSpacing: '1px',
-                    color: '#f30074',
-                  }}
-                  className="link"
-                  onClick={() => router.push(`/artist/${album.artist_id}`)}
-                >
-                  {album.artists.name}
+                  {artist.name}
                 </Typography.Title>
                 <Typography.Text
                   type="secondary"
@@ -132,8 +123,8 @@ export default function Home({ params }) {
                     overflow: 'hidden',
                   }}
                 >
-                  {album.desc ? (
-                    album.desc.split('\n').map((line, index) => (
+                  {artist.biography ? (
+                    artist.biography.split('\n').map((line, index) => (
                       <p key={index} style={{ margin: '0 0 4px 0' }}>
                         {line}
                       </p>
@@ -141,7 +132,7 @@ export default function Home({ params }) {
                   ) : (
                     <></>
                   )}
-                  {String(album.desc).length > 120 && (
+                  {String(artist.biography).length > 120 && (
                     <Button
                       style={{
                         position: 'absolute',
@@ -194,7 +185,7 @@ export default function Home({ params }) {
               }
             />
             <Modal
-              title={album.album_title}
+              title={artist.album_title}
               open={isModalOpen}
               onOk={handleOk}
               onCancel={handleCancel}
@@ -202,8 +193,8 @@ export default function Home({ params }) {
               width={800}
             >
               <Typography.Text type="secondary">
-                {album.desc ? (
-                  album.desc
+                {artist.biography ? (
+                  artist.biography
                     .split('\n')
                     .map((line, index) => <p key={index}>{line}</p>)
                 ) : (

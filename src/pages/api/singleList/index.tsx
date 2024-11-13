@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client'
-import flattenObject from '../../../lib/flattenObject'
+import flattenObject from '../../../utils/flattenObject'
 
 const prisma = new PrismaClient()
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
-      let songs = await prisma.songs.findMany({
+      const songs = await prisma.songs.findMany({
         distinct: ['artists_id'],
         orderBy: {
           albums: {
@@ -29,8 +29,8 @@ export default async function handler(req, res) {
           },
         },
       })
-      songs = songs.map((song) => flattenObject(song))
-      res.status(200).json(songs)
+      const newSongs = songs.map((song) => flattenObject(song))
+      res.status(200).json(newSongs)
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch songs' })
     }

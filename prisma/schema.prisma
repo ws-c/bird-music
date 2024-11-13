@@ -58,3 +58,9 @@ model artists {
   albums     albums[]
   songs      songs[]
 }
+
+model users {
+  id        String    @id @db.VarChar(255)
+  password  String?   @db.VarChar(255)
+  createdAt DateTime? @db.DateTime(0)
+}

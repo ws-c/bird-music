@@ -1,0 +1,42 @@
+.fullPlayerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0, 0, 0); /* 背景透明黑色 */
+  backdrop-filter: blur(20px); /* 毛玻璃效果 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 998;
+}
+
+.fullPlayerContent {
+  width: 600px;
+  height: 90%;
+}
+.fullPlayerContent img {
+  width: 600px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.04);
+}
+.moveButton {
+  color: #dddbde !important;
+}
+.playButton {
+  color: #fff !important;
+}
+.closeButton {
+  background: none;
+  border: none;
+  color: white !important;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.closeButton:hover {
+  transform: scale(1.2);
+}

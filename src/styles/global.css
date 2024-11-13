@@ -6,8 +6,8 @@
 
 html {
   box-sizing: border-box;
+  overflow-y: overlay;
 }
-
 body {
   margin: 0;
   padding: 0;
@@ -16,6 +16,15 @@ body {
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   background: rgba(0, 0, 0, 0.05);
+}
+.link {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: underline;
 }
 .image-container {
   position: relative;
@@ -30,14 +39,24 @@ body {
   height: 100%;
   border-radius: 8px;
 }
-
+.cover-animation {
+  animation: scaleDown 1.3s forwards ease-out;
+}
+@keyframes scaleDown {
+  0% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4); /* 背景色 */
+  background-color: rgba(0, 0, 0, 0.3); /* 背景色 */
   border-radius: 8px;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -64,8 +83,7 @@ body {
 .clicked {
   background-color: #ffe6ee !important; /* 设置背景色 */
   border-radius: 8px; /* 圆角效果 */
-  transition: all 0.3s ease; /* 添加过渡动画 */
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s ease; /* 添加过渡动画 */
 }
 .ant-table-tbody > tr.ant-table-row:hover > td {
   background: none !important;

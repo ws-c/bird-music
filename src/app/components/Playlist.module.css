@@ -40,7 +40,7 @@
   position: absolute;
   top: 80px;
   font-size: 40px;
-  color: white;
+  color: white !important;
   transition: opacity 0.3s;
   opacity: 0; /* 默认隐藏 */
 }
