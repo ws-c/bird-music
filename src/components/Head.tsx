@@ -1,12 +1,19 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Avatar, Button, Dropdown, Flex } from 'antd'
 import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import styles from './Header.module.css'
 import Input from 'antd/es/input/Input'
 import { useRouter } from 'next/navigation'
+import useStore from '../store/useStore'
 
 export default function Header() {
+  const { name } = useStore()
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   const route = useRouter()
   const logout = async () => {
     localStorage.clear()
@@ -41,11 +48,7 @@ export default function Header() {
         />
       </Flex>
       <div className={styles.right}>
-        <span>
-          {localStorage.getItem('user')
-            ? localStorage.getItem('user')
-            : '未登录'}
-        </span>
+        <span>{isClient && name}</span>
         <Dropdown menu={{ items }} placement="bottomRight" arrow>
           <Avatar icon={<UserOutlined />} className={styles.avatar} />
         </Dropdown>

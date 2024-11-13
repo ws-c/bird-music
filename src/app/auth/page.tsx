@@ -5,18 +5,20 @@ import styles from './Auth.module.css'
 import useStore from '../../store/useStore'
 
 export default function Auth() {
-  const { setShowPlayer } = useStore()
+  const { setShowPlayer, setName } = useStore()
   useEffect(() => {
     // 停止播放等操作
     setShowPlayer(false)
   }, [])
-
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [activeTabKey, setActiveTabKey] = useState('1') // Track the active tab
 
-  const handleLoginSubmit = async (values) => {
+  const handleLoginSubmit = async (values: {
+    username: any
+    password: any
+  }) => {
     const { username, password } = values
     setError('')
 
@@ -27,8 +29,7 @@ export default function Auth() {
     })
 
     if (res.ok) {
-      alert('登录 successful')
-      localStorage.setItem('user', username)
+      setName(username)
       // 强制刷新，消除路由缓存
       window.location.href = '/'
     } else {
@@ -37,7 +38,10 @@ export default function Auth() {
     }
   }
 
-  const handleRegisterSubmit = async (values) => {
+  const handleRegisterSubmit = async (values: {
+    username: any
+    password: any
+  }) => {
     const { username, password } = values
     setError('')
 
@@ -49,9 +53,7 @@ export default function Auth() {
 
     if (res.ok) {
       notification.success({
-        message: 'Registration Successful',
-        description:
-          'You have registered successfully. Redirecting to login page...',
+        message: '注册成功'
       })
 
       // After registration, switch to the "Login" tab
