@@ -15,16 +15,16 @@ const layoutStyle = {
 const headerStyle = {
   background: '#fff',
   borderBottom: '1px solid #e8e8e8',
-  position: 'sticky',
+  position: 'sticky'   as React.CSSProperties['position'],
   top: 0,
   zIndex: 1000,
 }
 
 const contentStyle = {
-  padding: '0 28px',
+  padding: '0 60px',
   background: '#fff',
   paddingBottom: '100px',
-  overflowY: 'auto',
+  overflow: 'auto',
   flex: 1, // 使 Content 区域占满剩余的空间
   maxHeight: 'calc(100vh - 64px)', // 计算剩余空间，去掉 header 的高度
 }
@@ -33,7 +33,7 @@ const siderStyle = {
   background: '#f9f9f9',
   borderRight: '1px solid #e8e8e8',
   minHeight: '100vh',
-  position: 'fixed',
+  position: 'fixed'  as React.CSSProperties['position'],
   left: '0',
   zIndex: 999,
 }
@@ -65,6 +65,70 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           color={curActive === 'radio' ? '#f30074' : ''}
         ></Icons>
       ),
+    },
+    {
+      label: '创建的歌单',
+      key: 'create',
+      children: [
+        {
+          label: (
+            <Flex
+              align="center"
+              style={{
+                fontSize: '12px',
+                color: '#999',
+              }}
+              gap={8}
+            >
+              <img
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '4px',
+                }}
+                src="https://p3.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg?param=40y40"
+                alt="Image"
+              />
+              <div
+                style={{
+                  height: '32px',
+                  width: '127px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  lineHeight: '32px',
+                }}
+              >
+                国内流行我爱你我爱你你1212
+              </div>
+            </Flex>
+          ),
+          key: '8782',
+        },
+        {
+          label: (
+            <Flex
+              align="center"
+              style={{
+                fontSize: '12px',
+                color: '#999',
+              }}
+              gap={8}
+            >
+              <img
+                style={{ width: '32px', height: '32px', borderRadius: '4px' }}
+                src="https://p3.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg?param=40y40"
+              ></img>{' '}
+              电子音乐
+            </Flex>
+          ),
+          key: '878',
+        },
+      ],
+    },
+    {
+      label: '收藏的歌单',
+      key: 'collect',
     },
   ]
 
@@ -102,6 +166,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }}
           mode="inline"
           selectedKeys={[curActive]}
+          defaultOpenKeys={['create']}
           items={items}
           onClick={(item) => onClick(item)}
         />

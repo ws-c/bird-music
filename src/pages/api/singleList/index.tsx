@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const songs = await prisma.songs.findMany({
-        distinct: ['artists_id'],
+        distinct: ['albums_id'],
         orderBy: {
           albums: {
             release_date: 'desc', // 按专辑发布日期降序排序

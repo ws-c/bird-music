@@ -38,7 +38,11 @@ export default function RootLayout({
             token: {
               colorPrimary: '#f30074',
             },
-            components: {},
+            components: {
+              Menu:{
+                subMenuItemBg: '#f9f9f9'
+              }
+            },
           }}
         >
           <AntdRegistry>

@@ -4,7 +4,6 @@ import {
   CaretRightOutlined,
   StepBackwardOutlined,
   StepForwardOutlined,
-  MenuOutlined,
   PauseOutlined,
 } from '@ant-design/icons'
 import useStore from '../store/useStore'
@@ -14,6 +13,8 @@ import _ from 'lodash'
 import styles from './FullPlayer.module.css'
 import useColorThief from 'use-color-thief'
 import { useRouter } from 'next/navigation'
+import PlayDrawer from './PlayDrawer'
+import PlayDrawerFull from './PlayDrawerFull'
 
 const Player = () => {
   const router = useRouter()
@@ -24,90 +25,146 @@ const Player = () => {
   )
   const [currentTime, setCurrentTime] = useState(0)
   const [sliderValue, setSliderValue] = useState(0)
-  const audioRef = useRef(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // 每次 currentSongIndex 变化时，更新播放状态
   useEffect(() => {
     if (audioRef.current && isPlaying) {
       audioRef.current.play()
     }
-  }, [currentSongIndex])
+  }, [currentSongIndex, isPlaying])
+
+  // 当 currentId 或 singleList 变化时，更新 currentSongIndex
   useEffect(() => {
     const index = singleList.findIndex((song) => song.id === currentId)
     setCurrentSongIndex(index >= 0 ? index : 0)
-    console.log('index', index)
   }, [singleList, currentId])
 
+  // 根据 isPlaying 状态播放或暂停
   useEffect(() => {
     if (audioRef.current) {
       isPlaying ? audioRef.current.play() : audioRef.current.pause()
     }
   }, [isPlaying])
 
+  // 定时更新当前时间和滑块值
   useEffect(() => {
     const updateTime = () => {
       if (audioRef.current) {
         setCurrentTime(audioRef.current.currentTime)
-        if (handled.current === false) {
+        if (!handled.current) {
           setSliderValue(audioRef.current.currentTime) // 实时更新滑块值
         }
       }
     }
-
-    const interval = setInterval(updateTime, 1000)
+    const interval = setInterval(updateTime, 1000) // 每秒更新一次
     return () => clearInterval(interval)
   }, [isPlaying])
 
+  // 歌曲历史列表，用于随机播放时的返回功能
+  const [historyList, setHistoryList] = useState<number[]>([])
+
+  // 播放上一首
   const handlePrevious = () => {
-    setCurrentSongIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? singleList.length - 1 : prevIndex - 1
-      setCurrentId(singleList[newIndex].id) // 使用新索引设置 ID
-      return newIndex // 返回新索引
-    })
+    if (historyList.length <= 0) {
+      setCurrentSongIndex((prevIndex) => {
+        const newIndex = prevIndex === 0 ? singleList.length - 1 : prevIndex - 1
+        setCurrentId(singleList[newIndex].id)
+        return newIndex
+      })
+    } else {
+      const newIndex = historyList[historyList.length - 1]
+      setCurrentSongIndex(newIndex)
+      setHistoryList(historyList.slice(0, -1)) // 移除已播放的歌曲记录
+    }
     setIsPlaying(true)
   }
 
-  const handleNext = () => {
-    setCurrentSongIndex((prevIndex) => {
-      const newIndex = prevIndex === singleList.length - 1 ? 0 : prevIndex + 1
-      setCurrentId(singleList[newIndex].id) // 使用新索引设置 ID
-      return newIndex // 返回新索引
-    })
+  // 播放下一首
+  const handleNext = (isOnclick = false) => {
+    if (isOnclick) {
+      if (playMode === 1 || playMode === 3) {
+        setCurrentSongIndex((prevIndex) => {
+          const newIndex =
+            prevIndex === singleList.length - 1 ? 0 : prevIndex + 1
+          return newIndex
+        })
+      } else if (playMode === 2) {
+        setHistoryList((prev) => [...prev, currentSongIndex])
+        const newIndex = Math.floor(Math.random() * singleList.length)
+        setCurrentSongIndex(newIndex)
+      }
+    } else {
+      // 自动播放下一首
+      if (playMode === 1) {
+        setCurrentSongIndex((prevIndex) => {
+          const newIndex =
+            prevIndex === singleList.length - 1 ? 0 : prevIndex + 1
+          return newIndex
+        })
+      } else if (playMode === 2) {
+        const newIndex = Math.floor(Math.random() * singleList.length)
+        setCurrentSongIndex(newIndex)
+      } else {
+        if (!audioRef.current) return
+        audioRef.current.currentTime = 0
+        audioRef.current?.play()
+      }
+    }
     setIsPlaying(true)
   }
 
+  // 更新 currentId
+  useEffect(() => {
+    if (currentSongIndex !== null && singleList[currentSongIndex]) {
+      setCurrentId(singleList[currentSongIndex].id)
+    }
+  }, [currentSongIndex])
+
+  // 切换播放状态
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying)
-    console.log('isPlaying', isPlaying)
   }
+
+  // 控制滑块变化
   const handled = useRef(false)
-  const handleSliderChange = (value) => {
+  const handleSliderChange = (value: React.SetStateAction<number>) => {
     handled.current = true
     setSliderValue(value) // 实时更新滑块值
   }
 
-  const handleSliderAfterChange = (value) => {
+  // 放手后更新音频播放时间
+  const handleSliderAfterChange = (value: number) => {
     if (audioRef.current) {
-      audioRef.current.currentTime = value // 放手后更新播放时间
+      audioRef.current.currentTime = value
     }
     handled.current = false
   }
 
+  // 获取当前歌曲
   const currentSong = singleList[currentSongIndex] || {}
-  const [volume, setVolume] = useState(100) // 新增音量状态
-  const handleVolumeChange = (value) => {
+
+  // 音量控制
+  const [volume, setVolume] = useState(100)
+  const handleVolumeChange = (value: number) => {
     setVolume(value)
     if (audioRef.current) {
-      audioRef.current.volume = value / 100 // 设置音量，值需在 0-1 之间
+      audioRef.current.volume = value / 100
     }
   }
+
+  // 切换静音
   const toggleMute = () => {
     if (audioRef.current) {
-      if (audioRef.current.volume == 0) {
+      if (audioRef.current.volume === 0) {
         handleVolumeChange(100)
       } else {
         handleVolumeChange(0)
       }
     }
   }
+
+  // 根据音量显示不同图标
   const getVolumeIcon = (value: string) => {
     if (audioRef.current) {
       const volumeLevel = audioRef.current.volume
@@ -141,36 +198,108 @@ const Player = () => {
       }
     }
   }
-  // 播放列表抽屉
-  const [open, setOpen] = useState(false)
-  const showDrawer = () => {
-    setOpen(!open)
-  }
-  const onClose = () => {
-    setOpen(false)
-  }
-  const [onClicked, setOnClicked] = useState(null)
+
+  // 当前点击的歌曲
+  const [onClicked, setOnClicked] = useState<string | null>(null)
   useEffect(() => {
     setOnClicked(currentId)
   }, [currentId])
+
   // 全屏模式
   const [fullScreen, setFullScreen] = useState(false)
+
+  // 获取当前歌曲封面颜色
   const { color, palette } = useColorThief(currentSong.cover, {
     format: 'rgb',
     colorCount: 10,
     quality: 10,
   })
+
+  // 渐变背景样式
   const gradientStyle = {
     width: '100%',
     height: '100%',
-    background: `linear-gradient(to top, 
-      rgba(${color}, 0.3) 0%,
-      rgba(${palette[0]}, 0.9) 100%`,
+    background: `linear-gradient(to top, rgba(${color}, 0.3) 0%, rgba(${palette[1]}, 0.9) 100%)`,
   }
-  useEffect(() => {
-    console.log('palette', palette)
-    console.log('color', color)
-  }, [palette, color])
+
+  // 播放模式
+  const [playMode, setPlayMode] = useState(1)
+
+  // 切换播放模式
+  const handlePlayModeChange = () => {
+    if (playMode === 1) {
+      setPlayMode(2)
+    } else if (playMode === 2) {
+      setPlayMode(3)
+    } else {
+      setPlayMode(1)
+    }
+  }
+
+  // 获取播放模式图标
+  const getPlayModeIcon = (value: string) => {
+    let iconSize = 20
+    let color = '#1e1e1e'
+    if (value === '2') {
+      iconSize = 24
+      color = '#f0ecf1'
+    }
+    if (playMode === 1) {
+      return (
+        <Button
+          type="text"
+          icon={
+            <Icons
+              type="icon-liebiaoxunhuan"
+              size={iconSize}
+              onClick={handlePlayModeChange}
+              color={color}
+            />
+          }
+          title="列表播放"
+        ></Button>
+      )
+    } else if (playMode === 2) {
+      return (
+        <Button
+          type="text"
+          icon={
+            <Icons
+              type="icon-suijibofang"
+              size={iconSize}
+              onClick={handlePlayModeChange}
+              color={color}
+            />
+          }
+          title="随机播放"
+        ></Button>
+      )
+    } else {
+      return (
+        <Button
+          type="text"
+          icon={
+            <Icons
+              type="icon-danquxunhuan"
+              size={iconSize}
+              onClick={handlePlayModeChange}
+              color={color}
+            />
+          }
+          title="单曲循环"
+        ></Button>
+      )
+    }
+  }
+
+  // 播放列表抽屉
+  const [open, setOpen] = useState<boolean>(false)
+  const showDrawer = () => setOpen(!open)
+  const onClose = () => setOpen(false)
+  // 播放列表抽屉全屏版
+  const [open1, setOpen1] = useState<boolean>(false)
+  const showDrawer1 = () => setOpen1(!open)
+  const onClose1 = () => setOpen1(false)
   return (
     <>
       {fullScreen && (
@@ -267,7 +396,20 @@ const Player = () => {
                   </Flex>
                 </Flex>
 
-                <Flex gap={24} justify="center">
+                <Flex
+                  gap={16}
+                  justify="center"
+                  align="center"
+                  style={{ position: 'relative' }}
+                >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: '70%',
+                    }}
+                  >
+                    {getPlayModeIcon('2')}
+                  </div>
                   <Button
                     size="large"
                     type="text"
@@ -307,8 +449,27 @@ const Player = () => {
                         style={{ fontSize: '32px' }}
                       />
                     }
-                    onClick={handleNext}
+                    onClick={() => handleNext(true)}
                   />
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: '70%',
+                    }}
+                  >
+                    <Button
+                      type="text"
+                      title="播放列表"
+                      icon={
+                        <Icons
+                          type="icon-bofangliebiao"
+                          size={20}
+                          onClick={showDrawer1}
+                          color="#f0ecf1"
+                        />
+                      }
+                    ></Button>
+                  </div>
                 </Flex>
                 <Flex gap={8}>
                   {getVolumeIcon('2')}
@@ -331,7 +492,12 @@ const Player = () => {
         style={{ position: 'relative', padding: '10px 40px' }}
       >
         <Flex gap={24} justify="center" align="center">
-          <div className="image-container" onClick={() => setFullScreen(true)}>
+          <div
+            className="image-container"
+            onClick={() => {
+              setFullScreen(true), onClose()
+            }}
+          >
             <img
               className="cover"
               src={currentSong.cover}
@@ -375,11 +541,11 @@ const Player = () => {
           }}
           vertical
         >
-          <Flex gap={24} justify="center" style={{ paddingTop: '15px' }}>
+          <Flex gap={16} justify="center" style={{ paddingTop: '15px' }}>
             <Button
               size="large"
               type="text"
-              icon={<StepBackwardOutlined style={{ fontSize: '24px' }} />}
+              icon={<StepBackwardOutlined style={{ fontSize: '32px' }} />}
               onClick={handlePrevious}
             />
             <Button
@@ -389,17 +555,17 @@ const Player = () => {
               style={{ margin: '0 10px', borderRadius: '50%' }}
               icon={
                 isPlaying ? (
-                  <PauseOutlined style={{ fontSize: '40px' }} />
+                  <PauseOutlined style={{ fontSize: '48px' }} />
                 ) : (
-                  <CaretRightOutlined style={{ fontSize: '40px' }} />
+                  <CaretRightOutlined style={{ fontSize: '48px' }} />
                 )
               }
             />
             <Button
               size="large"
               type="text"
-              icon={<StepForwardOutlined style={{ fontSize: '24px' }} />}
-              onClick={handleNext}
+              icon={<StepForwardOutlined style={{ fontSize: '32px' }} />}
+              onClick={() => handleNext(true)}
             />
           </Flex>
           <Flex align="center" gap={12}>
@@ -419,6 +585,7 @@ const Player = () => {
           </Flex>
         </Flex>
         <Flex gap={24} align="center">
+          {getPlayModeIcon('1')}
           <Flex gap={8}>
             {getVolumeIcon('1')}
             <Slider
@@ -432,64 +599,37 @@ const Player = () => {
           <span style={{ position: 'relative', top: '-2px', color: '#e5e6eb' }}>
             |
           </span>
-          <MenuOutlined onClick={showDrawer} />
+          <Button
+            type="text"
+            title="播放列表"
+            icon={
+              <Icons type="icon-bofangliebiao" size={20} onClick={showDrawer} />
+            }
+          ></Button>
         </Flex>
       </Flex>
-      <Drawer
-        style={{ padding: '0 !important' }}
-        title="播放列表"
-        onClose={onClose}
+      <PlayDrawer
         open={open}
-        width={320}
-        maskClassName="ant-mask"
-        rootStyle={{ marginTop: '64px', marginBottom: '81px' }}
-      >
-        <List
-          dataSource={singleList}
-          renderItem={(item) => (
-            <List.Item
-              style={{
-                cursor: 'pointer',
-                padding: '0px 8px',
-                marginBottom: '8px',
-              }}
-              className={`item ${onClicked == item.id ? 'clicked' : ''}`}
-              onClick={() => {
-                setCurrentId(item.id)
-                setOnClicked(item.id)
-                setIsPlaying(true)
-              }}
-            >
-              <List.Item.Meta
-                avatar={
-                  <img
-                    src={item.cover}
-                    style={{
-                      position: 'relative',
-                      top: '4px',
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '4px',
-                    }}
-                  ></img>
-                }
-                title={item.song_title}
-                description={item.name}
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              />
-              <div>{formatTime(item.duration)}</div>
-            </List.Item>
-          )}
-        />
-      </Drawer>
+        onClose={onClose}
+        singleList={singleList}
+        onClicked={onClicked}
+        setOnClicked={setOnClicked}
+        setCurrentId={setCurrentId}
+        setIsPlaying={setIsPlaying}
+      />
+      <PlayDrawerFull
+        open={open1}
+        onClose={onClose1}
+        singleList={singleList}
+        onClicked={onClicked}
+        setOnClicked={setOnClicked}
+        setCurrentId={setCurrentId}
+        setIsPlaying={setIsPlaying}
+      />
       <audio
         ref={audioRef}
         src={currentSong.file_path}
-        onEnded={handleNext}
+        onEnded={() => handleNext(false)}
         onLoadedMetadata={() => {
           if (audioRef.current) {
             audioRef.current.currentTime = 0 // Reset time when song changes

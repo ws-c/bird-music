@@ -81,9 +81,14 @@ body {
   border-radius: 8px;
 }
 .clicked {
-  background-color: #ffe6ee !important; /* 设置背景色 */
-  border-radius: 8px; /* 圆角效果 */
-  transition: all 0.5s ease; /* 添加过渡动画 */
+  background-color: rgba(0, 0, 0, 0.08) !important;
+  border-radius: 8px; 
+  transition: all 0.5s ease;
+}
+.clicked2 {
+  background-color: rgba(255, 255, 255, 0.1) !important; 
+  border-radius: 8px; 
+  transition: all 0.5s ease; 
 }
 .ant-table-tbody > tr.ant-table-row:hover > td {
   background: none !important;
@@ -100,6 +105,12 @@ body {
 }
 .ant-mask {
   background: none !important;
+}
+.ant-menu-item {
+  padding: 8px !important;
+}
+.ant-menu-submenu-title {
+  padding: 8px !important;
 }
 /* 定义整个滚动条的宽度 */
 ::-webkit-scrollbar {
