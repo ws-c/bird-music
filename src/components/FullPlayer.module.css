@@ -4,8 +4,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgb(0, 0, 0); /* 背景透明黑色 */
-  backdrop-filter: blur(20px); /* 毛玻璃效果 */
+  background: #000;
+  backdrop-filter: blur(20px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,11 +16,19 @@
   width: 600px;
   height: 90%;
 }
+
 .fullPlayerContent img {
+  transform: scale(1);
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 弹跳曲线 */
   width: 600px;
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(255, 255, 255, 0.04);
+}
+
+.fullPlayerContent .imgPause {
+  transform: scale(0.8);
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* 弹跳曲线 */
 }
 .moveButton {
   color: #dddbde !important;

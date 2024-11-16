@@ -325,7 +325,10 @@ const Player = () => {
               </Flex>
               <Flex className={styles.fullPlayerContent} vertical gap={16}>
                 <Flex justify="center">
-                  <img src={currentSong.cover} className={styles.img} />
+                  <img
+                    src={currentSong.cover}
+                    className={isPlaying ? '' : styles.imgPause}
+                  />
                 </Flex>
                 <Flex vertical>
                   <span
@@ -489,7 +492,7 @@ const Player = () => {
       <Flex
         align="center"
         justify="space-between"
-        style={{ position: 'relative', padding: '10px 40px' }}
+        style={{ position: 'relative', padding: '16px 40px' }}
       >
         <Flex gap={24} justify="center" align="center">
           <div
@@ -616,6 +619,7 @@ const Player = () => {
         setOnClicked={setOnClicked}
         setCurrentId={setCurrentId}
         setIsPlaying={setIsPlaying}
+        isPlaying={isPlaying}
       />
       <PlayDrawerFull
         open={open1}
@@ -625,6 +629,7 @@ const Player = () => {
         setOnClicked={setOnClicked}
         setCurrentId={setCurrentId}
         setIsPlaying={setIsPlaying}
+        isPlaying={isPlaying}
       />
       <audio
         ref={audioRef}

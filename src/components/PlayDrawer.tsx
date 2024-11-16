@@ -1,7 +1,7 @@
-import { Drawer, List } from 'antd'
+import { Drawer, Flex, List } from 'antd'
 import { formatTime } from '../utils/formatTime'
 import { FC } from 'react'
-
+import myStyle from './PlayDrawer.module.css'
 type Props = {
   open: boolean
   onClose: () => void
@@ -10,6 +10,7 @@ type Props = {
   setOnClicked: (id: string) => void
   setIsPlaying: (isPlaying: boolean) => void
   singleList: any[]
+  isPlaying: boolean
 }
 const PlayDrawer: FC<Props> = ({
   open,
@@ -19,13 +20,14 @@ const PlayDrawer: FC<Props> = ({
   setOnClicked,
   setIsPlaying,
   singleList,
+  isPlaying
 }) => {
   return (
     <Drawer
       title="播放列表"
       onClose={onClose}
       open={open}
-      width={320}
+      width={360}
       maskClassName="ant-mask"
       rootStyle={{
         marginTop: '64px',
@@ -38,8 +40,9 @@ const PlayDrawer: FC<Props> = ({
           <List.Item
             style={{
               cursor: 'pointer',
-              padding: '0px 8px',
+              padding: '4px 16px',
               marginBottom: '8px',
+              overflow: 'hidden',
             }}
             className={`item ${onClicked == item.id ? 'clicked' : ''}`}
             onClick={() => {
@@ -48,6 +51,24 @@ const PlayDrawer: FC<Props> = ({
               setIsPlaying(true)
             }}
           >
+            {onClicked == item.id && isPlaying ? (
+              <Flex align="flex-end" style={{ marginRight: '8px' }}>
+                <div className={myStyle.loading}>
+                  <div className={myStyle.load}></div>
+                  <div className={myStyle.load}></div>
+                  <div className={myStyle.load}></div>
+                  <div className={myStyle.load}></div>
+                </div>
+              </Flex>
+            ) : (
+              <Flex
+                align="center"
+                style={{ marginRight: '8px', height: '100%' }}
+              >
+                <div className={myStyle.play}></div>
+              </Flex>
+            )}
+
             <List.Item.Meta
               avatar={
                 <img

@@ -53,7 +53,6 @@ const SingleList = () => {
             key={item.id}
             style={{
               width: '425px',
-              height: '50px',
               borderBottom: '1px solid #d9d9d9',
               padding: '8px',
               cursor: 'pointer',

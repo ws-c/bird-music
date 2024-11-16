@@ -8,6 +8,7 @@ import Player from '../components/Player'
 import 'nprogress/nprogress.css'
 import '../styles/nprogress.css'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
+import Head from '../components/Head'
 
 const footerStyle = {
   padding: '0',
@@ -39,9 +40,9 @@ export default function RootLayout({
               colorPrimary: '#f30074',
             },
             components: {
-              Menu:{
-                subMenuItemBg: '#f9f9f9'
-              }
+              Menu: {
+                subMenuItemBg: '#f2f3f5',
+              },
             },
           }}
         >

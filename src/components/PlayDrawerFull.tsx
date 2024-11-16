@@ -1,7 +1,7 @@
-import { ConfigProvider, Drawer, List } from 'antd'
+import { ConfigProvider, Drawer, Flex, List } from 'antd'
 import { formatTime } from '../utils/formatTime'
 import { FC } from 'react'
-
+import myStyle from './playDrawerFull.module.css'
 type Props = {
   open: boolean
   onClose: () => void
@@ -10,6 +10,7 @@ type Props = {
   setOnClicked: (id: string) => void
   setIsPlaying: (isPlaying: boolean) => void
   singleList: any[]
+  isPlaying: boolean
 }
 const PlayDrawerFull: FC<Props> = ({
   open,
@@ -19,6 +20,7 @@ const PlayDrawerFull: FC<Props> = ({
   setOnClicked,
   setIsPlaying,
   singleList,
+  isPlaying,
 }) => {
   return (
     <ConfigProvider
@@ -27,7 +29,7 @@ const PlayDrawerFull: FC<Props> = ({
           colorText: 'rgba(255, 255, 255, 0.88)',
           colorIcon: 'rgba(255, 255, 255, 0.88)',
           colorIconHover: 'rgba(0, 0, 0, 0.45)',
-          colorTextDescription: 'rgba(255, 255, 255, 0.45)'
+          colorTextDescription: 'rgba(255, 255, 255, 0.45)',
         },
       }}
     >
@@ -48,17 +50,34 @@ const PlayDrawerFull: FC<Props> = ({
             <List.Item
               style={{
                 cursor: 'pointer',
-                padding: '0px 8px',
+                padding: '4px 16px',
                 marginBottom: '8px',
                 backgroundColor: 'transparent',
               }}
-              className={`item ${onClicked == item.id ? 'clicked2' : ''}`}
+              className={`item2 ${onClicked == item.id ? 'clicked2' : ''}`}
               onClick={() => {
                 setCurrentId(item.id)
                 setOnClicked(item.id)
                 setIsPlaying(true)
               }}
             >
+              {onClicked == item.id && isPlaying ? (
+                <Flex align="flex-end" style={{ marginRight: '8px' }}>
+                  <div className={myStyle.loading}>
+                    <div className={myStyle.load}></div>
+                    <div className={myStyle.load}></div>
+                    <div className={myStyle.load}></div>
+                    <div className={myStyle.load}></div>
+                  </div>
+                </Flex>
+              ) : (
+                <Flex
+                  align="center"
+                  style={{ marginRight: '8px', height: '100%' }}
+                >
+                  <div className={myStyle.play}></div>
+                </Flex>
+              )}
               <List.Item.Meta
                 avatar={
                   <img

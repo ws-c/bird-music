@@ -1,14 +1,18 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { Avatar, Button, Dropdown, Flex } from 'antd'
+import React, { useEffect, useRef, useState } from 'react'
+import { AutoComplete, Avatar, Button, Dropdown, Flex } from 'antd'
 import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import styles from './Header.module.css'
 import Input from 'antd/es/input/Input'
 import { useRouter } from 'next/navigation'
 import useStore from '../store/useStore'
+type Option = {
+  value: string
+  label: string
+}
 
 export default function Header() {
-  const { name } = useStore()
+  const { name, inputValue, setInputValue } = useStore()
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
@@ -33,19 +37,49 @@ export default function Header() {
       label: <span onClick={logout}>退出</span>,
     },
   ]
+  // const inputValue = useRef<string>('')
+  const [options, setOptions] = useState<Option[]>([])
+
+  const handleSearch = async (value: any) => {
+    if (!value) {
+      setOptions([])
+      return
+    }
+    const data = await fetch(`/api/search?q=${value}`)
+    const newOptions = await data.json()
+    setOptions(newOptions)
+  }
+
+  const handleSelect = (value: string, option: Option) => {
+    console.log('Selected:', value)
+    setInputValue(option.label)
+  }
+  const handleChange = (value: string) => {
+    setInputValue(value)
+  }
   return (
     <Flex className={styles.header}>
       <Flex align="center" gap={8}>
         <Button
+          disabled={window.location.pathname === '/'}
           icon={<LeftOutlined size={12} />}
           onClick={() => route.back()}
         ></Button>
-        <Input
-          style={{ width: '300px', height: '32px' }}
-          size="small"
-          placeholder="搜索"
-          prefix={<SearchOutlined />}
-        />
+        <AutoComplete
+          allowClear
+          style={{ width: '300px' }}
+          options={options}
+          onSearch={handleSearch}
+          onSelect={handleSelect}
+          value={inputValue}
+          onChange={handleChange}
+        >
+          <Input
+            placeholder="搜索"
+            prefix={<SearchOutlined />}
+            style={{ height: '32px' }}
+          />
+        </AutoComplete>
       </Flex>
       <div className={styles.right}>
         <span>{isClient && name}</span>

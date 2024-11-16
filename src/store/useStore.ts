@@ -7,6 +7,8 @@ interface StoreState {
   showPlayer: boolean // 播放器是否显示的状态
   name: string // 用户名
   isPlaying: boolean // 是否正在播放的状态
+  inputValue: string // 输入框的值
+  setInputValue: (value: string) => void // 设置输入框的值
   setIsPlaying: (playing: boolean) => void
   setSingleList: (list: any[]) => void
   setCurrentId: (id: string | null) => void
@@ -38,7 +40,11 @@ const useStore = create<StoreState>((set) => {
     showPlayer: storedShowPlayer,
     name: storedName,
     isPlaying: false,
-
+    inputValue: '',
+    
+    setInputValue: (value: string) => {
+      set({ inputValue: value })
+    },
     setIsPlaying: (playing: boolean) => {
       set({ isPlaying: playing })
     },

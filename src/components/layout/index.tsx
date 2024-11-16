@@ -13,8 +13,8 @@ const layoutStyle = {
 }
 
 const headerStyle = {
-  background: '#fff',
-  borderBottom: '1px solid #e8e8e8',
+  background: '#f9f9f9',
+  // borderBottom: '1px solid #e8e8e8',
   position: 'sticky'   as React.CSSProperties['position'],
   top: 0,
   zIndex: 1000,
@@ -22,7 +22,7 @@ const headerStyle = {
 
 const contentStyle = {
   padding: '0 60px',
-  background: '#fff',
+  background: '#f9f9f9',
   paddingBottom: '100px',
   overflow: 'auto',
   flex: 1, // 使 Content 区域占满剩余的空间
@@ -30,8 +30,8 @@ const contentStyle = {
 }
 
 const siderStyle = {
-  background: '#f9f9f9',
-  borderRight: '1px solid #e8e8e8',
+  background: '#f2f3f5',
+  // borderRight: '1px solid #e8e8e8',
   minHeight: '100vh',
   position: 'fixed'  as React.CSSProperties['position'],
   left: '0',
@@ -160,7 +160,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
         <Menu
           style={{
             border: 'none',
-            background: '#f9f9f9',
+            background: '#f2f3f5',
             letterSpacing: '2px',
             padding: '0 24px',
           }}
