@@ -80,7 +80,7 @@ export default function Home({ params }) {
     setOnClicked(currentId)
   }, [currentId])
   return (
-    <Layout curActive="/">
+    <Layout curActive="">
       <div style={{ marginTop: '50px' }}>
         {loading ? ( // 根据加载状态渲染不同的内容
           <Spin size="large" />

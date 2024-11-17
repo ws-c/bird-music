@@ -37,7 +37,6 @@ export default function Header() {
       label: <span onClick={logout}>退出</span>,
     },
   ]
-  // const inputValue = useRef<string>('')
   const [options, setOptions] = useState<Option[]>([])
 
   const handleSearch = async (value: any) => {
@@ -52,16 +51,24 @@ export default function Header() {
 
   const handleSelect = (value: string, option: Option) => {
     console.log('Selected:', value)
+    if (value) {
+      route.push(`/search/${value}`)
+    }
     setInputValue(option.label)
   }
   const handleChange = (value: string) => {
     setInputValue(value)
   }
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && inputValue) {
+      route.push(`/search/${inputValue}`)
+    }
+  }
   return (
     <Flex className={styles.header}>
       <Flex align="center" gap={8}>
         <Button
-          disabled={window.location.pathname === '/'}
+          disabled={isClient && window.location.pathname === '/'}
           icon={<LeftOutlined size={12} />}
           onClick={() => route.back()}
         ></Button>
@@ -78,6 +85,7 @@ export default function Header() {
             placeholder="搜索"
             prefix={<SearchOutlined />}
             style={{ height: '32px' }}
+            onKeyDown={handleKeyDown}
           />
         </AutoComplete>
       </Flex>

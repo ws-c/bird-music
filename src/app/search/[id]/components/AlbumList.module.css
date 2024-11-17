@@ -1,11 +1,10 @@
 .musicCard {
   position: relative;
-  width: 200px;
-  border: 1px solid #e0e0e0;
+  width: 250px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
+  padding: 12px;
 }
 
 .cardCover {
@@ -15,34 +14,21 @@
 .cardImage {
   width: 100%;
   height: auto;
+  border-radius: 8px;
 }
 
-.overlay {
-  height: 320px;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.04);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0; /* 默认隐藏 */
-  transition: opacity 0.3s;
-}
-
-.musicCard:hover .overlay {
-  opacity: 1; /* 悬停时显示 */
+.musicCard:hover {
+  height: 100%;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .playIcon {
   position: absolute;
   bottom: 130px;
-  right: 10px;
+  right: 20px;
   font-size: 32px;
   color: white !important;
-  transition: opacity 0.3s;
   opacity: 0; /* 默认隐藏 */
 }
 
@@ -51,7 +37,7 @@
 }
 
 .cardInfo {
-  padding: 16px;
+  padding-top: 16px;
 }
 
 .cardTitle {

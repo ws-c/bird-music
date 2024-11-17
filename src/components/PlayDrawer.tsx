@@ -31,7 +31,7 @@ const PlayDrawer: FC<Props> = ({
       maskClassName="ant-mask"
       rootStyle={{
         marginTop: '64px',
-        marginBottom: '81px',
+        marginBottom: '93px',
       }}
     >
       <List

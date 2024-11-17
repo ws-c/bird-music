@@ -1,9 +1,8 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Card, Divider, Flex } from 'antd'
+import { Flex } from 'antd'
 import styles from './Playlist.module.css'
 import { PlayCircleOutlined } from '@ant-design/icons'
-const { Meta } = Card
 
 const Playlist = () => {
   const [playlist, setPlaylist] = useState([])

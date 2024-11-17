@@ -548,26 +548,26 @@ const Player = () => {
             <Button
               size="large"
               type="text"
-              icon={<StepBackwardOutlined style={{ fontSize: '32px' }} />}
+              icon={<StepBackwardOutlined style={{ fontSize: '30px' }} />}
               onClick={handlePrevious}
             />
             <Button
               size="large"
               type="text"
               onClick={togglePlayPause}
-              style={{ margin: '0 10px', borderRadius: '50%' }}
+              style={{ margin: '0 8px' }}
               icon={
                 isPlaying ? (
-                  <PauseOutlined style={{ fontSize: '48px' }} />
+                  <PauseOutlined style={{ fontSize: '40px' }} />
                 ) : (
-                  <CaretRightOutlined style={{ fontSize: '48px' }} />
+                  <CaretRightOutlined style={{ fontSize: '40px' }} />
                 )
               }
             />
             <Button
               size="large"
               type="text"
-              icon={<StepForwardOutlined style={{ fontSize: '32px' }} />}
+              icon={<StepForwardOutlined style={{ fontSize: '30px' }} />}
               onClick={() => handleNext(true)}
             />
           </Flex>

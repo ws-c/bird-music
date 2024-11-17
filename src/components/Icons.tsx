@@ -2,7 +2,7 @@ import { createFromIconfontCN } from '@ant-design/icons'
 import React from 'react'
 
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/c/font_4530194_aovm68rga4d.js',
+  scriptUrl: '//at.alicdn.com/t/c/font_4530194_gkd7uwlahk.js',
 })
 
 function Index(props: {

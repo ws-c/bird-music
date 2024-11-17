@@ -1,13 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Dropdown, Flex, MenuProps } from 'antd'
-import Icons from '../../components/Icons'
 import styles from './SingleList.module.css'
-import useStore from '../../store/useStore'
-import { formatTime } from '../../utils/formatTime'
 import Link from 'next/link'
+import useStore from '../../../../store/useStore'
+import { formatTime } from '../../../../utils/formatTime'
+import Icons from '../../../../components/Icons'
 
-const SingleList = () => {
+const SingleList = ({ curSingleList }) => {
   const {
     isPlaying,
     setIsPlaying,
@@ -16,27 +16,13 @@ const SingleList = () => {
     currentId,
     setShowPlayer,
   } = useStore()
-  const [curSingleList, setCurSingleList] = useState([])
-  useEffect(() => {
-    const fetchPlaylist = async () => {
-      try {
-        const response = await fetch('/api/singleList')
-        const data = await response.json()
-        setCurSingleList(data)
-        console.log('singleList', data)
-      } catch (error) {
-        console.error('Error fetching SingleList:', error)
-      }
-    }
 
-    fetchPlaylist()
-  }, [])
   const [onClicked, setOnClicked] = useState(null)
   useEffect(() => {
     setOnClicked(currentId)
   }, [currentId])
   return (
-    <Flex gap={24} wrap={true} style={{ width: '1400px' }}>
+    <Flex gap={24} wrap={true}>
       {curSingleList.map((item) => {
         const menuItems: MenuProps['items'] = [
           {
