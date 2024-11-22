@@ -1,13 +1,28 @@
 /* Auth.module.css */
-
+.full {
+  height: 100vh;
+  background-image: linear-gradient(125deg, #e79dad, #ffe3ee, #67baa7);
+  background-size: 300%;
+  animation: gradientBG 30s ease-in-out infinite;
+}
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #f9f9f9;
 }
-.Authcontainer{
+.Authcontainer {
   width: 100%;
   max-width: 420px;
   background: white;

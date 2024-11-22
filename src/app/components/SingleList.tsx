@@ -36,7 +36,7 @@ const SingleList = () => {
     setOnClicked(currentId)
   }, [currentId])
   return (
-    <Flex gap={24} wrap={true} style={{ width: '1400px' }}>
+    <Flex gap={16} wrap={true} style={{minWidth: '1700px'}}>
       {curSingleList.map((item) => {
         const menuItems: MenuProps['items'] = [
           {
@@ -53,7 +53,7 @@ const SingleList = () => {
           <Flex
             key={item.id}
             style={{
-              width: '425px',
+              width: '383px',
               borderBottom: '1px solid #d9d9d9',
               padding: '8px',
               cursor: 'pointer',

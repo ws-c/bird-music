@@ -8,7 +8,6 @@ import Player from '../components/Player'
 import 'nprogress/nprogress.css'
 import '../styles/nprogress.css'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
-import Head from '../components/Head'
 
 const footerStyle = {
   padding: '0',

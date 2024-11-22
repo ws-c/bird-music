@@ -4,19 +4,22 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:118816742@localhost:3306/order"
+  url      = "mysql://root:root@localhost:3306/music"
 }
 
 model playlist {
-  id         Int       @id
+  id         Int       @id @default(autoincrement())
   name       String?   @db.VarChar(255)
   author     String?   @db.VarChar(255)
   createTime DateTime? @db.Timestamp(0)
   updateTime DateTime? @db.Timestamp(0)
   desc       String?   @db.VarChar(255)
-  tag        String?   @db.VarChar(255)
+  tags       Json?
   isPrivate  String?   @db.VarChar(255)
-  img        String?   @db.VarChar(255)
+  img        String?   @db.Text
+  users      users?    @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
+
+  @@index([author], map: "user_id")
 }
 
 model songs {
@@ -26,8 +29,8 @@ model songs {
   file_path  String  @db.Text
   albums_id  Int
   artists_id Int
-  albums     albums  @relation(fields: [albums_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "songs_ibfk_1")
-  artists    artists @relation(fields: [artists_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "songs_ibfk_2")
+  albums     albums  @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
+  artists    artists @relation(fields: [artists_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_2")
 
   @@index([albums_id], map: "albums_id")
   @@index([artists_id], map: "artist_id")
@@ -42,7 +45,7 @@ model albums {
   cover        String?   @db.Text
   createTime   DateTime? @db.Timestamp(0)
   updateTime   DateTime? @db.Timestamp(0)
-  artists      artists?  @relation(fields: [artist_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "albums_ibfk_1")
+  artists      artists?  @relation(fields: [artist_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "albums_ibfk_1")
   songs        songs[]
 
   @@index([artist_id], map: "artist_id")
@@ -60,7 +63,8 @@ model artists {
 }
 
 model users {
-  id        String    @id @db.VarChar(255)
-  password  String?   @db.VarChar(255)
-  createdAt DateTime? @db.Timestamp(0)
+  id        String     @id @db.VarChar(255)
+  password  String?    @db.VarChar(255)
+  createdAt DateTime?  @db.Timestamp(0)
+  playlist  playlist[]
 }

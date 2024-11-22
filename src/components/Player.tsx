@@ -575,7 +575,7 @@ const Player = () => {
             <span>{formatTime(currentTime)}</span>
             <Slider
               style={{
-                width: '800px',
+                width: '100%',
               }}
               min={0}
               max={currentSong.duration || 0}

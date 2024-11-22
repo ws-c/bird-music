@@ -11,15 +11,15 @@ export default function Home() {
     <Layout curActive="/">
       <div>
         <Typography.Title level={4}>精选推荐</Typography.Title>
-        <Divider></Divider>
+        {/* <Divider></Divider> */}
         <MusicCard />
 
         <Typography.Title level={4}>热门歌单</Typography.Title>
-        <Divider></Divider>
+        {/* <Divider></Divider> */}
         <Playlist></Playlist>
 
         <Typography.Title level={4}>最新单曲</Typography.Title>
-        <Divider></Divider>
+        {/* <Divider></Divider> */}
         <SingleList></SingleList>
       </div>
     </Layout>

@@ -5,9 +5,18 @@ export default async function handler(req, res) {
     if (!req.query.id) {
       try {
         const albums = await prisma.albums.findMany({
-          take: 3,
+          take: 6,
           orderBy: {
             release_date: 'desc',
+          },
+          include: {
+            songs: true,
+            artists: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         })
         res.status(200).json(albums)

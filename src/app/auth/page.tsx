@@ -1,8 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Form, Input, Button, notification, Tabs } from 'antd'
+import { Form, Input, Button, notification, Tabs, Flex } from 'antd'
 import styles from './Auth.module.css'
 import useStore from '../../store/useStore'
+import Icons from '../../components/Icons'
+import Title from 'antd/es/typography/Title'
 
 export default function Auth() {
   const { setShowPlayer, setName } = useStore()
@@ -53,7 +55,7 @@ export default function Auth() {
 
     if (res.ok) {
       notification.success({
-        message: '注册成功'
+        message: '注册成功',
       })
 
       // After registration, switch to the "Login" tab
@@ -177,15 +179,38 @@ export default function Auth() {
   ]
 
   return (
-    <div className={styles.container}>
-      <div className={styles.Authcontainer}>
-        <Tabs
-          activeKey={activeTabKey} // Controlled tab key
-          onChange={setActiveTabKey} // Update active key when tab is changed
-          style={{ width: '100%' }}
-          className={styles.tabs}
-          items={tabsItems} // Pass the items array to the Tabs component
+    <div className={styles.full}>
+      <Flex
+        style={{
+          position: 'absolute',
+          alignItems: 'baseline',
+          marginLeft: '32px',
+          height: '64px',
+          marginBottom: '16px',
+        }}
+      >
+        <Icons
+          type="icon-a-1f99c"
+          size={24}
+          style={{
+            marginRight: '8px',
+          }}
         />
+        <Title level={3} style={{ marginBottom: 0, lineHeight: '24px' }}>
+          Bird Music
+        </Title>
+      </Flex>
+
+      <div className={styles.container}>
+        <div className={styles.Authcontainer}>
+          <Tabs
+            activeKey={activeTabKey} // Controlled tab key
+            onChange={setActiveTabKey} // Update active key when tab is changed
+            style={{ width: '100%' }}
+            className={styles.tabs}
+            items={tabsItems} // Pass the items array to the Tabs component
+          />
+        </div>
       </div>
     </div>
   )

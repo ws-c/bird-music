@@ -26,7 +26,7 @@ const MusicCard = () => {
   }, [])
 
   return (
-    <Flex gap={24}>
+    <Flex gap={16} style={{ minWidth: '1700px' }}>
       {albums.map((item) => {
         return (
           <div
@@ -40,9 +40,11 @@ const MusicCard = () => {
                 src={item.cover}
                 style={{
                   objectFit: 'cover',
-                  height: 300,
+                  height: 250,
                   width: '100%',
                   filter: 'brightness(0.95)',
+                  verticalAlign: 'middle',
+                  borderRadius: 8,
                 }}
               />
               <div className={styles.overlay}>
@@ -55,13 +57,13 @@ const MusicCard = () => {
                     bottom: 35,
                     left: 15,
                     color: 'white',
-                    textShadow: '0px 0px 5px rgba(0, 0, 0, 0.6)',
+                    textShadow: '0px 0px 2px rgba(0, 0, 0, 0.5)',
                   }}
                 >
                   {item.album_title}
                 </div>
                 <Typography.Text className={styles.title}>
-                  {item.desc}
+                  {item.artists.name}
                 </Typography.Text>
               </Flex>
             </div>

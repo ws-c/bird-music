@@ -23,7 +23,6 @@ export default function Header() {
     localStorage.clear()
     const res = await fetch('/api/logout', { method: 'POST' })
     route.push('/auth')
-    console.log('Logout:', res.ok)
   }
 
   // 用户下拉菜单
@@ -68,6 +67,7 @@ export default function Header() {
     <Flex className={styles.header}>
       <Flex align="center" gap={8}>
         <Button
+          style={{ position: 'relative', top: '2px', height: '36px' }}
           disabled={isClient && window.location.pathname === '/'}
           icon={<LeftOutlined size={12} />}
           onClick={() => route.back()}
@@ -84,7 +84,7 @@ export default function Header() {
           <Input
             placeholder="搜索"
             prefix={<SearchOutlined />}
-            style={{ height: '32px' }}
+            style={{ height: '36px' }}
             onKeyDown={handleKeyDown}
           />
         </AutoComplete>

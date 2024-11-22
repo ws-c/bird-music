@@ -1,10 +1,19 @@
-import prisma from '../../../lib/prisma'
-// 首页推荐歌单
+import prisma from '../../../../lib/prisma'
+// 获取用户自己创建的歌单
 export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const playlist = await prisma.playlist.findMany({
-        take: 7,
+        where: {
+          author: req.query.author,
+        },
+        select: {
+          id: true,
+          name: true,
+          img: true,
+          author: true,
+          isPrivate: true,
+        },
       })
       res.status(200).json(playlist)
     } catch (error) {

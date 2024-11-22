@@ -1,6 +1,6 @@
 'use client'
-import React from 'react'
-import { Flex, Layout, Menu } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Button, Flex, Layout, Menu } from 'antd'
 import { Content, Header } from 'antd/es/layout/layout'
 import Sider from 'antd/es/layout/Sider'
 import { MenuInfo } from 'rc-menu/lib/interface'
@@ -8,14 +8,16 @@ import { useRouter } from 'next/navigation'
 import Icons from '../Icons'
 import Title from 'antd/es/typography/Title'
 import Head from '../Head'
+import CreatePlaylist from './CreatePlayList'
+import useStore from '../../store/useStore'
+
 const layoutStyle = {
   minHeight: '100vh',
 }
 
 const headerStyle = {
   background: '#f9f9f9',
-  // borderBottom: '1px solid #e8e8e8',
-  position: 'sticky'   as React.CSSProperties['position'],
+  position: 'sticky' as React.CSSProperties['position'],
   top: 0,
   zIndex: 1000,
 }
@@ -31,9 +33,8 @@ const contentStyle = {
 
 const siderStyle = {
   background: '#f2f3f5',
-  // borderRight: '1px solid #e8e8e8',
   minHeight: '100vh',
-  position: 'fixed'  as React.CSSProperties['position'],
+  position: 'fixed' as React.CSSProperties['position'],
   left: '0',
   zIndex: 999,
 }
@@ -41,8 +42,63 @@ interface IProps {
   children: React.ReactNode
   curActive: string
 }
+type PlayList = {
+  id: number
+  name: string
+  img: string
+  author: string
+  isPrivate: boolean
+}
 const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
+  const { name } = useStore()
   const router = useRouter()
+  const [myPlayList, setMyPlayList] = useState<PlayList[]>([])
+  useEffect(() => {
+    getMyPlayList()
+  }, [])
+  const getMyPlayList = async () => {
+    const res = await fetch(`/api/playlist/get?author=${name}`)
+    const data = await res.json()
+    setMyPlayList(data)
+  }
+  const myPlayList_ = myPlayList.map((item, index) => {
+    return {
+      label: (
+        <Flex
+          align="center"
+          style={{
+            fontSize: '12px',
+            color: '#999',
+          }}
+          gap={8}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <img
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '4px',
+            }}
+            src={item.img}
+            alt="Image"
+          />
+          <div
+            style={{
+              height: '32px',
+              width: '127px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              lineHeight: '32px',
+            }}
+          >
+            {item.name}
+          </div>
+        </Flex>
+      ),
+      key: item.id.toString(), // 使用 index 确保每个 item 有唯一的 key
+    }
+  })
   const items = [
     {
       label: '主页',
@@ -67,64 +123,28 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       ),
     },
     {
-      label: '创建的歌单',
+      label: (
+        <Flex style={{ position: 'relative' }}>
+          创建的歌单
+          <Button
+            size="small"
+            type="text"
+            style={{
+              position: 'absolute',
+              right: '-50px',
+              top: '7px',
+            }}
+            onClick={(e) => {
+              e.stopPropagation()
+              showModal()
+            }}
+          >
+            <Icons type="icon-add" size={16} />
+          </Button>
+        </Flex>
+      ),
       key: 'create',
-      children: [
-        {
-          label: (
-            <Flex
-              align="center"
-              style={{
-                fontSize: '12px',
-                color: '#999',
-              }}
-              gap={8}
-            >
-              <img
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '4px',
-                }}
-                src="https://p3.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg?param=40y40"
-                alt="Image"
-              />
-              <div
-                style={{
-                  height: '32px',
-                  width: '127px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  lineHeight: '32px',
-                }}
-              >
-                国内流行我爱你我爱你你1212
-              </div>
-            </Flex>
-          ),
-          key: '8782',
-        },
-        {
-          label: (
-            <Flex
-              align="center"
-              style={{
-                fontSize: '12px',
-                color: '#999',
-              }}
-              gap={8}
-            >
-              <img
-                style={{ width: '32px', height: '32px', borderRadius: '4px' }}
-                src="https://p3.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg?param=40y40"
-              ></img>{' '}
-              电子音乐
-            </Flex>
-          ),
-          key: '878',
-        },
-      ],
+      children: myPlayList_,
     },
     {
       label: '收藏的歌单',
@@ -134,6 +154,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
 
   const onClick = (item: MenuInfo) => {
     router.push(`/${item.key}`)
+  }
+  const [open, setOpen] = useState(false)
+  const showModal = () => {
+    setOpen(true)
   }
   return (
     <Layout style={layoutStyle}>
@@ -171,7 +195,6 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           onClick={(item) => onClick(item)}
         />
       </Sider>
-
       <Layout
         style={{
           marginLeft: '240px',
@@ -184,6 +207,12 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
 
         <Content style={contentStyle}>{children}</Content>
       </Layout>
+      <CreatePlaylist
+        open={open}
+        setOpen={setOpen}
+        name={name}
+        getMyPlayList={getMyPlayList}
+      ></CreatePlaylist>
     </Layout>
   )
 }
