@@ -7,7 +7,15 @@ import useStore from '../../../store/useStore'
 import { useRouter } from 'next/navigation'
 const columns = [
   {
-    title: '歌曲',
+    title: '#',
+    dataIndex: 'index',
+    key: 'index',
+    width: '1%',
+    render: (_: any, __: any, index: number) =>
+      (index + 1).toString().padStart(2, '0'),
+  },
+  {
+    title: '歌名',
     dataIndex: 'song_title',
     key: 'song_title',
     width: '20%',
@@ -78,7 +86,7 @@ export default function Home({ params }) {
   }, [currentId])
   return (
     <Layout curActive="">
-      <div style={{ marginTop: '50px' }}>
+      <div style={{ marginTop: '30px' }}>
         {loading ? ( // 根据加载状态渲染不同的内容
           <Spin size="large" />
         ) : (
@@ -87,7 +95,7 @@ export default function Home({ params }) {
               <div
                 style={{
                   overflow: 'hidden',
-                  height: '270px',
+                  height: '250px',
                   borderRadius: '8px',
                   boxShadow:
                     '0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1)',
@@ -97,13 +105,13 @@ export default function Home({ params }) {
                   src={album.cover}
                   alt=""
                   style={{
-                    height: '270px',
+                    height: '250px',
                     borderRadius: '8px',
                   }}
                   className="cover-animation"
                 />
               </div>
-              <Flex vertical>
+              <Flex vertical style={{ position: 'relative' }}>
                 <Typography.Title
                   level={3}
                   style={{ margin: '0', letterSpacing: '1px' }}
@@ -127,7 +135,7 @@ export default function Home({ params }) {
                   style={{
                     position: 'relative',
                     margin: '20px 0',
-                    height: '90px',
+                    height: '95px',
                     width: '350px',
                     overflow: 'hidden',
                   }}
@@ -141,28 +149,26 @@ export default function Home({ params }) {
                   ) : (
                     <></>
                   )}
-                  {String(album.desc).length > 120 && (
-                    <Button
-                      style={{
-                        position: 'absolute',
-                        bottom: '0',
-                        right: '0',
-                        background: '#fff',
-                        border: 'none',
-                        padding: '0',
-                        paddingLeft: '17px',
-                      }}
-                      type="link"
-                      size="small"
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      更多
-                    </Button>
-                  )}
                 </Typography.Text>
+                {String(album.desc).length > 120 && (
+                  <Button
+                    style={{
+                      position: 'absolute',
+                      bottom: '50px',
+                      right: '-10px',
+                      background: '#f9f9f9',
+                      border: 'none',
+                    }}
+                    type="link"
+                    size="small"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    更多
+                  </Button>
+                )}
                 <Button
                   type="primary"
-                  style={{ width: '25%' }}
+                  style={{ width: '100px' }}
                   onClick={() => {
                     setCurrentId(curSingleList[0].id),
                       setSingleList(curSingleList)
@@ -190,7 +196,7 @@ export default function Home({ params }) {
                 },
               })}
               rowClassName={(record) =>
-                `item ${onClicked == record.id ? 'clicked' : ''}`
+                `table-item ${onClicked == record.id ? 'clicked' : ''}`
               }
             />
             <Modal

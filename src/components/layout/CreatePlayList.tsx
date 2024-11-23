@@ -90,14 +90,20 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
 
   const uploadProps: UploadProps = {
     action: '/api/common/upload',
-    listType: 'picture-card' as 'picture-card', // 明确指定为符合 UploadListType 类型
+    listType: 'picture-card' as 'picture-card',
     maxCount: 1,
-    beforeUpload: (file: { type: string }) => {
+    beforeUpload: (file: { type: string; size: number }) => {
       const isImage = file.type.startsWith('image/')
       if (!isImage) {
         message.error('只能上传图片')
+        return Upload.LIST_IGNORE
       }
-      return isImage || Upload.LIST_IGNORE // 避免非图片文件继续上传
+      const isWithinSizeLimit = file.size / 1024 <= 300 // 限制文件大小为 300KB
+      if (!isWithinSizeLimit) {
+        message.error('图片大小不能超过300KB')
+        return Upload.LIST_IGNORE
+      }
+      return true // 文件符合要求
     },
     onChange: (info: UploadChangeParam) => {
       setFileList(info.fileList) // 更新文件列表
@@ -128,7 +134,7 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
       onCancel={handleCancel}
       width={450}
     >
-      <Form form={form} name="songList" initialValues={{ tags: ['电子'] }}>
+      <Form form={form} name="songList">
         <Form.Item
           name={'name'}
           rules={[{ required: true, message: '歌单标题不能为空' }]}

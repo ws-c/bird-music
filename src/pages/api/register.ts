@@ -1,10 +1,9 @@
 import bcrypt from 'bcryptjs'
-import prisma from '../../../lib/prisma'
+import prisma from '../../lib/prisma'
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { username, password } = req.body
-
     // 检查用户名是否存在
     try {
       const existingUser = await prisma.users.findUnique({

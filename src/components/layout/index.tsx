@@ -42,17 +42,11 @@ interface IProps {
   children: React.ReactNode
   curActive: string
 }
-type PlayList = {
-  id: number
-  name: string
-  img: string
-  author: string
-  isPrivate: boolean
-}
+
 const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
-  const { name } = useStore()
+  const { name, myPlayList, setMyPlayList } = useStore()
   const router = useRouter()
-  const [myPlayList, setMyPlayList] = useState<PlayList[]>([])
+
   useEffect(() => {
     getMyPlayList()
   }, [])
@@ -71,7 +65,6 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
             color: '#999',
           }}
           gap={8}
-          onClick={(e) => e.stopPropagation()}
         >
           <img
             style={{
@@ -79,7 +72,11 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
               height: '32px',
               borderRadius: '4px',
             }}
-            src={item.img}
+            src={
+              item.img
+                ? item.img
+                : 'https://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg'
+            }
             alt="Image"
           />
           <div
@@ -96,7 +93,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           </div>
         </Flex>
       ),
-      key: item.id.toString(), // 使用 index 确保每个 item 有唯一的 key
+      key: `playlist/${item.id}`, // 使用 index 确保每个 item 有唯一的 key
     }
   })
   const items = [

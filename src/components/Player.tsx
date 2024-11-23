@@ -15,6 +15,7 @@ import useColorThief from 'use-color-thief'
 import { useRouter } from 'next/navigation'
 import PlayDrawer from './PlayDrawer'
 import PlayDrawerFull from './PlayDrawerFull'
+import Collect from './Collect'
 
 const Player = () => {
   const router = useRouter()
@@ -300,6 +301,12 @@ const Player = () => {
   const [open1, setOpen1] = useState<boolean>(false)
   const showDrawer1 = () => setOpen1(!open)
   const onClose1 = () => setOpen1(false)
+
+  //收藏对话框
+  const [open2, setOpen2] = useState(false)
+  const showModal2 = () => {
+    setOpen2(true)
+  }
   return (
     <>
       {fullScreen && (
@@ -516,14 +523,7 @@ const Player = () => {
               ></Icons>
             </div>
           </div>
-          <Flex
-            vertical
-            justify="center"
-            gap={8}
-            style={{
-              maxWidth: '250px',
-            }}
-          >
+          <Flex vertical justify="center" gap={8}>
             <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
               {currentSong.song_title}
             </span>
@@ -534,6 +534,14 @@ const Player = () => {
               {currentSong.name}
             </span>
           </Flex>
+          <div style={{ position: 'relative', height: '60px' }}>
+            <Icons
+              type="icon-yunyinle-tianjiadao"
+              size={16}
+              style={{ position: 'absolute', top: '10px' }}
+              onClick={showModal2}
+            />
+          </div>
         </Flex>
         <Flex
           style={{
@@ -631,6 +639,7 @@ const Player = () => {
         setIsPlaying={setIsPlaying}
         isPlaying={isPlaying}
       />
+      <Collect open={open2} setOpen={setOpen2} />
       <audio
         ref={audioRef}
         src={currentSong.file_path}

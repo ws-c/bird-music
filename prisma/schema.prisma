@@ -8,29 +8,31 @@ datasource db {
 }
 
 model playlist {
-  id         Int       @id @default(autoincrement())
-  name       String?   @db.VarChar(255)
-  author     String?   @db.VarChar(255)
-  createTime DateTime? @db.Timestamp(0)
-  updateTime DateTime? @db.Timestamp(0)
-  desc       String?   @db.VarChar(255)
-  tags       Json?
-  isPrivate  String?   @db.VarChar(255)
-  img        String?   @db.Text
-  users      users?    @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
+  id             Int              @id @default(autoincrement())
+  name           String?          @db.VarChar(255)
+  author         String?          @db.VarChar(255)
+  createTime     DateTime?        @db.Timestamp(0)
+  updateTime     DateTime?        @db.Timestamp(0)
+  desc           String?          @db.VarChar(255)
+  tags           Json?
+  isPrivate      String?          @db.VarChar(255)
+  img            String?          @db.Text
+  users          users?           @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
+  playlist_songs playlist_songs[]
 
   @@index([author], map: "user_id")
 }
 
 model songs {
-  id         Int     @id @default(autoincrement())
-  song_title String  @db.VarChar(255)
-  duration   Int?
-  file_path  String  @db.Text
-  albums_id  Int
-  artists_id Int
-  albums     albums  @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
-  artists    artists @relation(fields: [artists_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_2")
+  id             Int              @id @default(autoincrement())
+  song_title     String           @db.VarChar(255)
+  duration       Int?
+  file_path      String           @db.Text
+  albums_id      Int
+  artists_id     Int
+  playlist_songs playlist_songs[]
+  albums         albums           @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
+  artists        artists          @relation(fields: [artists_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_2")
 
   @@index([albums_id], map: "albums_id")
   @@index([artists_id], map: "artist_id")
@@ -67,4 +69,15 @@ model users {
   password  String?    @db.VarChar(255)
   createdAt DateTime?  @db.Timestamp(0)
   playlist  playlist[]
+}
+
+model playlist_songs {
+  playlist_id Int
+  song_id     Int
+  playlist    playlist @relation(fields: [playlist_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "playlist_songs_ibfk_1")
+  songs       songs    @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "playlist_songs_ibfk_2")
+
+  @@id([playlist_id, song_id])
+  @@index([playlist_id], map: "idx_playlist_songs_playlist_id")
+  @@index([song_id], map: "idx_playlist_songs_song_id")
 }

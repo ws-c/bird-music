@@ -20,7 +20,7 @@ const SingleList = () => {
   useEffect(() => {
     const fetchPlaylist = async () => {
       try {
-        const response = await fetch('/api/singleList')
+        const response = await fetch('/api/home/singleList')
         const data = await response.json()
         setCurSingleList(data)
         console.log('singleList', data)

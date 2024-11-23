@@ -12,7 +12,7 @@ const MusicCard = () => {
     const fetchAlbums = async () => {
       NProgress.start()
       try {
-        const response = await fetch('/api/album')
+        const response = await fetch('/api/home/album')
         const data = await response.json()
         setAlbums(data)
         console.log('data', data)

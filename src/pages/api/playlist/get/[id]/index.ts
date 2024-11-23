@@ -1,21 +1,23 @@
-import prisma from '../../../../lib/prisma'
+import prisma from '../../../../../lib/prisma'
+
 // 获取用户自己创建的歌单
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    // 获取用户的所有歌单
+    const { id } = req.query
     try {
-      const playlist = await prisma.playlist.findMany({
+      const playlist = await prisma.playlist.findUnique({
         where: {
-          author: req.query.author,
-        },
-        select: {
-          id: true,
-          name: true,
-          img: true,
+          id: +id,
         },
       })
-      res.status(200).json(playlist)
+
+      if (!playlist) {
+        return res.status(404).json({ error: 'No playlist found' })
+      }
+
+      res.status(200).json(playlist) // 返回匹配结果
     } catch (error) {
+      console.error('Error fetching playlist:', error)
       res.status(500).json({ error: 'Failed to fetch playlist' })
     }
   } else {

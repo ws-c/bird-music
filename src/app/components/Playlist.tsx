@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { Flex } from 'antd'
 import styles from './Playlist.module.css'
 import { PlayCircleOutlined } from '@ant-design/icons'
-import { PlayListType } from '../../utils/enum'
 
 const Playlist = () => {
   const [playlist, setPlaylist] = useState([])
@@ -11,7 +10,7 @@ const Playlist = () => {
   useEffect(() => {
     const fetchplaylist = async () => {
       try {
-        const response = await fetch('/api/playlist')
+        const response = await fetch('/api/home/playlist')
         const data = await response.json()
         setPlaylist(data)
       } catch (error) {
