@@ -2,9 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+//"mysql://root:root@localhost:3306/music"
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:root@localhost:3306/music"
+  url      = env("DATABASE_URL")
 }
 
 model playlist {
