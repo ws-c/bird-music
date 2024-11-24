@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
-import Layout from '../../../components/layout'
 import { formatTime } from '../../../utils/formatTime'
 import useStore from '../../../store/useStore'
 import flattenObject from '../../../utils/flattenObject'
@@ -49,6 +48,7 @@ export default function Home({ params }) {
     currentId,
     setIsPlaying,
     setSingleList,
+    setColorTheme,
   } = useStore()
   const { id } = params
   const [artist, setArtist] = useState({})
@@ -66,6 +66,7 @@ export default function Home({ params }) {
             name: data.name,
           }))
         )
+        setColorTheme(data.image_url)
       } catch (error) {
         console.error('Error fetching artist:', error)
       } finally {
@@ -84,133 +85,131 @@ export default function Home({ params }) {
   const handleCancel = () => {
     setIsModalOpen(false)
   }
-  const [onClicked, setOnClicked] = useState(null)
+  const [onClicked, setOnClicked] = useState('')
   useEffect(() => {
-    setOnClicked(currentId)
+    if (currentId) {
+      setOnClicked(currentId)
+    }
   }, [currentId])
   return (
-    <Layout curActive="">
-      <div style={{ marginTop: '30px' }}>
-        {loading ? ( // 根据加载状态渲染不同的内容
-          <Spin size="large" />
-        ) : (
-          <>
-            <Flex align="flex-end" gap={35} style={{ width: '700px' }}>
-              <div
+    <div style={{ marginTop: '30px' }}>
+      {loading ? ( // 根据加载状态渲染不同的内容
+        <Spin size="large" />
+      ) : (
+        <>
+          <Flex align="flex-end" gap={35} style={{ width: '700px' }}>
+            <div
+              style={{
+                overflow: 'hidden',
+                height: '250px',
+                borderRadius: '50%',
+                boxShadow:
+                  '0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <img
+                src={artist.image_url}
+                alt=""
                 style={{
-                  overflow: 'hidden',
                   height: '250px',
-                  borderRadius: '50%',
-                  boxShadow:
-                    '0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1)',
+                }}
+                className="cover-animation"
+              />
+            </div>
+            <Flex vertical style={{ position: 'relative' }}>
+              <Typography.Title
+                level={2}
+                style={{ margin: '0', letterSpacing: '1px' }}
+              >
+                {artist.name}
+              </Typography.Title>
+              <Typography.Text
+                type="secondary"
+                style={{
+                  position: 'relative',
+                  margin: '20px 0',
+                  height: '90px',
+                  width: '350px',
+                  overflow: 'hidden',
                 }}
               >
-                <img
-                  src={artist.image_url}
-                  alt=""
-                  style={{
-                    height: '250px',
-                  }}
-                  className="cover-animation"
-                />
-              </div>
-              <Flex vertical style={{ position: 'relative' }}>
-                <Typography.Title
-                  level={2}
-                  style={{ margin: '0', letterSpacing: '1px' }}
-                >
-                  {artist.name}
-                </Typography.Title>
-                <Typography.Text
-                  type="secondary"
-                  style={{
-                    position: 'relative',
-                    margin: '20px 0',
-                    height: '90px',
-                    width: '350px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {artist.biography ? (
-                    artist.biography.split('\n').map((line, index) => (
-                      <p key={index} style={{ margin: '0 0 4px 0' }}>
-                        {line}
-                      </p>
-                    ))
-                  ) : (
-                    <></>
-                  )}
-                </Typography.Text>
-                {String(artist.biography).length > 120 && (
-                  <Button
-                    style={{
-                      position: 'absolute',
-                      bottom: '53px',
-                      right: '-20px',
-                      background: '#f9f9f9',
-                      border: 'none',
-                    }}
-                    type="link"
-                    size="small"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    更多
-                  </Button>
-                )}
-                <Button
-                  type="primary"
-                  style={{ width: '100px' }}
-                  onClick={() => {
-                    setCurrentId(curSingleList[0].id),
-                      setSingleList(curSingleList)
-                    setShowPlayer(true),
-                      setOnClicked(curSingleList[0].id),
-                      setIsPlaying(true)
-                  }}
-                >
-                  播放全部
-                </Button>
-              </Flex>
-            </Flex>
-            <Table
-              rowKey={(record) => record.id}
-              dataSource={curSingleList}
-              columns={columns}
-              style={{ marginTop: '50px', width: '80%' }}
-              pagination={false}
-              onRow={(record) => ({
-                onClick: () => {
-                  setCurrentId(record.id), setSingleList(curSingleList)
-                  setShowPlayer(true),
-                    setOnClicked(record.id),
-                    setIsPlaying(true)
-                },
-              })}
-              rowClassName={(record) =>
-                `table-item ${onClicked == record.id ? 'clicked' : ''}`
-              }
-            />
-            <Modal
-              title={artist.album_title}
-              open={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-              footer={null}
-              width={800}
-            >
-              <Typography.Text type="secondary">
                 {artist.biography ? (
-                  artist.biography
-                    .split('\n')
-                    .map((line, index) => <p key={index}>{line}</p>)
+                  artist.biography.split('\n').map((line, index) => (
+                    <p key={index} style={{ margin: '0 0 4px 0' }}>
+                      {line}
+                    </p>
+                  ))
                 ) : (
                   <></>
                 )}
               </Typography.Text>
-            </Modal>
-          </>
-        )}
-      </div>
-    </Layout>
+              {String(artist.biography).length > 120 && (
+                <Button
+                  style={{
+                    position: 'absolute',
+                    bottom: '53px',
+                    right: '-20px',
+                    background: '#f9f9f9',
+                    border: 'none',
+                  }}
+                  type="link"
+                  size="small"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  更多
+                </Button>
+              )}
+              <Button
+                type="primary"
+                style={{ width: '100px' }}
+                onClick={() => {
+                  setCurrentId(curSingleList[0].id),
+                    setSingleList(curSingleList)
+                  setShowPlayer(true),
+                    setOnClicked(curSingleList[0].id),
+                    setIsPlaying(true)
+                }}
+              >
+                播放全部
+              </Button>
+            </Flex>
+          </Flex>
+          <Table
+            rowKey={(record) => record.id}
+            dataSource={curSingleList}
+            columns={columns}
+            style={{ marginTop: '50px', width: '80%' }}
+            pagination={false}
+            onRow={(record) => ({
+              onClick: () => {
+                setCurrentId(record.id), setSingleList(curSingleList)
+                setShowPlayer(true), setOnClicked(record.id), setIsPlaying(true)
+              },
+            })}
+            rowClassName={(record) =>
+              `table-item ${onClicked == record.id ? 'clicked' : ''}`
+            }
+          />
+          <Modal
+            title={artist.album_title}
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            footer={null}
+            width={800}
+          >
+            <Typography.Text type="secondary">
+              {artist.biography ? (
+                artist.biography
+                  .split('\n')
+                  .map((line, index) => <p key={index}>{line}</p>)
+              ) : (
+                <></>
+              )}
+            </Typography.Text>
+          </Modal>
+        </>
+      )}
+    </div>
   )
 }

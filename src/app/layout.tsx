@@ -43,11 +43,15 @@ export default function RootLayout({
           theme={{
             token: {
               colorPrimary: '#f30074',
+              colorBgContainer: '#f9f9f9',
             },
             components: {
               Menu: {
                 subMenuItemBg: '#f2f3f5',
               },
+              Table: {
+                headerBg: '#f9f9f9'
+              }
             },
           }}
         >

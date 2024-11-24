@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react'
 import useStore from '../../../store/useStore'
 import { formatTime } from '../../../utils/formatTime'
 import { useRouter } from 'next/navigation'
-import { Spin, Flex, Typography, Button, Table } from 'antd'
+import { Spin, Flex, Typography, Button, Table, Avatar } from 'antd'
 import dayjs from 'dayjs'
 import React from 'react'
 import flattenObject from '../../../utils/flattenObject'
-
+import { UserOutlined } from '@ant-design/icons'
 const columns = [
   {
     title: '#',
@@ -48,42 +48,48 @@ const columns = [
 const PlayList = ({ params }: { params: { id: string } }) => {
   const { id } = params
   const {
-    name,
+    user,
     setCurrentId,
     setShowPlayer,
     currentId,
     setIsPlaying,
     setSingleList,
+    refreshCount,
+    setColorTheme,
   } = useStore()
   const router = useRouter()
 
   const [playList, setPlayList] = useState({})
   const [loading, setLoading] = useState(true)
   const [curSingleList, setCurSingleList] = useState([])
-  const [onClicked, setOnClicked] = useState(null)
+  const [onClicked, setOnClicked] = useState('')
 
   useEffect(() => {
-    fetchPlayList()
-    fetchData()
-  }, [])
-  const fetchPlayList = () => {
-    setLoading(true)
-    fetch(`/api/playlist/get/${id}?author=${name}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPlayList(data)
-      })
-      .catch((error) => console.error('Failed to fetch playlist:', error))
-      .finally(() => setLoading(false))
-  }
-  const fetchData = async () => {
-    const res = await fetch(`/api/playlist_content?id=${id}`)
-    const data = await res.json()
-    const newData = data.map((item: any) => flattenObject(item))
-    setCurSingleList(newData)
+    fetchAllData()
+  }, [refreshCount])
+  const fetchAllData = async () => {
+    setLoading(true) // 启用加载状态
+    try {
+      const [playlistRes, contentRes] = await Promise.all([
+        fetch(`/api/playlist/get/${id}?author=${user.username}`),
+        fetch(`/api/playlist_content?id=${id}`),
+      ])
+      const playlistData = await playlistRes.json()
+      const contentData = await contentRes.json()
+      setPlayList(playlistData)
+      setColorTheme(playlistData.img)
+      const flattenedData = contentData.map((item: any) => flattenObject(item))
+      setCurSingleList(flattenedData)
+    } catch (error) {
+      console.error('Failed to fetch data:', error)
+    } finally {
+      setLoading(false)
+    }
   }
   useEffect(() => {
-    setOnClicked(currentId)
+    if (currentId) {
+      setOnClicked(currentId)
+    }
   }, [currentId])
   return (
     <div style={{ marginTop: '30px' }}>
@@ -123,7 +129,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 style={{
                   position: 'relative',
                   margin: '12px 0 24px 0',
-                  height: '60px',
+                  height: '70px',
                   width: '500px',
                   overflow: 'hidden',
                 }}
@@ -137,17 +143,20 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 ) : (
                   <></>
                 )}
-                <Flex gap={16}>
+                <Flex gap={12} align="center">
+                  <Avatar src={user.cover} icon={<UserOutlined />} size={28} />
                   <span>{playList.author}</span>
-                  <span>
-                    标签：
-                    {playList.tags.map((item, index) => (
-                      <React.Fragment key={item}>
-                        {index !== 0 && ' / '}
-                        <a>{item}</a>
-                      </React.Fragment>
-                    ))}
-                  </span>
+                  {playList.tags && (
+                    <span>
+                      标签：
+                      {playList.tags.map((item, index) => (
+                        <React.Fragment key={item}>
+                          {index !== 0 && ' / '}
+                          <a>{item}</a>
+                        </React.Fragment>
+                      ))}
+                    </span>
+                  )}
                   <span>
                     创建于
                     {new dayjs(playList.createTime).format('YYYY-MM-DD')}
@@ -157,6 +166,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
 
               <Flex gap={8}>
                 <Button
+                  disabled={curSingleList.length === 0}
                   type="primary"
                   style={{ width: '100px' }}
                   onClick={() => {
@@ -169,7 +179,9 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 >
                   播放全部
                 </Button>
-                <Button disabled={name === playList.author}>收藏歌单</Button>
+                <Button disabled={user.username === playList.author}>
+                  收藏歌单
+                </Button>
               </Flex>
             </Flex>
           </Flex>

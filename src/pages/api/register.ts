@@ -8,7 +8,10 @@ export default async function handler(req, res) {
     try {
       const existingUser = await prisma.users.findUnique({
         where: {
-          id: username,
+          username,
+        },
+        select: {
+          id: true,
         },
       })
 
@@ -22,7 +25,7 @@ export default async function handler(req, res) {
 
       const user = await prisma.users.create({
         data: {
-          id: username,
+          username: username,
           password: hashedPassword,
         },
       })

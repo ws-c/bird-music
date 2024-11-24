@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
-import Layout from '../../../components/layout'
 import { formatTime } from '../../../utils/formatTime'
 import useStore from '../../../store/useStore'
 import { useRouter } from 'next/navigation'
@@ -43,6 +42,7 @@ export default function Home({ params }) {
     currentId,
     setIsPlaying,
     setSingleList,
+    setColorTheme,
   } = useStore()
   const { id } = params
   const [album, setAlbum] = useState({})
@@ -62,6 +62,7 @@ export default function Home({ params }) {
             album_title: data.album_title,
           }))
         )
+        setColorTheme(data.cover)
       } catch (error) {
         console.error('Error fetching album:', error)
       } finally {
@@ -85,141 +86,137 @@ export default function Home({ params }) {
     setOnClicked(currentId)
   }, [currentId])
   return (
-    <Layout curActive="">
-      <div style={{ marginTop: '30px' }}>
-        {loading ? ( // 根据加载状态渲染不同的内容
-          <Spin size="large" />
-        ) : (
-          <>
-            <Flex align="flex-end" gap={35} style={{ width: '700px' }}>
-              <div
+    <div style={{ marginTop: '30px' }}>
+      {loading ? ( // 根据加载状态渲染不同的内容
+        <Spin size="large" />
+      ) : (
+        <>
+          <Flex align="flex-end" gap={35} style={{ width: '700px' }}>
+            <div
+              style={{
+                overflow: 'hidden',
+                height: '250px',
+                borderRadius: '8px',
+                boxShadow:
+                  '0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <img
+                src={album.cover}
+                alt=""
                 style={{
-                  overflow: 'hidden',
                   height: '250px',
                   borderRadius: '8px',
-                  boxShadow:
-                    '0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1)',
+                }}
+                className="cover-animation"
+              />
+            </div>
+            <Flex vertical style={{ position: 'relative' }}>
+              <Typography.Title
+                level={3}
+                style={{ margin: '0', letterSpacing: '1px' }}
+              >
+                {album.album_title}
+              </Typography.Title>
+              <Typography.Title
+                level={3}
+                style={{
+                  margin: '0',
+                  letterSpacing: '1px',
+                  color: '#f30074',
+                }}
+                className="link"
+                onClick={() => router.push(`/artist/${album.artist_id}`)}
+              >
+                {album.artists.name}
+              </Typography.Title>
+              <Typography.Text
+                type="secondary"
+                style={{
+                  position: 'relative',
+                  margin: '20px 0',
+                  height: '95px',
+                  width: '350px',
+                  overflow: 'hidden',
                 }}
               >
-                <img
-                  src={album.cover}
-                  alt=""
-                  style={{
-                    height: '250px',
-                    borderRadius: '8px',
-                  }}
-                  className="cover-animation"
-                />
-              </div>
-              <Flex vertical style={{ position: 'relative' }}>
-                <Typography.Title
-                  level={3}
-                  style={{ margin: '0', letterSpacing: '1px' }}
-                >
-                  {album.album_title}
-                </Typography.Title>
-                <Typography.Title
-                  level={3}
-                  style={{
-                    margin: '0',
-                    letterSpacing: '1px',
-                    color: '#f30074',
-                  }}
-                  className="link"
-                  onClick={() => router.push(`/artist/${album.artist_id}`)}
-                >
-                  {album.artists.name}
-                </Typography.Title>
-                <Typography.Text
-                  type="secondary"
-                  style={{
-                    position: 'relative',
-                    margin: '20px 0',
-                    height: '95px',
-                    width: '350px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {album.desc ? (
-                    album.desc.split('\n').map((line, index) => (
-                      <p key={index} style={{ margin: '0 0 4px 0' }}>
-                        {line}
-                      </p>
-                    ))
-                  ) : (
-                    <></>
-                  )}
-                </Typography.Text>
-                {String(album.desc).length > 120 && (
-                  <Button
-                    style={{
-                      position: 'absolute',
-                      bottom: '50px',
-                      right: '-10px',
-                      background: '#f9f9f9',
-                      border: 'none',
-                    }}
-                    type="link"
-                    size="small"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    更多
-                  </Button>
-                )}
-                <Button
-                  type="primary"
-                  style={{ width: '100px' }}
-                  onClick={() => {
-                    setCurrentId(curSingleList[0].id),
-                      setSingleList(curSingleList)
-                    setShowPlayer(true),
-                      setOnClicked(curSingleList[0].id),
-                      setIsPlaying(true)
-                  }}
-                >
-                  播放全部
-                </Button>
-              </Flex>
-            </Flex>
-            <Table
-              rowKey={(record) => record.id}
-              dataSource={curSingleList}
-              columns={columns}
-              style={{ marginTop: '50px', width: '80%' }}
-              pagination={false}
-              onRow={(record) => ({
-                onClick: () => {
-                  setCurrentId(record.id), setSingleList(curSingleList)
-                  setShowPlayer(true),
-                    setOnClicked(record.id),
-                    setIsPlaying(true)
-                },
-              })}
-              rowClassName={(record) =>
-                `table-item ${onClicked == record.id ? 'clicked' : ''}`
-              }
-            />
-            <Modal
-              title={album.album_title}
-              open={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-              footer={null}
-              width={800}
-            >
-              <Typography.Text type="secondary">
                 {album.desc ? (
-                  album.desc
-                    .split('\n')
-                    .map((line, index) => <p key={index}>{line}</p>)
+                  album.desc.split('\n').map((line, index) => (
+                    <p key={index} style={{ margin: '0 0 4px 0' }}>
+                      {line}
+                    </p>
+                  ))
                 ) : (
                   <></>
                 )}
               </Typography.Text>
-            </Modal>
-          </>
-        )}
-      </div>
-    </Layout>
+              {String(album.desc).length > 120 && (
+                <Button
+                  style={{
+                    position: 'absolute',
+                    bottom: '50px',
+                    right: '-10px',
+                    background: '#f9f9f9',
+                    border: 'none',
+                  }}
+                  type="link"
+                  size="small"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  更多
+                </Button>
+              )}
+              <Button
+                type="primary"
+                style={{ width: '100px' }}
+                onClick={() => {
+                  setCurrentId(curSingleList[0].id),
+                    setSingleList(curSingleList)
+                  setShowPlayer(true),
+                    setOnClicked(curSingleList[0].id),
+                    setIsPlaying(true)
+                }}
+              >
+                播放全部
+              </Button>
+            </Flex>
+          </Flex>
+          <Table
+            rowKey={(record) => record.id}
+            dataSource={curSingleList}
+            columns={columns}
+            style={{ marginTop: '50px', width: '80%' }}
+            pagination={false}
+            onRow={(record) => ({
+              onClick: () => {
+                setCurrentId(record.id), setSingleList(curSingleList)
+                setShowPlayer(true), setOnClicked(record.id), setIsPlaying(true)
+              },
+            })}
+            rowClassName={(record) =>
+              `table-item ${onClicked == record.id ? 'clicked' : ''}`
+            }
+          />
+          <Modal
+            title={album.album_title}
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            footer={null}
+            width={800}
+          >
+            <Typography.Text type="secondary">
+              {album.desc ? (
+                album.desc
+                  .split('\n')
+                  .map((line, index) => <p key={index}>{line}</p>)
+              ) : (
+                <></>
+              )}
+            </Typography.Text>
+          </Modal>
+        </>
+      )}
+    </div>
   )
 }

@@ -98,7 +98,7 @@ body {
   border-radius: 8px;
 }
 .clicked {
-  background-color: rgba(0, 0, 0, 0.06) !important;
+  background-color: rgba(0, 0, 0, 0.04) !important;
   border-radius: 8px;
   transition: all 0.5s ease;
 }
@@ -129,6 +129,7 @@ body {
 .ant-menu-submenu-title {
   padding: 8px !important;
 }
+
 /* 定义整个滚动条的宽度 */
 ::-webkit-scrollbar {
   width: 14px; /* 垂直滚动条宽度 */

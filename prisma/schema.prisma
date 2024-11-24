@@ -9,18 +9,16 @@ datasource db {
 
 model playlist {
   id             Int              @id @default(autoincrement())
-  name           String?          @db.VarChar(255)
-  author         String?          @db.VarChar(255)
-  createTime     DateTime?        @db.Timestamp(0)
-  updateTime     DateTime?        @db.Timestamp(0)
+  name           String           @db.VarChar(255)
+  author         String           @db.VarChar(255)
+  createTime     DateTime?        @db.Date
   desc           String?          @db.VarChar(255)
   tags           Json?
   isPrivate      String?          @db.VarChar(255)
-  img            String?          @db.Text
-  users          users?           @relation(fields: [author], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id")
+  img            String?          @db.VarChar(255)
   playlist_songs playlist_songs[]
 
-  @@index([author], map: "user_id")
+  @@index([author], map: "name")
 }
 
 model songs {
@@ -46,7 +44,6 @@ model albums {
   release_date DateTime? @db.Date
   cover        String?   @db.Text
   createTime   DateTime? @db.Timestamp(0)
-  updateTime   DateTime? @db.Timestamp(0)
   artists      artists?  @relation(fields: [artist_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "albums_ibfk_1")
   songs        songs[]
 
@@ -59,16 +56,16 @@ model artists {
   biography  String?   @db.Text
   image_url  String?   @db.VarChar(255)
   createTime DateTime? @default(now()) @db.Timestamp(0)
-  updateTime DateTime? @default(now()) @db.Timestamp(0)
   albums     albums[]
   songs      songs[]
 }
 
 model users {
-  id        String     @id @db.VarChar(255)
-  password  String?    @db.VarChar(255)
-  createdAt DateTime?  @db.Timestamp(0)
-  playlist  playlist[]
+  id        Int       @id @default(autoincrement())
+  username  String    @unique(map: "unique_username") @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  createdAt DateTime? @db.Date
+  cover     String?   @db.VarChar(255)
 }
 
 model playlist_songs {

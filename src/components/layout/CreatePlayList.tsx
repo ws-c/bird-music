@@ -28,19 +28,20 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
   const [confirmLoading, setConfirmLoading] = useState(false)
 
   const handleOk = async () => {
-    // 验证表单字段
-    const values = await {
-      ...form.getFieldsValue(),
-      img: fileList[0].response.data.url || '',
-      author: name,
-    }
-    console.log('表单数据：', values)
-    setConfirmLoading(true)
     try {
+      const values = await form.validateFields() // 确保字段验证通过
+      const data = {
+        ...values,
+        img: fileList[0]?.response?.data.url || '',
+        author: name,
+      }
+      console.log('表单数据：', data)
+      setConfirmLoading(true)
+
       // 发送请求
       const response = await fetch('/api/playlist/create', {
         method: 'POST',
-        body: JSON.stringify(values),
+        body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -56,15 +57,13 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
         message.error(res.msg)
       }
     } catch (errorInfo) {
-      console.log('验证失败：', errorInfo)
-      message.error('请求失败，请稍后再试') // 提供错误反馈给用户
+      message.error('请检查填写内容是否完整')
     } finally {
       setConfirmLoading(false)
     }
   }
 
   const handleCancel = () => {
-    console.log('Clicked cancel button')
     setOpen(false)
   }
 
@@ -89,7 +88,7 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
   const [previewOpen, setPreviewOpen] = useState<boolean>(false)
 
   const uploadProps: UploadProps = {
-    action: '/api/common/upload',
+    action: '/api/common/upload_playlist',
     listType: 'picture-card' as 'picture-card',
     maxCount: 1,
     beforeUpload: (file: { type: string; size: number }) => {
@@ -144,10 +143,10 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
         <Form.Item>
           <Upload {...uploadProps} fileList={fileList} accept="image/*">
             {fileList.length < 1 && (
-              <div>
+              <a>
                 <UploadOutlined />
                 上传图片
-              </div>
+              </a>
             )}
           </Upload>
         </Form.Item>

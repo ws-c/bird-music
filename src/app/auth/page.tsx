@@ -7,7 +7,7 @@ import Icons from '../../components/Icons'
 import Title from 'antd/es/typography/Title'
 
 export default function Auth() {
-  const { setShowPlayer, setName } = useStore()
+  const { setShowPlayer, setUser, initializeState } = useStore()
   useEffect(() => {
     // 停止播放等操作
     setShowPlayer(false)
@@ -29,14 +29,15 @@ export default function Auth() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     })
+    const resData = await res.json()
 
-    if (res.ok) {
-      setName(username)
+    if (resData.code === 200) {
+      console.log('res', resData.data)
+      setUser(resData.data)
       // 强制刷新，消除路由缓存
       window.location.href = '/'
     } else {
-      const data = await res.json()
-      setError(data.message || '登录 failed')
+      setError(resData.message || '登录 failed')
     }
   }
 
@@ -139,7 +140,8 @@ export default function Auth() {
               label="Username"
               name="username"
               rules={[
-                { required: true, message: 'Please input your username!' },
+                { required: true, message: '请输入用户名' },
+                { max: 16, message: '用户名长度不能超过16个字符' },
               ]}
             >
               <Input

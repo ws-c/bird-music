@@ -11,7 +11,13 @@ export default async function handler(req, res) {
     try {
       // 根据 username 查找用户（假设 username 是唯一的）
       const user = await prisma.users.findUnique({
-        where: { id: username },
+        where: { username },
+        select: {
+          id: true,
+          username: true,
+          cover: true,
+          password: true,
+        },
       })
 
       if (!user) {
@@ -32,7 +38,15 @@ export default async function handler(req, res) {
           `token=${token}; HttpOnly; Path=/; Max-Age=3600`
         )
 
-        return res.status(200).json({ message: 'Logged in successfully' })
+        return res.status(200).json({
+          message: 'Logged in successfully',
+          data: {
+            id: user.id,
+            username: user.username,
+            cover: user.cover,
+          },
+          code: 200,
+        })
       } else {
         // 密码不匹配
         return res.status(401).json({ message: 'Invalid credentials' })

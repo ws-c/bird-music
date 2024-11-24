@@ -10,13 +10,15 @@ import Title from 'antd/es/typography/Title'
 import Head from '../Head'
 import CreatePlaylist from './CreatePlayList'
 import useStore from '../../store/useStore'
+import useColorThief from 'use-color-thief'
 
 const layoutStyle = {
   minHeight: '100vh',
 }
 
 const headerStyle = {
-  background: '#f9f9f9',
+  padding: '10px 60px 0 60px',
+  height: '80',
   position: 'sticky' as React.CSSProperties['position'],
   top: 0,
   zIndex: 1000,
@@ -24,7 +26,6 @@ const headerStyle = {
 
 const contentStyle = {
   padding: '0 60px',
-  background: '#f9f9f9',
   paddingBottom: '100px',
   overflow: 'auto',
   flex: 1, // 使 Content 区域占满剩余的空间
@@ -44,14 +45,14 @@ interface IProps {
 }
 
 const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
-  const { name, myPlayList, setMyPlayList } = useStore()
+  const { user, myPlayList, setMyPlayList, colorTheme } = useStore()
   const router = useRouter()
 
   useEffect(() => {
     getMyPlayList()
   }, [])
   const getMyPlayList = async () => {
-    const res = await fetch(`/api/playlist/get?author=${name}`)
+    const res = await fetch(`/api/playlist/get?author=${user.username}`)
     const data = await res.json()
     setMyPlayList(data)
   }
@@ -128,8 +129,8 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
             type="text"
             style={{
               position: 'absolute',
-              right: '-50px',
-              top: '7px',
+              right: '-30px',
+              top: '8px',
             }}
             onClick={(e) => {
               e.stopPropagation()
@@ -155,6 +156,17 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   const [open, setOpen] = useState(false)
   const showModal = () => {
     setOpen(true)
+  }
+
+  //主题背景颜色
+  const { color } = useColorThief(colorTheme, {
+    format: 'rgb',
+    colorCount: 10,
+    quality: 10,
+  })
+  // 渐变背景样式
+  const gradientStyle = {
+    background: `linear-gradient(to bottom, rgba(${color}, 0.25) 0%, #f9f9f9 40%)`,
   }
   return (
     <Layout style={layoutStyle}>
@@ -194,20 +206,21 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       </Sider>
       <Layout
         style={{
-          marginLeft: '240px',
+          paddingLeft: '240px',
           minHeight: '100vh',
+          ...gradientStyle,
         }}
       >
-        <Header style={headerStyle}>
+        <div style={headerStyle}>
           <Head></Head>
-        </Header>
+        </div>
 
         <Content style={contentStyle}>{children}</Content>
       </Layout>
       <CreatePlaylist
         open={open}
         setOpen={setOpen}
-        name={name}
+        name={user.username}
         getMyPlayList={getMyPlayList}
       ></CreatePlaylist>
     </Layout>

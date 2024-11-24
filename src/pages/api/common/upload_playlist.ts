@@ -36,7 +36,7 @@ export default async function upload(
       return res.status(400).json({ code: 1, msg: 'No file uploaded' })
     }
 
-    const filePath = `uploads/${Date.now()}-${file[0].originalFilename}` // 拼接上传文件路径
+    const filePath = `upload_playlist/${Date.now()}-${file[0].originalFilename}` // 拼接上传文件路径
     const resultUrl = await put(filePath, file[0].filepath) // 上传文件到阿里云 OSS
 
     res.status(200).json({

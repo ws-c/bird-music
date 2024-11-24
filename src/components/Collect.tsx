@@ -7,7 +7,7 @@ type prop = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 const Collect: React.FC<prop> = ({ open, setOpen }) => {
-  const { currentId, myPlayList } = useStore()
+  const { currentId, myPlayList, triggerRefresh } = useStore()
   const [confirmLoading, setConfirmLoading] = useState(false)
   const handleCancel = () => {
     setOpen(false)
@@ -40,6 +40,7 @@ const Collect: React.FC<prop> = ({ open, setOpen }) => {
       .finally(() => {
         setOpen(false)
         setConfirmLoading(false)
+        triggerRefresh()
       })
   }
 
