@@ -152,7 +152,6 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
         </Form.Item>
         {previewImage && (
           <Image
-            width={200}
             preview={{
               visible: previewOpen,
               onVisibleChange: setPreviewOpen,

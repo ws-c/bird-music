@@ -8,10 +8,11 @@ import {
   Dropdown,
   Flex,
   Form,
+  Input,
   Space,
   Upload,
-  Image,
   message,
+  Image,
 } from 'antd'
 import {
   LeftOutlined,
@@ -20,7 +21,6 @@ import {
   UploadOutlined,
 } from '@ant-design/icons'
 import styles from './Header.module.css'
-import Input from 'antd/es/input/Input'
 import { useRouter } from 'next/navigation'
 import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload'
 import useStore from '../store/useStore'
@@ -162,18 +162,17 @@ export default function Header() {
     }
   }
   useEffect(() => {
-    if (!open) {
+    if (open && form) {
       // 重置表单和状态
       form.resetFields()
       setFileList([])
-      setPreviewImage('')
-      setPreviewOpen(false)
     }
   }, [open, form])
   return (
     <Flex className={styles.header}>
       <Flex align="center" gap={8}>
         <Button
+          type="text"
           style={{ position: 'relative', top: '2px', height: '36px' }}
           disabled={isClient && window.location.pathname === '/'}
           icon={<LeftOutlined size={12} />}
@@ -189,6 +188,7 @@ export default function Header() {
           onChange={handleChange}
         >
           <Input
+            variant="filled"
             placeholder="搜索"
             prefix={<SearchOutlined />}
             style={{ height: '36px' }}
@@ -197,7 +197,6 @@ export default function Header() {
         </AutoComplete>
       </Flex>
       <div className={styles.right}>
-        <span>{isClient && user.username}</span>
         <Dropdown
           menu={{ items }}
           placement="bottomRight"
@@ -210,6 +209,7 @@ export default function Header() {
             className={styles.avatar}
           />
         </Dropdown>
+        <span>{isClient && user.username}</span>
       </div>
       <Drawer
         title="用户设置"
@@ -229,22 +229,22 @@ export default function Header() {
           form={form}
           name="userForm"
           layout="vertical"
-          variant="filled"
           initialValues={{
             username: user.username,
           }}
         >
           <Form.Item
             label="用户名"
-            name={'username'}
+            name="username"
             style={{ width: '60%' }}
             rules={[
               { required: true, message: '请输入用户名' },
               { max: 16, message: '用户名长度不能超过16个字符' },
             ]}
           >
-            <Input></Input>
+            <Input />
           </Form.Item>
+
           <Form.Item label="头像">
             <Upload {...uploadProps} fileList={fileList} accept="image/*">
               {fileList.length < 1 && (

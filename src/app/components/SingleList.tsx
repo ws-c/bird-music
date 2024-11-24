@@ -23,7 +23,6 @@ const SingleList = () => {
         const response = await fetch('/api/home/singleList')
         const data = await response.json()
         setCurSingleList(data)
-        console.log('singleList', data)
       } catch (error) {
         console.error('Error fetching SingleList:', error)
       }
@@ -36,7 +35,7 @@ const SingleList = () => {
     setOnClicked(currentId)
   }, [currentId])
   return (
-    <Flex gap={16} wrap={true} style={{minWidth: '1700px'}}>
+    <Flex gap={16} wrap={true} style={{ minWidth: '1700px' }}>
       {curSingleList.map((item) => {
         const menuItems: MenuProps['items'] = [
           {

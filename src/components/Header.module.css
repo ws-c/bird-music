@@ -3,9 +3,11 @@
 }
 
 .right {
+  position: relative;
+  top: 2px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 .avatar {

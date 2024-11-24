@@ -12,12 +12,8 @@ import CreatePlaylist from './CreatePlayList'
 import useStore from '../../store/useStore'
 import useColorThief from 'use-color-thief'
 
-const layoutStyle = {
-  minHeight: '100vh',
-}
-
 const headerStyle = {
-  padding: '10px 60px 0 60px',
+  padding: '10px 60px 0 20px',
   height: '80',
   position: 'sticky' as React.CSSProperties['position'],
   top: 0,
@@ -32,13 +28,6 @@ const contentStyle = {
   maxHeight: 'calc(100vh - 64px)', // 计算剩余空间，去掉 header 的高度
 }
 
-const siderStyle = {
-  background: '#f2f3f5',
-  minHeight: '100vh',
-  position: 'fixed' as React.CSSProperties['position'],
-  left: '0',
-  zIndex: 999,
-}
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -47,9 +36,10 @@ interface IProps {
 const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   const { user, myPlayList, setMyPlayList, colorTheme } = useStore()
   const router = useRouter()
-
+  const [client, setClient] = useState(false)
   useEffect(() => {
     getMyPlayList()
+    setClient(true)
   }, [])
   const getMyPlayList = async () => {
     const res = await fetch(`/api/playlist/get?author=${user.username}`)
@@ -164,12 +154,36 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     colorCount: 10,
     quality: 10,
   })
-  // 渐变背景样式
-  const gradientStyle = {
-    background: `linear-gradient(to bottom, rgba(${color}, 0.25) 0%, #f9f9f9 40%)`,
-  }
+  const style =
+    client && window.location.pathname === '/'
+      ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
+      : {
+          paddingLeft: '240px',
+          minHeight: '100vh',
+          background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
+        }
+  const siderStyle =
+    client && window.location.pathname === '/'
+      ? {
+          background: '#f0f3f6',
+          minHeight: '100vh',
+          position: 'fixed' as React.CSSProperties['position'],
+          left: '0',
+        }
+      : {
+          backgroundColor: '#f0f3f6',
+          background: `linear-gradient(to bottom, rgba(${color}, 0.01) 0%, #f0f3f6 25%)`,
+          minHeight: '100vh',
+          position: 'fixed' as React.CSSProperties['position'],
+          left: '0',
+        }
   return (
-    <Layout style={layoutStyle}>
+    <Layout
+      style={{
+        minHeight: '100vh',
+        background: '#f9f9f9',
+      }}
+    >
       <Sider width={240} style={siderStyle}>
         <Flex
           style={{
@@ -193,7 +207,6 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
         <Menu
           style={{
             border: 'none',
-            background: '#f2f3f5',
             letterSpacing: '2px',
             padding: '0 24px',
           }}
@@ -204,17 +217,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           onClick={(item) => onClick(item)}
         />
       </Sider>
-      <Layout
-        style={{
-          paddingLeft: '240px',
-          minHeight: '100vh',
-          ...gradientStyle,
-        }}
-      >
+      <Layout style={style}>
         <div style={headerStyle}>
           <Head></Head>
         </div>
-
         <Content style={contentStyle}>{children}</Content>
       </Layout>
       <CreatePlaylist

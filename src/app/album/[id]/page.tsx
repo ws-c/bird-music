@@ -152,18 +152,19 @@ export default function Home({ params }) {
               </Typography.Text>
               {String(album.desc).length > 120 && (
                 <Button
+                  color="primary"
+                  variant="link"
                   style={{
                     position: 'absolute',
                     bottom: '50px',
-                    right: '-10px',
-                    background: '#f9f9f9',
+                    right: '-50px',
                     border: 'none',
                   }}
                   type="link"
                   size="small"
                   onClick={() => setIsModalOpen(true)}
                 >
-                  更多
+                  ... 展开
                 </Button>
               )}
               <Button

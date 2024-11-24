@@ -72,7 +72,6 @@ body {
   transform: translate(-50%, -50%);
 }
 .table-item {
-  background-color: #f9f9f9;
   border-radius: 8px;
 }
 .table-item:hover {
@@ -129,7 +128,6 @@ body {
 .ant-menu-submenu-title {
   padding: 8px !important;
 }
-
 /* 定义整个滚动条的宽度 */
 ::-webkit-scrollbar {
   width: 14px; /* 垂直滚动条宽度 */

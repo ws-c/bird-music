@@ -8,7 +8,7 @@ const Playlist = () => {
   const [playlist, setPlaylist] = useState([])
 
   useEffect(() => {
-    const fetchplaylist = async () => {
+    const fetchPlaylist = async () => {
       try {
         const response = await fetch('/api/home/playlist')
         const data = await response.json()
@@ -17,7 +17,7 @@ const Playlist = () => {
         console.error('Error fetching playlist:', error)
       }
     }
-    fetchplaylist()
+    fetchPlaylist()
   }, [])
   return (
     <Flex style={{ minWidth: '1700px' }}>

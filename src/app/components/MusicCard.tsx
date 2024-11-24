@@ -15,7 +15,6 @@ const MusicCard = () => {
         const response = await fetch('/api/home/album')
         const data = await response.json()
         setAlbums(data)
-        console.log('data', data)
       } catch (error) {
         console.error('Error fetching albums:', error)
       } finally {

@@ -145,18 +145,19 @@ export default function Home({ params }) {
               </Typography.Text>
               {String(artist.biography).length > 120 && (
                 <Button
+                  ghost
+                  color="primary"
+                  variant="link"
                   style={{
                     position: 'absolute',
                     bottom: '53px',
-                    right: '-20px',
-                    background: '#f9f9f9',
+                    right: '-50px',
                     border: 'none',
                   }}
-                  type="link"
                   size="small"
                   onClick={() => setIsModalOpen(true)}
                 >
-                  更多
+                  ... 展开
                 </Button>
               )}
               <Button
