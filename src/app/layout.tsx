@@ -9,15 +9,6 @@ import 'nprogress/nprogress.css'
 import '../styles/nprogress.css'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 
-const footerStyle = {
-  padding: '0',
-  borderTop: '1px solid #e8e8e8',
-  background: '#fafafa',
-  position: 'fixed',
-  bottom: '0',
-  width: '100%',
-  zIndex: 1000,
-}
 export default function RootLayout({
   children,
 }: {
@@ -59,7 +50,17 @@ export default function RootLayout({
           <AntdRegistry>
             {children}
             {isClient && showPlayer && (
-              <Footer style={footerStyle}>
+              <Footer
+                style={{
+                  padding: '0',
+                  borderTop: '1px solid #e8e8e8',
+                  background: '#fafafa',
+                  position: 'fixed',
+                  bottom: '0',
+                  width: '100%',
+                  zIndex: 1000,
+                }}
+              >
                 <Player />
               </Footer>
             )}

@@ -1,7 +1,7 @@
 import flattenObject from '../../../../utils/flattenObject'
 import prisma from '../../../../lib/prisma'
 
-export default async function handler(req, res) {
+export default async function handler(req: { method: string }, res: any) {
   if (req.method === 'GET') {
     try {
       const songs = await prisma.songs.findMany({

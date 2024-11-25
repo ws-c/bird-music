@@ -1,13 +1,16 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Button, Dropdown, Flex, MenuProps } from 'antd'
 import styles from './SingleList.module.css'
 import Link from 'next/link'
 import useStore from '../../../../store/useStore'
 import { formatTime } from '../../../../utils/formatTime'
 import Icons from '../../../../components/Icons'
-
-const SingleList = ({ curSingleList }) => {
+import type { SingleList_ } from '../page'
+type SingleListProps = {
+  curSingleList: SingleList_[]
+}
+const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
   const {
     isPlaying,
     setIsPlaying,
@@ -17,9 +20,11 @@ const SingleList = ({ curSingleList }) => {
     setShowPlayer,
   } = useStore()
 
-  const [onClicked, setOnClicked] = useState(null)
+  const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
-    setOnClicked(currentId)
+    if (currentId) {
+      setOnClicked(currentId)
+    }
   }, [currentId])
   return (
     <Flex gap={24} wrap={true}>

@@ -201,7 +201,7 @@ const Player = () => {
   }
 
   // 当前点击的歌曲
-  const [onClicked, setOnClicked] = useState<string | null>(null)
+  const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
     setOnClicked(currentId)
   }, [currentId])

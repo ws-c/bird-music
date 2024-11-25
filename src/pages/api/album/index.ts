@@ -1,6 +1,9 @@
 import prisma from '../../../lib/prisma'
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: { method: string; query: { id: any } },
+  res: any
+) {
   if (req.method === 'GET' && req.query.id) {
     try {
       const album = await prisma.albums.findUnique({

@@ -4,6 +4,7 @@ import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
 import { formatTime } from '../../../utils/formatTime'
 import useStore from '../../../store/useStore'
 import { useRouter } from 'next/navigation'
+import { SongList } from '../../../types'
 const columns = [
   {
     title: '#',
@@ -30,11 +31,39 @@ const columns = [
     dataIndex: 'duration',
     key: 'duration',
     width: '10%',
-    render: (text) => formatTime(text),
+    render: (text: number) => formatTime(text),
   },
 ]
+type album = {
+  album_title: string
+  artist_id: number
+  artists: Artists
+  cover: string
+  createTime: null
+  desc: string
+  id: number
+  release_date: string
+  songs: Song[]
+  [property: string]: any
+}
 
-export default function Home({ params }) {
+type Artists = {
+  id: number
+  name: string
+  [property: string]: any
+}
+
+type Song = {
+  albums_id: number
+  artists_id: number
+  duration: number
+  file_path: string
+  id: number
+  song_title: string
+  [property: string]: any
+}
+
+export default function Home({ params }: { params: { id: string } }) {
   const router = useRouter()
   const {
     setCurrentId,
@@ -45,17 +74,27 @@ export default function Home({ params }) {
     setColorTheme,
   } = useStore()
   const { id } = params
-  const [album, setAlbum] = useState({})
+  const [album, setAlbum] = useState<album>({
+    album_title: '',
+    artist_id: 0,
+    artists: { id: 0, name: '' },
+    cover: '',
+    createTime: null,
+    desc: '',
+    id: 0,
+    release_date: '',
+    songs: [],
+  })
   const [loading, setLoading] = useState(true)
-  const [curSingleList, setCurSingleList] = useState([])
+  const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   useEffect(() => {
     const fetchAlbum = async () => {
       try {
         const response = await fetch(`/api/album?id=${id}`)
         const data = await response.json()
         setAlbum(data)
-        await setCurSingleList(
-          data.songs.map((song) => ({
+        setCurSingleList(
+          data.songs.map((song: Song) => ({
             ...song,
             name: data.artists.name,
             cover: data.cover,
@@ -81,7 +120,7 @@ export default function Home({ params }) {
   const handleCancel = () => {
     setIsModalOpen(false)
   }
-  const [onClicked, setOnClicked] = useState(null)
+  const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
     setOnClicked(currentId)
   }, [currentId])

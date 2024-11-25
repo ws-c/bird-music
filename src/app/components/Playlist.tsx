@@ -4,8 +4,19 @@ import { Flex } from 'antd'
 import styles from './Playlist.module.css'
 import { PlayCircleOutlined } from '@ant-design/icons'
 
+type Playlist = {
+  author: string
+  createTime: string
+  desc: string
+  id: number
+  img: string
+  isPrivate: string
+  name: string
+  tags: null
+}
+
 const Playlist = () => {
-  const [playlist, setPlaylist] = useState([])
+  const [playlist, setPlaylist] = useState<Playlist[]>([])
 
   useEffect(() => {
     const fetchPlaylist = async () => {

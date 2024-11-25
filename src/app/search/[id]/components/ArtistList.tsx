@@ -4,14 +4,10 @@ import { Avatar, Flex } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import styles from './ArtistList.module.css'
 import { useRouter } from 'next/navigation'
+import { ArtistList_ } from '../page'
 
-interface Artist {
-  id: string
-  name: string
-  image_url: string
-}
 type ArtistProps = {
-  artists: Artist[]
+  artists: ArtistList_[]
 }
 const ArtistList: FC<ArtistProps> = ({ artists }) => {
   const route = useRouter()

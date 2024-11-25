@@ -1,7 +1,10 @@
 import bcrypt from 'bcryptjs'
 import prisma from '../../lib/prisma'
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: { method: string; body: { username: any; password: any } },
+  res: any
+) {
   if (req.method === 'POST') {
     const { username, password } = req.body
     // 检查用户名是否存在

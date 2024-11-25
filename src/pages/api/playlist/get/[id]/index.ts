@@ -1,7 +1,11 @@
+import { JsonValue } from '@prisma/client/runtime/binary'
 import prisma from '../../../../../lib/prisma'
 
 // 获取用户自己创建的歌单
-export default async function handler(req, res) {
+export default async function handler(
+  req: { method: string; query: { id: any } },
+  res: any
+) {
   if (req.method === 'GET') {
     const { id } = req.query
     try {

@@ -1,7 +1,10 @@
 import prisma from '../../../lib/prisma'
 
 // 更新用户信息
-export default async function handler(req, res) {
+export default async function handler(
+  req: { method: string; body: { cover: any; username: any; oldName: any } },
+  res: any
+) {
   if (req.method === 'PUT') {
     try {
       const { cover, username, oldName } = req.body

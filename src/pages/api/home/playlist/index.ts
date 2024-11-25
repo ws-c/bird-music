@@ -1,6 +1,6 @@
 import prisma from '../../../../lib/prisma'
 // 首页推荐歌单
-export default async function handler(req, res) {
+export default async function handler(req: { method: string }, res: any) {
   if (req.method === 'GET') {
     try {
       const playlist = await prisma.playlist.findMany({

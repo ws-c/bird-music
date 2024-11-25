@@ -1,11 +1,10 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Layout from '../../components/layout'
-
 
 export default function Home() {
   return (
-    <Layout curActive='radio'>
+    <Layout curActive="radio">
       <div>radio</div>
     </Layout>
   )

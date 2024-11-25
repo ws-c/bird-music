@@ -17,7 +17,7 @@ interface User {
 // 定义 Store 的状态和方法类型
 interface StoreState {
   singleList: any[]
-  currentId: string | null
+  currentId: number
   showPlayer: boolean
   user: User
   isPlaying: boolean
@@ -28,7 +28,7 @@ interface StoreState {
   setInputValue: (value: string) => void
   setIsPlaying: (playing: boolean) => void
   setSingleList: (list: any[]) => void
-  setCurrentId: (id: string | null) => void
+  setCurrentId: (id: number) => void
   setShowPlayer: (show: boolean) => void
   setUser: (newUser: User) => void
   refreshCount: number
@@ -78,7 +78,7 @@ const useStore = create<StoreState>((set) => ({
     }
   },
   // 更新当前 ID 并存储到 localStorage
-  setCurrentId: (id: string | null) => {
+  setCurrentId: (id: number) => {
     set({ currentId: id })
     if (typeof window !== 'undefined') {
       localStorage.setItem('currentId', JSON.stringify(id))

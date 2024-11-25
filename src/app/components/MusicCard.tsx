@@ -4,9 +4,18 @@ import styles from './MusicCard.module.css' // 引入 CSS Module
 import { Flex, Typography } from 'antd'
 import { useRouter } from 'next/navigation'
 import NProgress from 'nprogress'
+export type Song = {
+  albums_id: number;
+  artists_id: number;
+  duration: number;
+  file_path: string;
+  id: number;
+  song_title: string;
+  [property: string]: any;
+}
 const MusicCard = () => {
   const router = useRouter()
-  const [albums, setAlbums] = useState([])
+  const [albums, setAlbums] = useState<Song[]>([])
 
   useEffect(() => {
     const fetchAlbums = async () => {

@@ -4,7 +4,10 @@ import prisma from '../../lib/prisma'
 
 const JWT_SECRET = 'Fizz'
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: { method: string; body: { username: any; password: any } },
+  res: any
+) {
   if (req.method === 'POST') {
     const { username, password } = req.body
 

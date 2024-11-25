@@ -1,7 +1,10 @@
 import prisma from '../../../../lib/prisma'
 import flattenObject from '../../../../utils/flattenObject'
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: { method: string; query: { keyword: string } },
+  res: any
+) {
   if (req.method === 'GET') {
     try {
       const query = req.query.keyword?.trim() // 获取查询关键字

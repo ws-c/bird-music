@@ -5,9 +5,9 @@ import myStyle from './PlayDrawer.module.css'
 type Props = {
   open: boolean
   onClose: () => void
-  setCurrentId: (id: string) => void
-  onClicked: string | null
-  setOnClicked: (id: string) => void
+  setCurrentId: (id: number) => void
+  onClicked: number
+  setOnClicked: (id: number) => void
   setIsPlaying: (isPlaying: boolean) => void
   singleList: any[]
   isPlaying: boolean
@@ -20,7 +20,7 @@ const PlayDrawer: FC<Props> = ({
   setOnClicked,
   setIsPlaying,
   singleList,
-  isPlaying
+  isPlaying,
 }) => {
   return (
     <Drawer

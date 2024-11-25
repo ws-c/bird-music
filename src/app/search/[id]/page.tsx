@@ -6,6 +6,37 @@ import SingleList from './components/SingleList'
 import ArtistList from './components/ArtistList'
 import AlbumList from './components/AlbumList'
 
+export type SingleList_ = {
+  album_title: string
+  albums_id: number
+  artists_id: number
+  cover?: string
+  duration: number
+  file_path: string
+  id: number
+  name?: string
+  song_title?: string
+  [property: string]: any
+}
+export type ArtistList_ = {
+  id?: number
+  image_url?: string
+  name?: string
+  [property: string]: any
+}
+export type AlbumList_ = {
+  album_title?: string
+  artists: Artists
+  cover?: string
+  id?: number
+  release_date?: string
+  [property: string]: any
+}
+export type Artists = {
+  name: string
+  [property: string]: any
+}
+
 export default function Home({
   params,
 }: {
@@ -14,9 +45,9 @@ export default function Home({
   }
 }) {
   const [loading, setLoading] = useState(true)
-  const [singleList, setSingleList] = useState([])
-  const [artistList, setArtistList] = useState([])
-  const [albumList, setAlbumList] = useState([])
+  const [singleList, setSingleList] = useState<SingleList_[]>([])
+  const [artistList, setArtistList] = useState<ArtistList_[]>([])
+  const [albumList, setAlbumList] = useState<AlbumList_[]>([])
 
   useEffect(() => {
     // 使用 Promise.all 使请求并行
@@ -37,7 +68,7 @@ export default function Home({
         setSingleList(singleRes)
         setArtistList(artistRes)
         setAlbumList(albumRes)
-        console.log('art',artistRes)
+        console.log('art', artistRes)
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
@@ -73,10 +104,9 @@ export default function Home({
                 <AlbumList albumList={albumList}></AlbumList>
               </>
             )}
-            {!artistList.length &&
-              !singleList.length &&
-              !albumList.length && <div>没有相关结果</div>
-            }
+            {!artistList.length && !singleList.length && !albumList.length && (
+              <div>没有相关结果</div>
+            )}
           </Flex>
         )}
       </div>

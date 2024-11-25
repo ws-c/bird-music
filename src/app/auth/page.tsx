@@ -7,7 +7,7 @@ import Icons from '../../components/Icons'
 import Title from 'antd/es/typography/Title'
 
 export default function Auth() {
-  const { setShowPlayer, setUser, initializeState } = useStore()
+  const { setShowPlayer, setUser } = useStore()
   useEffect(() => {
     // 停止播放等操作
     setShowPlayer(false)

@@ -44,6 +44,40 @@ const columns = [
     render: (text: number) => formatTime(text),
   },
 ]
+type Playlist = {
+  author: string;
+  createTime: string;
+  desc: string;
+  id: number;
+  img: string;
+  isPrivate: string;
+  name: string;
+  tags: string[];
+  [property: string]: any;
+}
+
+type Songs = {
+  albums: Albums;
+  albums_id: number;
+  artists: Artists;
+  artists_id: number;
+  duration: number;
+  file_path: string;
+  id: number;
+  song_title: string;
+  [property: string]: any;
+}
+
+type Albums = {
+  album_title: string;
+  cover: string;
+  [property: string]: any;
+}
+
+type Artists = {
+  name: string;
+  [property: string]: any;
+}
 
 const PlayList = ({ params }: { params: { id: string } }) => {
   const { id } = params
@@ -59,16 +93,25 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   } = useStore()
   const router = useRouter()
 
-  const [playList, setPlayList] = useState({})
+  const [playList, setPlayList] = useState<Playlist>({
+    author: '',
+    createTime: '',
+    desc: '',
+    id: 0,
+    img: '',
+    isPrivate: '',
+    name: '',
+    tags: [],
+  })
   const [loading, setLoading] = useState(true)
-  const [curSingleList, setCurSingleList] = useState([])
-  const [onClicked, setOnClicked] = useState('')
+  const [curSingleList, setCurSingleList] = useState<Songs[]>([])
+  const [onClicked, setOnClicked] = useState(0)
 
   useEffect(() => {
     fetchAllData()
   }, [refreshCount])
   const fetchAllData = async () => {
-    setLoading(true) // 启用加载状态
+    setLoading(true)
     try {
       const [playlistRes, contentRes] = await Promise.all([
         fetch(`/api/playlist/get/${id}?author=${user.username}`),
@@ -93,7 +136,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   }, [currentId])
   return (
     <div style={{ marginTop: '30px' }}>
-      {loading ? ( // 根据加载状态渲染不同的内容
+      {loading ? (
         <Spin size="large" />
       ) : (
         <>
@@ -159,7 +202,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   )}
                   <span>
                     创建于
-                    {new dayjs(playList.createTime).format('YYYY-MM-DD')}
+                    {dayjs(playList.createTime).format('YYYY-MM-DD')}
                   </span>
                 </Flex>
               </Typography.Text>

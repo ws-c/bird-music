@@ -3,7 +3,11 @@ import { jwtVerify } from 'jose' // Import the jwtVerify method from jose
 
 const JWT_SECRET = new TextEncoder().encode('Fizz') // 'Fizz' needs to be encoded into a Uint8Array
 
-export async function middleware(req) {
+export async function middleware(req: {
+  cookies: { get: (arg0: string) => { (): any; new (): any; value: any } }
+  nextUrl: { pathname: string }
+  url: string | URL | undefined
+}) {
   const token = req.cookies.get('token')?.value
 
   // 需要进行 token 校验的受保护路径

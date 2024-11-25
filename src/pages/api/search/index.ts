@@ -1,6 +1,9 @@
 import prisma from '../../../lib/prisma'
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: { method: string; query: { q: string } },
+  res: any
+) {
   if (req.method === 'GET') {
     try {
       const query = req.query.q?.trim() // 获取查询关键字

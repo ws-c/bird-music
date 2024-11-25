@@ -1,7 +1,20 @@
 import prisma from '../../../../lib/prisma'
 
 // 创建歌单
-export default async function handler(req, res) {
+export default async function handler(
+  req: {
+    method: string
+    body: {
+      name: any
+      author: any
+      desc: any
+      tags: any
+      isPrivate: any
+      img: any
+    }
+  },
+  res: any
+) {
   if (req.method === 'POST') {
     try {
       // 解析请求体

@@ -5,18 +5,10 @@ import styles from './AlbumList.module.css'
 import { PlayCircleOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
+import type { AlbumList_ } from '../page'
 
-type Album = {
-  id: number
-  release_date: string
-  album_title: string
-  cover: string
-  artists: {
-    name: string
-  }
-}
 type AlbumListProps = {
-  albumList: Album[]
+  albumList: AlbumList_[]
 }
 const albumList: FC<AlbumListProps> = ({ albumList }) => {
   const route = useRouter()

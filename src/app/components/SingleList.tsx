@@ -6,6 +6,7 @@ import styles from './SingleList.module.css'
 import useStore from '../../store/useStore'
 import { formatTime } from '../../utils/formatTime'
 import Link from 'next/link'
+import { SongList } from '../../types'
 
 const SingleList = () => {
   const {
@@ -16,7 +17,7 @@ const SingleList = () => {
     currentId,
     setShowPlayer,
   } = useStore()
-  const [curSingleList, setCurSingleList] = useState([])
+  const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   useEffect(() => {
     const fetchPlaylist = async () => {
       try {
@@ -30,7 +31,7 @@ const SingleList = () => {
 
     fetchPlaylist()
   }, [])
-  const [onClicked, setOnClicked] = useState(null)
+  const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
     setOnClicked(currentId)
   }, [currentId])

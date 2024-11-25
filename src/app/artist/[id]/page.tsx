@@ -4,6 +4,7 @@ import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
 import { formatTime } from '../../../utils/formatTime'
 import useStore from '../../../store/useStore'
 import flattenObject from '../../../utils/flattenObject'
+import { SongList } from '../../../types'
 const columns = [
   {
     title: '#',
@@ -40,8 +41,33 @@ const columns = [
     render: (text: number) => formatTime(text),
   },
 ]
+type Artist = {
+  biography: string
+  createTime: string
+  id: number
+  image_url: string
+  name: string
+  songs: Song[]
+  [property: string]: any
+}
 
-export default function Home({ params }) {
+type Song = {
+  albums: Albums
+  albums_id: number
+  artists_id: number
+  duration: number
+  file_path: string
+  id: number
+  song_title: string
+  [property: string]: any
+}
+type Albums = {
+  album_title: string
+  cover: string
+  [property: string]: any
+}
+
+export default function Home({ params }: { params: { id: string } }) {
   const {
     setCurrentId,
     setShowPlayer,
@@ -51,9 +77,16 @@ export default function Home({ params }) {
     setColorTheme,
   } = useStore()
   const { id } = params
-  const [artist, setArtist] = useState({})
+  const [artist, setArtist] = useState<Artist>({
+    biography: '',
+    createTime: '',
+    id: 0,
+    image_url: '',
+    name: '',
+    songs: [],
+  })
   const [loading, setLoading] = useState(true)
-  const [curSingleList, setCurSingleList] = useState([])
+  const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   useEffect(() => {
     const fetchAlbum = async () => {
       try {
@@ -61,7 +94,7 @@ export default function Home({ params }) {
         const data = await response.json()
         setArtist(data)
         setCurSingleList(
-          data.songs.map((song) => ({
+          data.songs.map((song: Song) => ({
             ...flattenObject(song),
             name: data.name,
           }))
@@ -85,7 +118,7 @@ export default function Home({ params }) {
   const handleCancel = () => {
     setIsModalOpen(false)
   }
-  const [onClicked, setOnClicked] = useState('')
+  const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
     if (currentId) {
       setOnClicked(currentId)
@@ -145,7 +178,6 @@ export default function Home({ params }) {
               </Typography.Text>
               {String(artist.biography).length > 120 && (
                 <Button
-                  ghost
                   color="primary"
                   variant="link"
                   style={{
