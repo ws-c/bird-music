@@ -1,9 +1,9 @@
 export default function flattenObject(obj: any) {
-  const result = {}
+  const result: { [key: string]: any } = {}
   const stack = [{ obj }]
 
   while (stack.length > 0) {
-    const { obj } = stack.pop()
+    const { obj } = stack.pop()!
 
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
