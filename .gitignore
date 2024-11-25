@@ -35,4 +35,4 @@ yarn-error.log*
 next-env.d.ts
 
 # system environment files
-.env.local
+.env
