@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = "mysql://wangshuai:Ws-118816742@rm-wz910td2iz8v3hmjyho.mysql.rds.aliyuncs.com:3306/music"
 }
 
 model playlist {
