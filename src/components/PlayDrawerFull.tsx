@@ -1,7 +1,7 @@
 import { ConfigProvider, Drawer, Flex, List } from 'antd'
 import { formatTime } from '../utils/formatTime'
 import { FC } from 'react'
-import myStyle from './playDrawerFull.module.css'
+// import myStyle from './playDrawerFull.module.css'
 type Props = {
   open: boolean
   onClose: () => void
@@ -53,6 +53,7 @@ const PlayDrawerFull: FC<Props> = ({
                 padding: '4px 16px',
                 marginBottom: '8px',
                 backgroundColor: 'transparent',
+                border: 'none'
               }}
               className={`item2 ${onClicked == item.id ? 'clicked2' : ''}`}
               onClick={() => {
@@ -61,7 +62,7 @@ const PlayDrawerFull: FC<Props> = ({
                 setIsPlaying(true)
               }}
             >
-              {onClicked == item.id && isPlaying ? (
+              {/* {onClicked == item.id && isPlaying ? (
                 <Flex align="flex-end" style={{ marginRight: '8px' }}>
                   <div className={myStyle.loading}>
                     <div className={myStyle.load}></div>
@@ -77,7 +78,7 @@ const PlayDrawerFull: FC<Props> = ({
                 >
                   <div className={myStyle.play}></div>
                 </Flex>
-              )}
+              )} */}
               <List.Item.Meta
                 avatar={
                   <img
