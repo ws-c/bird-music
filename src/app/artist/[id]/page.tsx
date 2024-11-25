@@ -126,7 +126,7 @@ export default function Home({ params }: { params: { id: string } }) {
   }, [currentId])
   return (
     <div style={{ marginTop: '30px' }}>
-      {loading ? ( // 根据加载状态渲染不同的内容
+      {loading ? (
         <Spin size="large" />
       ) : (
         <>

@@ -8,6 +8,8 @@ import dayjs from 'dayjs'
 import React from 'react'
 import flattenObject from '../../../utils/flattenObject'
 import { UserOutlined } from '@ant-design/icons'
+import Icons from '../../../components/Icons'
+import Edit from './Edit'
 const columns = [
   {
     title: '#',
@@ -44,39 +46,39 @@ const columns = [
     render: (text: number) => formatTime(text),
   },
 ]
-type Playlist = {
-  author: string;
-  createTime: string;
-  desc: string;
-  id: number;
-  img: string;
-  isPrivate: string;
-  name: string;
-  tags: string[];
-  [property: string]: any;
+export type Playlist = {
+  author: string
+  createTime: string
+  desc: string
+  id: number
+  img: string
+  isPrivate: string
+  name: string
+  tags: string[]
+  [property: string]: any
 }
 
 type Songs = {
-  albums: Albums;
-  albums_id: number;
-  artists: Artists;
-  artists_id: number;
-  duration: number;
-  file_path: string;
-  id: number;
-  song_title: string;
-  [property: string]: any;
+  albums: Albums
+  albums_id: number
+  artists: Artists
+  artists_id: number
+  duration: number
+  file_path: string
+  id: number
+  song_title: string
+  [property: string]: any
 }
 
 type Albums = {
-  album_title: string;
-  cover: string;
-  [property: string]: any;
+  album_title: string
+  cover: string
+  [property: string]: any
 }
 
 type Artists = {
-  name: string;
-  [property: string]: any;
+  name: string
+  [property: string]: any
 }
 
 const PlayList = ({ params }: { params: { id: string } }) => {
@@ -134,12 +136,24 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       setOnClicked(currentId)
     }
   }, [currentId])
+  // 修改歌单信息
+  const [open, setOpen] = useState(false)
+  const showModal = () => {
+    setOpen(true)
+  }
   return (
     <div style={{ marginTop: '30px' }}>
       {loading ? (
         <Spin size="large" />
       ) : (
         <>
+          <Edit
+            open={open}
+            setOpen={setOpen}
+            name={user.username}
+            fetchAllData={fetchAllData}
+            playList={playList}
+          ></Edit>
           <Flex align="flex-end" gap={35} style={{ width: '800px' }}>
             <div
               style={{
@@ -166,6 +180,12 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 style={{ margin: '0', letterSpacing: '1px' }}
               >
                 {playList.name}
+                <Icons
+                  onClick={showModal}
+                  type="icon-xiugai"
+                  size={24}
+                  style={{ marginLeft: '10px' }}
+                />
               </Typography.Title>
               <Typography.Text
                 type="secondary"
