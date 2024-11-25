@@ -1,4 +1,3 @@
-import { JsonValue } from '@prisma/client/runtime/binary'
 import prisma from '../../../../../lib/prisma'
 
 // 获取用户自己创建的歌单
@@ -9,6 +8,7 @@ export default async function handler(
   if (req.method === 'GET') {
     const { id } = req.query
     try {
+      // 获取歌单
       const playlist = await prisma.playlist.findUnique({
         where: {
           id: +id,
@@ -19,7 +19,21 @@ export default async function handler(
         return res.status(404).json({ error: 'No playlist found' })
       }
 
-      res.status(200).json(playlist) // 返回匹配结果
+      // 获取用户封面图
+      const user = await prisma.users.findUnique({
+        where: {
+          username: playlist.author,
+        },
+        select: {
+          cover: true,
+        },
+      })
+
+      // 如果用户没有设置封面图，使用默认空字符串
+      const cover = user?.cover ?? ''
+
+      // 返回合并后的结果
+      res.status(200).json({ cover, ...playlist })
     } catch (error) {
       console.error('Error fetching playlist:', error)
       res.status(500).json({ error: 'Failed to fetch playlist' })

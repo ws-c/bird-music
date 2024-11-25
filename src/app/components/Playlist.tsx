@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Flex } from 'antd'
 import styles from './Playlist.module.css'
 import { PlayCircleOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/navigation'
 
 type Playlist = {
   author: string
@@ -16,6 +17,7 @@ type Playlist = {
 }
 
 const Playlist = () => {
+  const nav = useRouter()
   const [playlist, setPlaylist] = useState<Playlist[]>([])
 
   useEffect(() => {
@@ -33,7 +35,11 @@ const Playlist = () => {
   return (
     <Flex style={{ minWidth: '1700px' }}>
       {playlist.map((item) => (
-        <div key={item.id} className={styles.musicCard}>
+        <div
+          key={item.id}
+          className={styles.musicCard}
+          onClick={() => nav.push(`/playlist/${item.id}`)}
+        >
           <div className={styles.overlay}>
             <PlayCircleOutlined className={styles.playIcon} />
           </div>

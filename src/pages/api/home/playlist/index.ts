@@ -5,6 +5,9 @@ export default async function handler(req: { method: string }, res: any) {
     try {
       const playlist = await prisma.playlist.findMany({
         take: 7,
+        orderBy: {
+          createTime: 'desc',
+        },
       })
       res.status(200).json(playlist)
     } catch (error) {

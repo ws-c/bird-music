@@ -55,6 +55,7 @@ export type Playlist = {
   isPrivate: string
   name: string
   tags: string[]
+  cover: string
   [property: string]: any
 }
 
@@ -104,6 +105,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     isPrivate: '',
     name: '',
     tags: [],
+    cover: '',
   })
   const [loading, setLoading] = useState(true)
   const [curSingleList, setCurSingleList] = useState<Songs[]>([])
@@ -116,7 +118,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     setLoading(true)
     try {
       const [playlistRes, contentRes] = await Promise.all([
-        fetch(`/api/playlist/get/${id}?author=${user.username}`),
+        fetch(`/api/playlist/get/${id}`),
         fetch(`/api/playlist_content?id=${id}`),
       ])
       const playlistData = await playlistRes.json()
@@ -207,7 +209,11 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   <></>
                 )}
                 <Flex gap={12} align="center">
-                  <Avatar src={user.cover} icon={<UserOutlined />} size={28} />
+                  <Avatar
+                    src={playList.cover}
+                    icon={<UserOutlined />}
+                    size={28}
+                  />
                   <span>{playList.author}</span>
                   {playList.tags && (
                     <span>
