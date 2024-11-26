@@ -13,8 +13,9 @@
 }
 
 .cardImage {
-  width: 100%;
-  height: auto;
+  width: 213px;
+  height: 213px;
+  object-fit: cover;
   border-radius: 8px;
 }
 

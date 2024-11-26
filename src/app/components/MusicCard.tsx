@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import NProgress from 'nprogress'
 export type Song = {
   albums_id: number;
-  artists_id: number;
+  artist_id: number;
   duration: number;
   file_path: string;
   id: number;

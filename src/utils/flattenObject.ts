@@ -10,8 +10,10 @@ export default function flattenObject(obj: any) {
         const value = obj[key]
 
         if (value && typeof value === 'object' && !Array.isArray(value)) {
+          // 如果是对象，继续扁平化
           stack.push({ obj: value })
         } else {
+          // 如果是基本类型或数组，直接加入结果
           result[key] = value
         }
       }

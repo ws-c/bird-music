@@ -22,9 +22,11 @@ const columns = [
   },
   {
     title: '艺人',
-    dataIndex: 'name',
+    dataIndex: 'song_artists',
     key: 'name',
     width: '15%',
+    render: (text: any) =>
+      text.map((item: any) => item.artists.name).join(' / '),
   },
   {
     title: '专辑',
@@ -41,29 +43,47 @@ const columns = [
     render: (text: number) => formatTime(text),
   },
 ]
-type Artist = {
+export type Artist = {
   biography: string
-  createTime: string
   id: number
   image_url: string
   name: string
-  songs: Song[]
+  song_artists: RequestSongArtist[]
   [property: string]: any
 }
 
-type Song = {
+export type RequestSongArtist = {
+  artist_id: number
+  song_id: number
+  songs: Songs
+  [property: string]: any
+}
+
+export type Songs = {
   albums: Albums
   albums_id: number
-  artists_id: number
   duration: number
   file_path: string
   id: number
+  song_artists: SongsSongArtist[]
   song_title: string
   [property: string]: any
 }
-type Albums = {
+
+export type Albums = {
   album_title: string
   cover: string
+  [property: string]: any
+}
+
+export type SongsSongArtist = {
+  artist_id: number
+  artists: Artists
+  [property: string]: any
+}
+
+export type Artists = {
+  name: string
   [property: string]: any
 }
 
@@ -79,11 +99,10 @@ export default function Home({ params }: { params: { id: string } }) {
   const { id } = params
   const [artist, setArtist] = useState<Artist>({
     biography: '',
-    createTime: '',
     id: 0,
     image_url: '',
     name: '',
-    songs: [],
+    song_artists: [],
   })
   const [loading, setLoading] = useState(true)
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
@@ -93,12 +112,12 @@ export default function Home({ params }: { params: { id: string } }) {
         const response = await fetch(`/api/artist?id=${id}`)
         const data = await response.json()
         setArtist(data)
-        setCurSingleList(
-          data.songs.map((song: Song) => ({
-            ...flattenObject(song),
-            name: data.name,
-          }))
-        )
+        const newData = data.song_artists.map((song: any) => ({
+          ...flattenObject(song.songs),
+        }))
+        console.log('456', newData)
+        setCurSingleList(newData)
+
         setColorTheme(data.image_url)
       } catch (error) {
         console.error('Error fetching artist:', error)
@@ -124,6 +143,7 @@ export default function Home({ params }: { params: { id: string } }) {
       setOnClicked(currentId)
     }
   }, [currentId])
+
   return (
     <div style={{ marginTop: '30px' }}>
       {loading ? (
@@ -145,6 +165,8 @@ export default function Home({ params }: { params: { id: string } }) {
                 alt=""
                 style={{
                   height: '250px',
+                  width: '250px',
+                  objectFit: 'cover',
                 }}
                 className="cover-animation"
               />
@@ -196,9 +218,9 @@ export default function Home({ params }: { params: { id: string } }) {
                 type="primary"
                 style={{ width: '100px' }}
                 onClick={() => {
-                  setCurrentId(curSingleList[0].id),
-                    setSingleList(curSingleList)
-                  setShowPlayer(true),
+                  setSingleList(curSingleList),
+                    setCurrentId(curSingleList[0].id),
+                    setShowPlayer(true),
                     setOnClicked(curSingleList[0].id),
                     setIsPlaying(true)
                 }}

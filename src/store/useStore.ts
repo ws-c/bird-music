@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { SongList } from '../types'
 
 type PlayList = {
   id: number
@@ -16,7 +17,7 @@ interface User {
 
 // 定义 Store 的状态和方法类型
 interface StoreState {
-  singleList: any[]
+  singleList: SongList[]
   currentId: number
   showPlayer: boolean
   user: User

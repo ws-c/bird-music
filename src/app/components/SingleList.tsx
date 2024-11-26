@@ -5,7 +5,6 @@ import Icons from '../../components/Icons'
 import styles from './SingleList.module.css'
 import useStore from '../../store/useStore'
 import { formatTime } from '../../utils/formatTime'
-import Link from 'next/link'
 import { SongList } from '../../types'
 
 const SingleList = () => {
@@ -37,14 +36,10 @@ const SingleList = () => {
   }, [currentId])
   return (
     <Flex gap={16} wrap={true} style={{ minWidth: '1700px' }}>
-      {curSingleList.map((item) => {
+      {curSingleList.map((item: SongList) => {
         const menuItems: MenuProps['items'] = [
           {
             key: '1',
-            label: <Link href={`/artist/${item.artists_id}`}>查看艺人</Link>,
-          },
-          {
-            key: '2',
             label: <span>分享</span>,
           },
         ]

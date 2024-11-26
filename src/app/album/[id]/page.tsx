@@ -22,9 +22,11 @@ const columns = [
   },
   {
     title: '艺人',
-    dataIndex: 'name',
+    dataIndex: 'song_artists',
     key: 'name',
-    width: '10%',
+    width: '15%',
+    render: (text: any) =>
+      text.map((item: any) => item.artists.name).join(' / '),
   },
   {
     title: '时长',
@@ -34,12 +36,11 @@ const columns = [
     render: (text: number) => formatTime(text),
   },
 ]
-type album = {
+export type Album = {
   album_title: string
   artist_id: number
-  artists: Artists
+  artists: RequestArtists
   cover: string
-  createTime: null
   desc: string
   id: number
   release_date: string
@@ -47,19 +48,32 @@ type album = {
   [property: string]: any
 }
 
-type Artists = {
+export type RequestArtists = {
   id: number
   name: string
   [property: string]: any
 }
 
-type Song = {
+export type Song = {
+  album_title: string
   albums_id: number
-  artists_id: number
+  cover: string
   duration: number
   file_path: string
   id: number
+  song_artists: SongArtist[]
   song_title: string
+  [property: string]: any
+}
+
+export type SongArtist = {
+  artist_id: number
+  artists: SongArtistArtists
+  [property: string]: any
+}
+
+export type SongArtistArtists = {
+  name: string
   [property: string]: any
 }
 
@@ -74,7 +88,7 @@ export default function Home({ params }: { params: { id: string } }) {
     setColorTheme,
   } = useStore()
   const { id } = params
-  const [album, setAlbum] = useState<album>({
+  const [album, setAlbum] = useState<Album>({
     album_title: '',
     artist_id: 0,
     artists: { id: 0, name: '' },
@@ -93,14 +107,7 @@ export default function Home({ params }: { params: { id: string } }) {
         const response = await fetch(`/api/album?id=${id}`)
         const data = await response.json()
         setAlbum(data)
-        setCurSingleList(
-          data.songs.map((song: Song) => ({
-            ...song,
-            name: data.artists.name,
-            cover: data.cover,
-            album_title: data.album_title,
-          }))
-        )
+        setCurSingleList(data.songs)
         setColorTheme(data.cover)
       } catch (error) {
         console.error('Error fetching album:', error)
@@ -122,7 +129,9 @@ export default function Home({ params }: { params: { id: string } }) {
   }
   const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
-    setOnClicked(currentId)
+    if (currentId) {
+      setOnClicked(currentId)
+    }
   }, [currentId])
   return (
     <div style={{ marginTop: '30px' }}>
@@ -210,9 +219,9 @@ export default function Home({ params }: { params: { id: string } }) {
                 type="primary"
                 style={{ width: '100px' }}
                 onClick={() => {
-                  setCurrentId(curSingleList[0].id),
-                    setSingleList(curSingleList)
-                  setShowPlayer(true),
+                  setSingleList(curSingleList),
+                    setCurrentId(curSingleList[0].id),
+                    setShowPlayer(true),
                     setOnClicked(curSingleList[0].id),
                     setIsPlaying(true)
                 }}

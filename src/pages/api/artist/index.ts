@@ -11,12 +11,26 @@ export default async function handler(
           id: +req.query.id, // 使用 id 查询
         },
         include: {
-          songs: {
+          song_artists: {
             include: {
-              albums: {
-                select: {
-                  album_title: true,
-                  cover: true,
+              songs: {
+                include: {
+                  albums: {
+                    select: {
+                      album_title: true,
+                      cover: true,
+                    },
+                  },
+                  song_artists: {
+                    select: {
+                      artist_id: true, // 获取艺术家ID
+                      artists: {
+                        select: {
+                          name: true, // 获取艺术家名字
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },

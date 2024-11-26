@@ -53,7 +53,7 @@ const PlayDrawerFull: FC<Props> = ({
                 padding: '4px 16px',
                 marginBottom: '8px',
                 backgroundColor: 'transparent',
-                border: 'none'
+                border: 'none',
               }}
               className={`item2 ${onClicked == item.id ? 'clicked2' : ''}`}
               onClick={() => {
@@ -93,7 +93,14 @@ const PlayDrawerFull: FC<Props> = ({
                   ></img>
                 }
                 title={item.song_title}
-                description={item.name}
+                description={item.song_artists.map(
+                  (item: any, index: number, self: string | any[]) => (
+                    <span key={item.artist_id}>
+                      {item.artists.name}
+                      {index < self.length - 1 && '/'}
+                    </span>
+                  )
+                )}
                 style={{
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',

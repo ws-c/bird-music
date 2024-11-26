@@ -27,13 +27,11 @@ model songs {
   duration       Int?
   file_path      String           @db.Text
   albums_id      Int
-  artists_id     Int
   playlist_songs playlist_songs[]
+  song_artists   song_artists[]
   albums         albums           @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
-  artists        artists          @relation(fields: [artists_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_2")
 
   @@index([albums_id], map: "albums_id")
-  @@index([artists_id], map: "artist_id")
 }
 
 model albums {
@@ -43,7 +41,6 @@ model albums {
   artist_id    Int?
   release_date DateTime? @db.Date
   cover        String?   @db.Text
-  createTime   DateTime? @db.Timestamp(0)
   artists      artists?  @relation(fields: [artist_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "albums_ibfk_1")
   songs        songs[]
 
@@ -51,13 +48,12 @@ model albums {
 }
 
 model artists {
-  id         Int       @id @default(autoincrement())
-  name       String    @db.VarChar(255)
-  biography  String?   @db.Text
-  image_url  String?   @db.VarChar(255)
-  createTime DateTime? @default(now()) @db.Timestamp(0)
-  albums     albums[]
-  songs      songs[]
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  biography    String?        @db.Text
+  image_url    String?        @db.VarChar(255)
+  albums       albums[]
+  song_artists song_artists[]
 }
 
 model users {
@@ -77,4 +73,14 @@ model playlist_songs {
   @@id([playlist_id, song_id])
   @@index([playlist_id], map: "idx_playlist_songs_playlist_id")
   @@index([song_id], map: "idx_playlist_songs_song_id")
+}
+
+model song_artists {
+  song_id   Int
+  artist_id Int
+  artists   artists @relation(fields: [artist_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_song_artists_artist")
+  songs     songs   @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "fk_song_artists_song")
+
+  @@id([song_id, artist_id])
+  @@index([artist_id], map: "fk_song_artists_artist")
 }

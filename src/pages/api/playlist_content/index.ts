@@ -1,4 +1,5 @@
 import prisma from '../../../lib/prisma'
+import flattenObject from '../../../utils/flattenObject'
 
 // 获取用户自己创建的歌单
 export default async function handler(
@@ -21,16 +22,20 @@ export default async function handler(
               duration: true,
               file_path: true,
               albums_id: true,
-              artists_id: true,
+              song_artists: {
+                select: {
+                  artist_id: true,
+                  artists: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
               albums: {
                 select: {
                   album_title: true,
                   cover: true,
-                },
-              },
-              artists: {
-                select: {
-                  name: true,
                 },
               },
             },
@@ -41,8 +46,8 @@ export default async function handler(
       if (!playlist) {
         return res.status(404).json({ error: 'No playlist found' })
       }
-
-      res.status(200).json(playlist) // 返回匹配结果
+      const newPlaylist = playlist.map((item) => flattenObject(item))
+      res.status(200).json(newPlaylist) // 返回匹配结果
     } catch (error) {
       console.error('Error fetching playlist:', error)
       res.status(500).json({ error: 'Failed to fetch playlist' })

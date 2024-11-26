@@ -97,7 +97,6 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
     form.resetFields()
     setFileList(user.cover ? [{ url: user.cover }] : [])
   }, [open])
-  console.log(fileList[0])
   return (
     <Drawer
       title="用户设置"

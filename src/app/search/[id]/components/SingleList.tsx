@@ -2,7 +2,6 @@
 import React, { FC, useEffect, useState } from 'react'
 import { Button, Dropdown, Flex, MenuProps } from 'antd'
 import styles from './SingleList.module.css'
-import Link from 'next/link'
 import useStore from '../../../../store/useStore'
 import { formatTime } from '../../../../utils/formatTime'
 import Icons from '../../../../components/Icons'
@@ -32,10 +31,6 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
         const menuItems: MenuProps['items'] = [
           {
             key: '1',
-            label: <Link href={`/artist/${item.artists_id}`}>查看艺人</Link>,
-          },
-          {
-            key: '2',
             label: <span>分享</span>,
           },
         ]

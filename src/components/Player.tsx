@@ -40,7 +40,6 @@ const Player = () => {
     const index = singleList.findIndex((song) => song.id === currentId)
     setCurrentSongIndex(index >= 0 ? index : 0)
   }, [singleList, currentId])
-
   // 根据 isPlaying 状态播放或暂停
   useEffect(() => {
     if (audioRef.current) {
@@ -307,6 +306,7 @@ const Player = () => {
   const showModal2 = () => {
     setOpen2(true)
   }
+  console.log('currentSong.song_artists', currentSong.song_artists)
   return (
     <>
       {fullScreen && (
@@ -355,15 +355,22 @@ const Player = () => {
                         fontWeight: 'bold',
                       }}
                     >
-                      <span
-                        onClick={() => {
-                          router.push(`/artist/${currentSong.artists_id}`),
-                            setFullScreen(false)
-                        }}
-                        className="link"
-                      >
-                        {currentSong.name}
-                      </span>
+                      {currentSong.song_artists?.map((artist, index, self) => (
+                        <span key={index}>
+                          <span
+                            className="link"
+                            onClick={() => {
+                              if (artist?.artist_id) {
+                                router.push(`/artist/${artist.artist_id}`)
+                                setFullScreen(false)
+                              }
+                            }}
+                          >
+                            {artist.artists?.name || 'Unknown Artist'}
+                          </span>
+                          <span>{index !== self.length - 1 && ' / '}</span>
+                        </span>
+                      ))}
                       <span> — </span>
                       <span
                         className="link"
@@ -526,22 +533,32 @@ const Player = () => {
           <Flex vertical justify="center" gap={8}>
             <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
               {currentSong.song_title}
+              <Icons
+                type="icon-yunyinle-tianjiadao"
+                size={14}
+                style={{ position: 'relative', left: '8px' }}
+                onClick={showModal2}
+              />
             </span>
-            <span
-              className="link"
-              onClick={() => router.push(`/artist/${currentSong.artists_id}`)}
-            >
-              {currentSong.name}
-            </span>
+            <Flex gap={8}>
+              {currentSong.song_artists?.map((artist, index, self) => (
+                <span key={index}>
+                  <span
+                    className="link"
+                    onClick={() => {
+                      if (artist?.artist_id) {
+                        router.push(`/artist/${artist.artist_id}`)
+                        setFullScreen(false)
+                      }
+                    }}
+                  >
+                    {artist.artists?.name || 'Unknown Artist'}
+                  </span>
+                  <span>{index !== self.length - 1 && ' / '}</span>
+                </span>
+              ))}
+            </Flex>
           </Flex>
-          <div style={{ position: 'relative', height: '60px' }}>
-            <Icons
-              type="icon-yunyinle-tianjiadao"
-              size={16}
-              style={{ position: 'absolute', top: '10px' }}
-              onClick={showModal2}
-            />
-          </div>
         </Flex>
         <Flex
           style={{

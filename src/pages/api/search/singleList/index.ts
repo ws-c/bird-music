@@ -24,13 +24,19 @@ export default async function handler(
               },
             },
             {
-              artists: {
-                name: { contains: query },
+              albums: {
+                album_title: { contains: query },
               },
             },
             {
-              albums: {
-                album_title: { contains: query },
+              song_artists: {
+                some: {
+                  artists: {
+                    name: {
+                      contains: query, // 通过 song_artists 关联过滤艺术家名字
+                    },
+                  },
+                },
               },
             },
           ],
@@ -49,13 +55,19 @@ export default async function handler(
               album_title: true, // 获取专辑标题
             },
           },
-          artists: {
+          song_artists: {
             select: {
-              name: true, // 获取艺术家名字
+              artists: {
+                select: {
+                  name: true, // 获取艺术家名字
+                },
+              },
             },
           },
         },
       })
+
+      // 扁平化查询结果
       const newSongs = songs.map((song) => flattenObject(song))
       res.status(200).json(newSongs)
     } catch (error) {

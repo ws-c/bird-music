@@ -83,7 +83,14 @@ const PlayDrawer: FC<Props> = ({
                 ></img>
               }
               title={item.song_title}
-              description={item.name}
+              description={item.song_artists.map(
+                (item: any, index: number, self: string | any[]) => (
+                  <span key={item.artist_id}>
+                    {item.artists.name}
+                    {index < self.length - 1 && '/'}
+                  </span>
+                )
+              )}
               style={{
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',

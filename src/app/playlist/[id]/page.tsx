@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation'
 import { Spin, Flex, Typography, Button, Table, Avatar } from 'antd'
 import dayjs from 'dayjs'
 import React from 'react'
-import flattenObject from '../../../utils/flattenObject'
 import { UserOutlined } from '@ant-design/icons'
 import Icons from '../../../components/Icons'
 import Edit from './Edit'
+import { SongList } from '../../../types'
 const columns = [
   {
     title: '#',
@@ -27,9 +27,11 @@ const columns = [
   },
   {
     title: '艺人',
-    dataIndex: 'name',
+    dataIndex: 'song_artists',
     key: 'name',
     width: '15%',
+    render: (text: any) =>
+      text.map((item: any) => item.artists.name).join(' / '),
   },
   {
     title: '专辑',
@@ -59,29 +61,6 @@ export type Playlist = {
   [property: string]: any
 }
 
-type Songs = {
-  albums: Albums
-  albums_id: number
-  artists: Artists
-  artists_id: number
-  duration: number
-  file_path: string
-  id: number
-  song_title: string
-  [property: string]: any
-}
-
-type Albums = {
-  album_title: string
-  cover: string
-  [property: string]: any
-}
-
-type Artists = {
-  name: string
-  [property: string]: any
-}
-
 const PlayList = ({ params }: { params: { id: string } }) => {
   const { id } = params
   const {
@@ -108,7 +87,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     cover: '',
   })
   const [loading, setLoading] = useState(true)
-  const [curSingleList, setCurSingleList] = useState<Songs[]>([])
+  const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   const [onClicked, setOnClicked] = useState(0)
 
   useEffect(() => {
@@ -125,8 +104,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       const contentData = await contentRes.json()
       setPlayList(playlistData)
       setColorTheme(playlistData.img)
-      const flattenedData = contentData.map((item: any) => flattenObject(item))
-      setCurSingleList(flattenedData)
+      setCurSingleList(contentData)
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -171,7 +149,9 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 alt=""
                 style={{
                   height: '250px',
+                  width: '250px',
                   borderRadius: '8px',
+                  objectFit: 'cover',
                 }}
                 className="cover-animation"
               />

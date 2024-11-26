@@ -20,13 +20,19 @@ export default async function handler(req: { method: string }, res: any) {
               album_title: true, // 获取专辑标题
             },
           },
-          artists: {
+          song_artists: {
             select: {
-              name: true, // 获取艺术家名字
+              artist_id: true, // 获取艺术家ID
+              artists: {
+                select: {
+                  name: true, // 获取艺术家名字
+                },
+              },
             },
           },
         },
       })
+
       const newSongs = songs.map((song) => flattenObject(song))
       res.status(200).json(newSongs)
     } catch (error) {
