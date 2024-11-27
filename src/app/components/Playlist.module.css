@@ -46,7 +46,9 @@
   right: 20px;
   font-size: 32px;
   color: white !important;
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
   opacity: 0; /* 默认隐藏 */
 }
 .playIcon:hover {

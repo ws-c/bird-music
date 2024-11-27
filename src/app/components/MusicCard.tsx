@@ -5,13 +5,13 @@ import { Flex, Typography } from 'antd'
 import { useRouter } from 'next/navigation'
 import NProgress from 'nprogress'
 export type Song = {
-  albums_id: number;
-  artist_id: number;
-  duration: number;
-  file_path: string;
-  id: number;
-  song_title: string;
-  [property: string]: any;
+  albums_id: number
+  artist_id: number
+  duration: number
+  file_path: string
+  id: number
+  song_title: string
+  [property: string]: any
 }
 const MusicCard = () => {
   const router = useRouter()

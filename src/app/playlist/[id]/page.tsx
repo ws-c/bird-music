@@ -1,15 +1,15 @@
 'use client'
 import { useEffect, useState } from 'react'
-import useStore from '../../../store/useStore'
-import { formatTime } from '../../../utils/formatTime'
+import useStore from '@/store/useStore'
+import { formatTime } from '@/utils/formatTime'
 import { useRouter } from 'next/navigation'
 import { Spin, Flex, Typography, Button, Table, Avatar } from 'antd'
 import dayjs from 'dayjs'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import Icons from '../../../components/Icons'
+import Icons from '@/components/Icons'
 import Edit from './Edit'
-import { SongList } from '../../../types'
+import { SongList } from '@/types'
 const columns = [
   {
     title: '#',

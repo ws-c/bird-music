@@ -4,7 +4,7 @@ import { Avatar, Flex } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import styles from './ArtistList.module.css'
 import { useRouter } from 'next/navigation'
-import { ArtistList_ } from '../page'
+import { ArtistList_ } from '@/page'
 
 type ArtistProps = {
   artists: ArtistList_[]

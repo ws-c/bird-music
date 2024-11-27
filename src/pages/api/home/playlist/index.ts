@@ -1,4 +1,4 @@
-import prisma from '../../../../lib/prisma'
+import prisma from '@/lib/prisma'
 // 首页推荐歌单
 export default async function handler(req: { method: string }, res: any) {
   if (req.method === 'GET') {

@@ -1,11 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Dropdown, Flex, MenuProps } from 'antd'
-import Icons from '../../components/Icons'
+import Icons from '@/components/Icons'
 import styles from './SingleList.module.css'
-import useStore from '../../store/useStore'
-import { formatTime } from '../../utils/formatTime'
-import { SongList } from '../../types'
+import useStore from '@/store/useStore'
+import { formatTime } from '@/utils/formatTime'
+import { SongList } from '@/types'
 
 const SingleList = () => {
   const {

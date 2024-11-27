@@ -3,14 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier . --write",
     "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.21.1",
+    "@ant-design/icons": "^5.5.1",
     "@ant-design/nextjs-registry": "^1.0.1",
     "@prisma/client": "^5.21.1",
     "ali-oss": "^6.21.0",
@@ -40,6 +42,11 @@
     "@types/nprogress": "^0.2.3",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.17",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.1",
+    "prettier-plugin-tailwindcss": "^0.6.9",
     "prisma": "5.21.1",
     "ts-node": "10.9.2",
     "typescript": "5.6.3"

@@ -1,12 +1,13 @@
 'use client'
-import '../styles/global.css'
-import { ConfigProvider } from 'antd'
+
+import '@/styles/global.css'
 import React, { useEffect, useState } from 'react'
-import useStore from '../store/useStore'
+import { ConfigProvider } from 'antd'
+import useStore from '@/store/useStore'
 import { Footer } from 'antd/es/layout/layout'
-import Player from '../components/Player'
+import Player from '@/components/Player'
 import 'nprogress/nprogress.css'
-import '../styles/nprogress.css'
+import '@/styles/nprogress.css'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
 
 export default function RootLayout({

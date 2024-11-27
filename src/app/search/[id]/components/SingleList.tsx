@@ -2,10 +2,10 @@
 import React, { FC, useEffect, useState } from 'react'
 import { Button, Dropdown, Flex, MenuProps } from 'antd'
 import styles from './SingleList.module.css'
-import useStore from '../../../../store/useStore'
-import { formatTime } from '../../../../utils/formatTime'
-import Icons from '../../../../components/Icons'
-import type { SingleList_ } from '../page'
+import useStore from '@/store/useStore'
+import { formatTime } from '@/utils/formatTime'
+import Icons from '@/components/Icons'
+import type { SingleList_ } from '@/page'
 type SingleListProps = {
   curSingleList: SingleList_[]
 }

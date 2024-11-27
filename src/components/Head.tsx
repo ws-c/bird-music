@@ -11,7 +11,7 @@ import {
 } from 'antd'
 import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
-import useStore from '../store/useStore'
+import useStore from '@/store/useStore'
 import styles from './Header.module.css'
 import HeadSetting from './HeadSetting'
 
@@ -120,7 +120,7 @@ export default function Header() {
         </Dropdown>
         <span>{isClient && user.username}</span>
       </div>
-      
+
       <HeadSetting open={open} setOpen={setOpen} />
     </Flex>
   )

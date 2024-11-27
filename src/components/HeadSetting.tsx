@@ -10,7 +10,7 @@ import {
   Space,
 } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import useStore from '../store/useStore'
+import useStore from '@/store/useStore'
 import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload'
 
 interface UserSettingsProps {

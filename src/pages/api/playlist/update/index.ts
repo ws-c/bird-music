@@ -1,4 +1,4 @@
-import prisma from '../../../../lib/prisma'
+import prisma from '@/lib/prisma'
 
 // 修改歌单
 export default async function handler(

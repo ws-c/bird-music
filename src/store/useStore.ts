@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { SongList } from '../types'
+import { SongList } from '@/types'
 
 type PlayList = {
   id: number

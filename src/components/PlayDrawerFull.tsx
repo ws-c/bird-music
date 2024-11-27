@@ -1,5 +1,5 @@
 import { ConfigProvider, Drawer, Flex, List } from 'antd'
-import { formatTime } from '../utils/formatTime'
+import { formatTime } from '@/utils/formatTime'
 import { FC } from 'react'
 // import myStyle from './playDrawerFull.module.css'
 type Props = {

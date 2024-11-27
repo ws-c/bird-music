@@ -1,4 +1,4 @@
-import prisma from '../../../lib/prisma'
+import prisma from '@/lib/prisma'
 // 单曲收藏至歌单
 export default async function handler(
   req: { method: string; body: { songId: any; playListId: any } },

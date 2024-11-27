@@ -1,4 +1,4 @@
-import prisma from '../../../../lib/prisma'
+import prisma from '@/lib/prisma'
 // 获取用户自己创建的歌单
 export default async function handler(
   req: { method: string; query: { author: any } },

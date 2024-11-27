@@ -1,5 +1,5 @@
-import prisma from '../../../lib/prisma'
-import flattenObject from '../../../utils/flattenObject'
+import prisma from '@/lib/prisma'
+import flattenObject from '@/utils/flattenObject'
 
 // 获取用户自己创建的歌单
 export default async function handler(

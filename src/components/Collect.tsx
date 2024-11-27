@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Flex, Modal, notification } from 'antd'
-import useStore from '../store/useStore'
+import useStore from '@/store/useStore'
 
 type prop = {
   open: boolean

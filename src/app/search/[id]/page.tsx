@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Flex, Spin, Typography } from 'antd'
-import Layout from '../../../components/layout'
+import Layout from '@/components/layout'
 import SingleList from './components/SingleList'
 import ArtistList from './components/ArtistList'
 import AlbumList from './components/AlbumList'
