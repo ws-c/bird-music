@@ -7,7 +7,7 @@ import {
   PauseOutlined,
 } from '@ant-design/icons'
 import useStore from '@/store/useStore'
-import { formatTime } from '@/utils/formatTime'
+import { formatTime } from '@/helpers/formatTime'
 import Icons from './Icons'
 import _ from 'lodash'
 import styles from './FullPlayer.module.css'

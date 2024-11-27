@@ -1,9 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
-import { formatTime } from '@/utils/formatTime'
+import { formatTime } from '@/helpers/formatTime'
 import useStore from '@/store/useStore'
-import flattenObject from '@/utils/flattenObject'
+import flattenObject from '@/helpers/flattenObject'
 import { SongList } from '@/types'
 const columns = [
   {

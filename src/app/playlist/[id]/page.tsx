@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import useStore from '@/store/useStore'
-import { formatTime } from '@/utils/formatTime'
+import { formatTime } from '@/helpers/formatTime'
 import { useRouter } from 'next/navigation'
 import { Spin, Flex, Typography, Button, Table, Avatar } from 'antd'
 import dayjs from 'dayjs'

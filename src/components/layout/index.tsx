@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Flex, Layout, Menu } from 'antd'
-import { Content, Header } from 'antd/es/layout/layout'
+import { Content } from 'antd/es/layout/layout'
 import Sider from 'antd/es/layout/Sider'
 import { MenuInfo } from 'rc-menu/lib/interface'
 import { useRouter } from 'next/navigation'

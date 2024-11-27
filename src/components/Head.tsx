@@ -1,19 +1,14 @@
 'use client'
+
 import React, { useEffect, useState } from 'react'
-import {
-  AutoComplete,
-  Avatar,
-  Button,
-  Dropdown,
-  Flex,
-  Input,
-  message,
-} from 'antd'
+import { AutoComplete, Button, Dropdown, Flex, Input } from 'antd'
 import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store/useStore'
 import styles from './Header.module.css'
 import HeadSetting from './HeadSetting'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { ThemeToggle } from '@/components/layouts/theme-toggle'
 
 type Option = {
   value: string
@@ -106,21 +101,22 @@ export default function Header() {
         </AutoComplete>
       </Flex>
       <div className={styles.right}>
+        <ThemeToggle />
         <Dropdown
           menu={{ items }}
           placement="bottomRight"
           arrow
           trigger={['click']}
         >
-          <Avatar
-            src={isClient && user.cover}
-            icon={<UserOutlined />}
-            className={styles.avatar}
-          />
+          <Avatar>
+            <AvatarImage src={user.cover} />
+            <AvatarFallback>
+              <UserOutlined />
+            </AvatarFallback>
+          </Avatar>
         </Dropdown>
-        <span>{isClient && user.username}</span>
+        <span className="dark:text-black">{isClient && user.username}</span>
       </div>
-
       <HeadSetting open={open} setOpen={setOpen} />
     </Flex>
   )

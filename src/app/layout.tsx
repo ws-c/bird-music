@@ -1,5 +1,6 @@
 'use client'
 
+import '@/styles/globals.css'
 import '@/styles/global.css'
 import React, { useEffect, useState } from 'react'
 import { ConfigProvider } from 'antd'
@@ -9,6 +10,7 @@ import Player from '@/components/Player'
 import 'nprogress/nprogress.css'
 import '@/styles/nprogress.css'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { ThemeProvider } from '@/components/providers/theme-provider'
 
 export default function RootLayout({
   children,
@@ -22,7 +24,7 @@ export default function RootLayout({
   }, [])
 
   return (
-    <html lang="en">
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <link
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -49,7 +51,14 @@ export default function RootLayout({
           }}
         >
           <AntdRegistry>
-            {children}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
             {isClient && showPlayer && (
               <Footer
                 style={{

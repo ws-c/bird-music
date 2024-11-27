@@ -4,7 +4,7 @@ import { Button, Dropdown, Flex, MenuProps } from 'antd'
 import Icons from '@/components/Icons'
 import styles from './SingleList.module.css'
 import useStore from '@/store/useStore'
-import { formatTime } from '@/utils/formatTime'
+import { formatTime } from '@/helpers/formatTime'
 import { SongList } from '@/types'
 
 const SingleList = () => {

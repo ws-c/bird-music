@@ -1,4 +1,4 @@
-import flattenObject from '@/utils/flattenObject'
+import flattenObject from '@/helpers/flattenObject'
 import prisma from '@/lib/prisma'
 
 export default async function handler(req: { method: string }, res: any) {
