@@ -5,7 +5,7 @@ import styles from './SingleList.module.css'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import Icons from '@/components/Icons'
-import type { SingleList_ } from '@/page'
+import type { SingleList_ } from '../page'
 type SingleListProps = {
   curSingleList: SingleList_[]
 }

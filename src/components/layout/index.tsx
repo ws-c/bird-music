@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { Button, Flex, Layout, Menu } from 'antd'
 import { Content } from 'antd/es/layout/layout'
 import Sider from 'antd/es/layout/Sider'
-import { MenuInfo } from 'rc-menu/lib/interface'
 import { useRouter } from 'next/navigation'
 import Icons from '@/components/Icons'
 import Title from 'antd/es/typography/Title'
@@ -140,7 +139,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     },
   ]
 
-  const onClick = (item: MenuInfo) => {
+  const onClick = (item: any) => {
     router.push(`/${item.key}`)
   }
   const [open, setOpen] = useState(false)

@@ -5,7 +5,7 @@ import styles from './AlbumList.module.css'
 import { PlayCircleOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
-import type { AlbumList_ } from '@/page'
+import type { AlbumList_ } from '../page'
 
 type AlbumListProps = {
   albumList: AlbumList_[]
