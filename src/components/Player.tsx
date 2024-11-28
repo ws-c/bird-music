@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, ConfigProvider, Drawer, Flex, List, Slider } from 'antd'
+import { Button, ConfigProvider } from 'antd'
 import {
   CaretRightOutlined,
   StepBackwardOutlined,
@@ -9,13 +9,12 @@ import {
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import Icons from './Icons'
-import _ from 'lodash'
-import styles from './FullPlayer.module.css'
 import useColorThief from 'use-color-thief'
 import { useRouter } from 'next/navigation'
 import PlayDrawer from './PlayDrawer'
 import PlayDrawerFull from './PlayDrawerFull'
 import Collect from './Collect'
+import { Slider } from '@/components/ui/slider'
 
 const Player = () => {
   const router = useRouter()
@@ -25,7 +24,7 @@ const Player = () => {
     singleList.findIndex((song) => song.id === currentId)
   )
   const [currentTime, setCurrentTime] = useState(0)
-  const [sliderValue, setSliderValue] = useState(0)
+  const [sliderValue, setSliderValue] = useState([0])
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   // 每次 currentSongIndex 变化时，更新播放状态
@@ -53,7 +52,7 @@ const Player = () => {
       if (audioRef.current) {
         setCurrentTime(audioRef.current.currentTime)
         if (!handled.current) {
-          setSliderValue(audioRef.current.currentTime) // 实时更新滑块值
+          setSliderValue([audioRef.current.currentTime]) // 实时更新滑块值
         }
       }
     }
@@ -128,15 +127,15 @@ const Player = () => {
 
   // 控制滑块变化
   const handled = useRef(false)
-  const handleSliderChange = (value: React.SetStateAction<number>) => {
+  const handleSliderChange = (value: React.SetStateAction<number[]>) => {
     handled.current = true
     setSliderValue(value) // 实时更新滑块值
   }
 
   // 放手后更新音频播放时间
-  const handleSliderAfterChange = (value: number) => {
+  const handleSliderAfterChange = (value: number[]) => {
     if (audioRef.current) {
-      audioRef.current.currentTime = value
+      audioRef.current.currentTime = value[0]
     }
     handled.current = false
   }
@@ -145,11 +144,11 @@ const Player = () => {
   const currentSong = singleList[currentSongIndex] || {}
 
   // 音量控制
-  const [volume, setVolume] = useState(100)
-  const handleVolumeChange = (value: number) => {
+  const [volume, setVolume] = useState([100])
+  const handleVolumeChange = (value: number[]) => {
     setVolume(value)
     if (audioRef.current) {
-      audioRef.current.volume = value / 100
+      audioRef.current.volume = value[0] / 100
     }
   }
 
@@ -157,9 +156,9 @@ const Player = () => {
   const toggleMute = () => {
     if (audioRef.current) {
       if (audioRef.current.volume === 0) {
-        handleVolumeChange(100)
+        handleVolumeChange([100])
       } else {
-        handleVolumeChange(0)
+        handleVolumeChange([0])
       }
     }
   }
@@ -320,45 +319,37 @@ const Player = () => {
             },
           }}
         >
-          <div className={styles.fullPlayerOverlay}>
-            <Flex style={gradientStyle} justify="center" align="center">
-              <Flex style={{ position: 'absolute', top: '20px', left: '20px' }}>
+          <div className="fixed bottom-0 left-0 right-0 top-0 z-[998] bg-black">
+            <div
+              style={{ ...gradientStyle }}
+              className="flex items-center justify-center backdrop-blur-[20px]"
+            >
+              <div className="absolute left-5 top-5">
                 <Icons
                   type="icon-xiala"
                   size={24}
                   onClick={() => setFullScreen(false)}
-                  rootClassName={styles.closeButton}
+                  color="#fff"
+                  className="transform cursor-pointer text-xl text-white transition-transform duration-300 ease-in-out hover:scale-110"
                 />
-              </Flex>
-              <Flex className={styles.fullPlayerContent} vertical gap={16}>
-                <Flex justify="center">
+              </div>
+              <div className="flex w-[650px] flex-col gap-4">
+                <div className="flex justify-center">
                   <img
                     src={currentSong.cover}
-                    className={isPlaying ? '' : styles.imgPause}
+                    className={`duration-400 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)] w-[650px] transform transition-transform ${isPlaying ? '' : 'scale-90'} rounded-lg object-cover shadow-[0_4px_10px_rgba(255,255,255,0.04)]`}
                   />
-                </Flex>
-                <Flex vertical>
-                  <span
-                    style={{
-                      color: ' #f3f2f4',
-                      fontSize: '16px',
-                      fontWeight: 'bold',
-                    }}
-                  >
+                </div>
+                <div>
+                  <span className="text-lg font-bold text-[#f3f2f4]">
                     {currentSong.song_title}
                   </span>
-                  <Flex>
-                    <span
-                      style={{
-                        color: ' #c6c2ca',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                      }}
-                    >
+                  <div>
+                    <span className="text-lg font-bold text-[#c6c2ca]">
                       {currentSong.song_artists?.map((artist, index, self) => (
                         <span key={index}>
                           <span
-                            className="link"
+                            className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
                             onClick={() => {
                               if (artist?.artist_id) {
                                 router.push(`/artist/${artist.artist_id}`)
@@ -373,10 +364,10 @@ const Player = () => {
                       ))}
                       <span> — </span>
                       <span
-                        className="link"
+                        className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
                         onClick={() => {
-                          router.push(`/album/${currentSong.albums_id}`),
-                            setFullScreen(false)
+                          router.push(`/album/${currentSong.albums_id}`)
+                          setFullScreen(false)
                         }}
                       >
                         {currentSong.album_title === currentSong.song_title
@@ -384,47 +375,27 @@ const Player = () => {
                           : currentSong.album_title}
                       </span>
                     </span>
-                  </Flex>
-                </Flex>
-                <Flex vertical>
+                  </div>
+                </div>
+                <div>
                   <Slider
                     min={0}
                     max={currentSong.duration || 0}
                     value={sliderValue}
-                    onChange={handleSliderChange}
-                    onChangeComplete={handleSliderAfterChange}
-                    tooltip={{ open: false }}
+                    onValueChange={handleSliderChange}
+                    onValueCommit={handleSliderAfterChange}
                   />
-                  <Flex justify="space-between">
-                    <span
-                      style={{
-                        color: ' #bab5bf',
-                      }}
-                    >
+                  <div className="flex justify-between">
+                    <span className="text-[#bab5bf]">
                       {formatTime(currentTime)}
                     </span>
-                    <span
-                      style={{
-                        color: ' #bab5bf',
-                      }}
-                    >
+                    <span className="text-[#bab5bf]">
                       {formatTime(currentSong.duration)}
                     </span>
-                  </Flex>
-                </Flex>
-
-                <Flex
-                  gap={16}
-                  justify="center"
-                  align="center"
-                  style={{ position: 'relative' }}
-                >
-                  <div
-                    style={{
-                      position: 'absolute',
-                      right: '70%',
-                    }}
-                  >
+                  </div>
+                </div>
+                <div className="relative flex items-center justify-center gap-4">
+                  <div className="absolute right-[70%]">
                     {getPlayModeIcon('2')}
                   </div>
                   <Button
@@ -432,8 +403,7 @@ const Player = () => {
                     type="text"
                     icon={
                       <StepBackwardOutlined
-                        className={styles.moveButton}
-                        style={{ fontSize: '32px' }}
+                        style={{ fontSize: '32px', color: '#dddbde' }}
                       />
                     }
                     onClick={handlePrevious}
@@ -442,17 +412,15 @@ const Player = () => {
                     size="large"
                     type="text"
                     onClick={togglePlayPause}
-                    style={{ margin: '0 10px', borderRadius: '50%' }}
+                    className="mx-2 rounded-full"
                     icon={
                       isPlaying ? (
                         <PauseOutlined
-                          className={styles.playButton}
-                          style={{ fontSize: '48px' }}
+                          style={{ fontSize: '48px', color: '#fff' }}
                         />
                       ) : (
                         <CaretRightOutlined
-                          className={styles.playButton}
-                          style={{ fontSize: '48px' }}
+                          style={{ fontSize: '48px', color: '#fff' }}
                         />
                       )
                     }
@@ -462,18 +430,12 @@ const Player = () => {
                     type="text"
                     icon={
                       <StepForwardOutlined
-                        className={styles.moveButton}
-                        style={{ fontSize: '32px' }}
+                        style={{ fontSize: '32px', color: '#dddbde' }}
                       />
                     }
                     onClick={() => handleNext(true)}
                   />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: '70%',
-                    }}
-                  >
+                  <div className="absolute left-[70%]">
                     <Button
                       type="text"
                       title="播放列表"
@@ -485,66 +447,61 @@ const Player = () => {
                           color="#f0ecf1"
                         />
                       }
-                    ></Button>
+                    />
                   </div>
-                </Flex>
-                <Flex gap={8}>
+                </div>
+                <div className="flex gap-2">
                   {getVolumeIcon('2')}
                   <Slider
-                    style={{ width: '100%' }}
+                    className="w-full"
                     min={0}
                     max={100}
                     value={volume}
-                    onChange={handleVolumeChange} // 处理音量变化
+                    onValueChange={handleVolumeChange} // 处理音量变化
                   />
-                </Flex>
-              </Flex>
-            </Flex>
+                </div>
+              </div>
+            </div>
           </div>
         </ConfigProvider>
       )}
-      <Flex
-        align="center"
-        justify="space-between"
-        style={{ position: 'relative', padding: '16px 40px' }}
-      >
-        <Flex gap={24} justify="center" align="center">
+      <div className="relative flex items-center justify-between px-[40px] py-[16px]">
+        <div className="flex items-center justify-center gap-[24px]">
           <div
-            className="image-container"
+            className="relative h-[60px] w-[60px] cursor-pointer rounded-lg"
             onClick={() => {
-              setFullScreen(true), onClose()
+              setFullScreen(true)
+              onClose()
             }}
           >
             <img
-              className="cover"
+              className="h-full w-full rounded-lg"
               src={currentSong.cover}
               alt={currentSong.song_title}
-              style={{ width: '60px', height: '60px', borderRadius: '8px' }}
             />
-            <div className="overlay">
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 transition-opacity duration-300 hover:opacity-100">
               <Icons
                 type="icon-zhankaiquanpingkuozhan"
                 size={24}
-                rootClassName="overlay-icon"
-                color="#fff"
+                style={{ color: '#fff' }}
               ></Icons>
             </div>
           </div>
-          <Flex vertical justify="center" gap={8}>
-            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>
+          <div className="flex flex-col justify-center gap-[8px]">
+            <span className="text-[16px] font-bold">
               {currentSong.song_title}
               <Icons
                 type="icon-yunyinle-tianjiadao"
                 size={14}
-                style={{ position: 'relative', left: '8px' }}
+                className="relative left-[8px]"
                 onClick={showModal2}
               />
             </span>
-            <Flex gap={8}>
+            <div className="flex gap-[8px]">
               {currentSong.song_artists?.map((artist, index, self) => (
                 <span key={index}>
                   <span
-                    className="link"
+                    className="overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
                     onClick={() => {
                       if (artist?.artist_id) {
                         router.push(`/artist/${artist.artist_id}`)
@@ -557,19 +514,11 @@ const Player = () => {
                   <span>{index !== self.length - 1 && ' / '}</span>
                 </span>
               ))}
-            </Flex>
-          </Flex>
-        </Flex>
-        <Flex
-          style={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '800px',
-          }}
-          vertical
-        >
-          <Flex gap={16} justify="center" style={{ paddingTop: '15px' }}>
+            </div>
+          </div>
+        </div>
+        <div className="absolute left-[50%] flex w-[800px] translate-x-[-50%] transform flex-col">
+          <div className="flex justify-center gap-[16px] pt-[15px]">
             <Button
               size="large"
               type="text"
@@ -580,7 +529,7 @@ const Player = () => {
               size="large"
               type="text"
               onClick={togglePlayPause}
-              style={{ margin: '0 8px' }}
+              className="mx-[8px]"
               icon={
                 isPlaying ? (
                   <PauseOutlined style={{ fontSize: '40px' }} />
@@ -595,8 +544,8 @@ const Player = () => {
               icon={<StepForwardOutlined style={{ fontSize: '30px' }} />}
               onClick={() => handleNext(true)}
             />
-          </Flex>
-          <Flex align="center" gap={12}>
+          </div>
+          <div className="flex items-center gap-[12px]">
             <span>{formatTime(currentTime)}</span>
             <Slider
               style={{
@@ -605,28 +554,25 @@ const Player = () => {
               min={0}
               max={currentSong.duration || 0}
               value={sliderValue} // 使用 sliderValue
-              onChange={handleSliderChange} // 实时更新值
-              onChangeComplete={handleSliderAfterChange} // 放手后更新播放进度
-              tooltip={{ open: false }}
+              onValueChange={handleSliderChange} // 实时更新值
+              onValueCommit={handleSliderAfterChange} // 放手后更新播放进度
             />
             <span>{formatTime(currentSong.duration)}</span>
-          </Flex>
-        </Flex>
-        <Flex gap={24} align="center">
+          </div>
+        </div>
+        <div className="flex items-center gap-[24px]">
           {getPlayModeIcon('1')}
-          <Flex gap={8}>
+          <div className="flex gap-[8px]">
             {getVolumeIcon('1')}
             <Slider
               style={{ width: '100px' }}
               min={0}
               max={100}
               value={volume}
-              onChange={handleVolumeChange} // 处理音量变化
+              onValueChange={handleVolumeChange} // 处理音量变化
             />
-          </Flex>
-          <span style={{ position: 'relative', top: '-2px', color: '#e5e6eb' }}>
-            |
-          </span>
+          </div>
+          <span className="relative text-[#e5e6eb]">|</span>
           <Button
             type="text"
             title="播放列表"
@@ -634,8 +580,8 @@ const Player = () => {
               <Icons type="icon-bofangliebiao" size={20} onClick={showDrawer} />
             }
           ></Button>
-        </Flex>
-      </Flex>
+        </div>
+      </div>
       <PlayDrawer
         open={open}
         onClose={onClose}

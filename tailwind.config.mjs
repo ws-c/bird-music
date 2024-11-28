@@ -74,10 +74,17 @@ export default {
             height: '0',
           },
         },
+        'move6': {
+          '0%': { height: '0.2em' },
+          '25%': { height: '0.7em' },
+          '50%': { height: '1.5em' },
+          '100%': { height: '0.2em' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'move6': 'move6 1.1s infinite',
       },
     },
   },

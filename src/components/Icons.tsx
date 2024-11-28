@@ -10,7 +10,7 @@ function Index(props: {
   size: number
   color?: string
   onClick?: (e?: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void
-  rootClassName?: string
+  className?: string
   style?: object
   alt?: string
 }) {
@@ -23,7 +23,7 @@ function Index(props: {
         fontSize: props.size,
         ...props.style,
       }}
-      className={` ${props.rootClassName}`}
+      className={` ${props.className}`}
       onClick={(e) => {
         // e.stopPropagation()
         if (props.onClick) {
