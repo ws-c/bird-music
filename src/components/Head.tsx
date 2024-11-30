@@ -5,7 +5,6 @@ import { AutoComplete, Button, Dropdown, Flex, Input } from 'antd'
 import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store/useStore'
-import styles from './Header.module.css'
 import HeadSetting from './HeadSetting'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { ThemeToggle } from '@/components/layouts/theme-toggle'
@@ -73,8 +72,8 @@ export default function Header() {
   }
 
   return (
-    <Flex className={styles.header}>
-      <Flex align="center" gap={8}>
+    <div className="flex justify-between">
+      <div className="flex items-center gap-[8px]">
         <Button
           type="text"
           style={{ position: 'relative', top: '2px', height: '36px' }}
@@ -99,8 +98,8 @@ export default function Header() {
             onKeyDown={handleKeyDown}
           />
         </AutoComplete>
-      </Flex>
-      <div className={styles.right}>
+      </div>
+      <div className="relative top-[2px] flex items-center gap-2">
         <ThemeToggle />
         <Dropdown
           menu={{ items }}
@@ -118,6 +117,6 @@ export default function Header() {
         <span className="dark:text-black">{isClient && user.username}</span>
       </div>
       <HeadSetting open={open} setOpen={setOpen} />
-    </Flex>
+    </div>
   )
 }

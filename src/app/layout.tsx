@@ -59,21 +59,7 @@ export default function RootLayout({
             >
               {children}
             </ThemeProvider>
-            {isClient && showPlayer && (
-              <Footer
-                style={{
-                  padding: '0',
-                  borderTop: '1px solid #e8e8e8',
-                  background: '#fafafa',
-                  position: 'fixed',
-                  bottom: '0',
-                  width: '100%',
-                  zIndex: 1000,
-                }}
-              >
-                <Player />
-              </Footer>
-            )}
+            {isClient && showPlayer && <Player />}
           </AntdRegistry>
         </ConfigProvider>
       </body>

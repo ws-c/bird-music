@@ -1,7 +1,6 @@
 import { Drawer, Flex, List } from 'antd'
 import { formatTime } from '@/helpers/formatTime'
 import { FC } from 'react'
-// import styles from './PlayDrawer.module.css'
 type Props = {
   open: boolean
   onClose: () => void
@@ -68,7 +67,7 @@ const PlayDrawer: FC<Props> = ({
             </div>
             <div className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap">
               <div className="font-medium text-black">{item.song_title}</div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-gray-500">
                 {item.song_artists.map(
                   (artist: any, index: number, self: any) => (
                     <span key={artist.artist_id}>
@@ -79,7 +78,7 @@ const PlayDrawer: FC<Props> = ({
                 )}
               </div>
             </div>
-            <div className="ml-4 text-sm text-gray-300">
+            <div className="ml-4 text-sm text-gray-500">
               {formatTime(item.duration)}
             </div>
           </div>

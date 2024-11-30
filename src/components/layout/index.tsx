@@ -11,22 +11,6 @@ import CreatePlaylist from './CreatePlayList'
 import useStore from '@/store/useStore'
 import useColorThief from 'use-color-thief'
 
-const headerStyle = {
-  padding: '10px 60px 0 20px',
-  height: '80',
-  position: 'sticky' as React.CSSProperties['position'],
-  top: 0,
-  zIndex: 1000,
-}
-
-const contentStyle = {
-  padding: '0 60px',
-  paddingBottom: '100px',
-  overflow: 'auto',
-  flex: 1, // 使 Content 区域占满剩余的空间
-  maxHeight: 'calc(100vh - 64px)', // 计算剩余空间，去掉 header 的高度
-}
-
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -177,29 +161,11 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           left: '0',
         }
   return (
-    <Layout
-      style={{
-        minHeight: '100vh',
-        background: '#f9f9f9',
-      }}
-    >
+    <div className="min-h-screen bg-[#f9f9f9]">
       <Sider width={240} style={siderStyle}>
-        <Flex
-          style={{
-            alignItems: 'baseline',
-            marginLeft: '32px',
-            height: '64px',
-            marginBottom: '16px',
-          }}
-        >
-          <Icons
-            type="icon-a-1f99c"
-            size={24}
-            style={{
-              marginRight: '8px',
-            }}
-          />
-          <Title level={3} style={{ marginBottom: 0, lineHeight: '24px' }}>
+        <Flex className="mb-4 ml-8 h-16 items-baseline">
+          <Icons type="icon-a-1f99c" size={24} className="mr-2" />
+          <Title level={3} className="mb-0 leading-[24px]">
             Bird Music
           </Title>
         </Flex>
@@ -216,19 +182,21 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           onClick={(item) => onClick(item)}
         />
       </Sider>
-      <Layout style={style}>
-        <div style={headerStyle}>
-          <Head></Head>
+      <div style={style}>
+        <div className="sticky top-0 z-50 h-[80px] p-[10px_60px_0_20px]">
+          <Head />
         </div>
-        <Content style={contentStyle}>{children}</Content>
-      </Layout>
+        <main className="max-h-[calc(100vh-64px)] flex-1 overflow-auto p-[0_60px] pb-[100px]">
+          {children}
+        </main>
+      </div>
       <CreatePlaylist
         open={open}
         setOpen={setOpen}
         name={user.username}
         getMyPlayList={getMyPlayList}
       ></CreatePlaylist>
-    </Layout>
+    </div>
   )
 }
 export default CommonLayout

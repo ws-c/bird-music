@@ -13,9 +13,11 @@ function Index(props: {
   className?: string
   style?: object
   alt?: string
+  title?: string
 }) {
   return (
     <IconFont
+      title={props.title}
       alt=""
       type={props.type}
       style={{

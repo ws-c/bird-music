@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, ConfigProvider } from 'antd'
-import {
-  CaretRightOutlined,
-  StepBackwardOutlined,
-  StepForwardOutlined,
-  PauseOutlined,
-} from '@ant-design/icons'
+import { ConfigProvider } from 'antd'
+import { MdOutlineAddBox } from 'react-icons/md'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import Icons from './Icons'
@@ -15,7 +10,18 @@ import PlayDrawer from './PlayDrawer'
 import PlayDrawerFull from './PlayDrawerFull'
 import Collect from './Collect'
 import { Slider } from '@/components/ui/slider'
-
+import { CgPlayList, CgArrowsExpandRight } from 'react-icons/cg'
+import {
+  IoCaretForwardCircle,
+  IoChevronDown,
+  IoPauseCircle,
+  IoPlaySkipBack,
+  IoPlaySkipForward,
+  IoVolumeHigh,
+  IoVolumeLow,
+  IoVolumeMedium,
+  IoVolumeOff,
+} from 'react-icons/io5'
 const Player = () => {
   const router = useRouter()
   const { singleList, currentId, setCurrentId, isPlaying, setIsPlaying } =
@@ -169,17 +175,23 @@ const Player = () => {
       const volumeLevel = audioRef.current.volume
       if (volumeLevel === 0) {
         return (
-          <Icons
-            type="icon-volume-mute"
+          <IoVolumeOff
             size={16}
             style={{ color: value === '2' ? '#f0ecf1' : undefined }}
             onClick={toggleMute}
           />
         )
-      } else if (volumeLevel < 0.5) {
+      } else if (volumeLevel < 0.3) {
         return (
-          <Icons
-            type="icon-volume-small"
+          <IoVolumeLow
+            size={16}
+            style={{ color: value === '2' ? '#f0ecf1' : undefined }}
+            onClick={toggleMute}
+          />
+        )
+      } else if (volumeLevel < 0.8) {
+        return (
+          <IoVolumeMedium
             size={16}
             style={{ color: value === '2' ? '#f0ecf1' : undefined }}
             onClick={toggleMute}
@@ -187,8 +199,7 @@ const Player = () => {
         )
       } else {
         return (
-          <Icons
-            type="icon-volume-notice"
+          <IoVolumeHigh
             size={16}
             style={{ color: value === '2' ? '#f0ecf1' : undefined }}
             onClick={toggleMute}
@@ -238,55 +249,40 @@ const Player = () => {
   // 获取播放模式图标
   const getPlayModeIcon = (value: string) => {
     let iconSize = 20
-    let color = '#1e1e1e'
+    let color
     if (value === '2') {
       iconSize = 24
-      color = '#f0ecf1'
+      color = 'white'
     }
     if (playMode === 1) {
       return (
-        <Button
-          type="text"
-          icon={
-            <Icons
-              type="icon-liebiaoxunhuan"
-              size={iconSize}
-              onClick={handlePlayModeChange}
-              color={color}
-            />
-          }
+        <Icons
+          type="icon-liebiaoxunhuan"
+          size={iconSize}
+          onClick={handlePlayModeChange}
           title="列表播放"
-        ></Button>
+          color={color}
+        />
       )
     } else if (playMode === 2) {
       return (
-        <Button
-          type="text"
-          icon={
-            <Icons
-              type="icon-suijibofang"
-              size={iconSize}
-              onClick={handlePlayModeChange}
-              color={color}
-            />
-          }
+        <Icons
+          type="icon-suijibofang"
+          size={iconSize}
+          onClick={handlePlayModeChange}
           title="随机播放"
-        ></Button>
+          color={color}
+        />
       )
     } else {
       return (
-        <Button
-          type="text"
-          icon={
-            <Icons
-              type="icon-danquxunhuan"
-              size={iconSize}
-              onClick={handlePlayModeChange}
-              color={color}
-            />
-          }
+        <Icons
+          type="icon-danquxunhuan"
+          size={iconSize}
+          onClick={handlePlayModeChange}
           title="单曲循环"
-        ></Button>
+          color={color}
+        />
       )
     }
   }
@@ -305,165 +301,134 @@ const Player = () => {
   const showModal2 = () => {
     setOpen2(true)
   }
-  console.log('currentSong.song_artists', currentSong.song_artists)
   return (
-    <>
+    <div className="fixed bottom-0 z-[1000] w-full border-t border-[#e8e8e8] bg-[#fafafa] p-0 dark:bg-[#2d2d38]">
       {fullScreen && (
-        <ConfigProvider
-          theme={{
-            components: {
-              Slider: {
-                railBg: `rgba(255,255,255, 0.3)`,
-                railHoverBg: `rgba(255,255,255, 0.6)`,
-              },
-            },
-          }}
-        >
-          <div className="fixed bottom-0 left-0 right-0 top-0 z-[998] bg-black">
-            <div
-              style={{ ...gradientStyle }}
-              className="flex items-center justify-center backdrop-blur-[20px]"
-            >
-              <div className="absolute left-5 top-5">
-                <Icons
-                  type="icon-xiala"
-                  size={24}
-                  onClick={() => setFullScreen(false)}
-                  color="#fff"
-                  className="transform cursor-pointer text-xl text-white transition-transform duration-300 ease-in-out hover:scale-110"
+        <div className="fixed bottom-0 left-0 right-0 top-0 z-[998] bg-black">
+          <div
+            style={{ ...gradientStyle }}
+            className="flex items-center justify-center backdrop-blur-[20px]"
+          >
+            <div className="absolute left-5 top-5">
+              <IoChevronDown
+                size={24}
+                onClick={() => setFullScreen(false)}
+                className="transform cursor-pointer text-xl text-white transition-transform duration-300 ease-in-out hover:scale-110"
+              />
+            </div>
+            <div className="flex w-[650px] flex-col gap-4">
+              <div className="flex justify-center">
+                <img
+                  src={currentSong.cover}
+                  className={`duration-400 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)] w-[650px] transform transition-transform ${isPlaying ? '' : 'scale-90'} rounded-lg object-cover shadow-[0_4px_10px_rgba(255,255,255,0.04)]`}
                 />
               </div>
-              <div className="flex w-[650px] flex-col gap-4">
-                <div className="flex justify-center">
-                  <img
-                    src={currentSong.cover}
-                    className={`duration-400 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)] w-[650px] transform transition-transform ${isPlaying ? '' : 'scale-90'} rounded-lg object-cover shadow-[0_4px_10px_rgba(255,255,255,0.04)]`}
-                  />
-                </div>
+              <div>
+                <span className="text-lg font-bold text-[#f3f2f4]">
+                  {currentSong.song_title}
+                </span>
                 <div>
-                  <span className="text-lg font-bold text-[#f3f2f4]">
-                    {currentSong.song_title}
-                  </span>
-                  <div>
-                    <span className="text-lg font-bold text-[#c6c2ca]">
-                      {currentSong.song_artists?.map((artist, index, self) => (
-                        <span key={index}>
-                          <span
-                            className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
-                            onClick={() => {
-                              if (artist?.artist_id) {
-                                router.push(`/artist/${artist.artist_id}`)
-                                setFullScreen(false)
-                              }
-                            }}
-                          >
-                            {artist.artists?.name || 'Unknown Artist'}
-                          </span>
-                          <span>{index !== self.length - 1 && ' / '}</span>
+                  <span className="text-lg font-bold text-[#c6c2ca]">
+                    {currentSong.song_artists?.map((artist, index, self) => (
+                      <span key={index}>
+                        <span
+                          className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
+                          onClick={() => {
+                            if (artist?.artist_id) {
+                              router.push(`/artist/${artist.artist_id}`)
+                              setFullScreen(false)
+                            }
+                          }}
+                        >
+                          {artist.artists?.name || 'Unknown Artist'}
                         </span>
-                      ))}
-                      <span> — </span>
-                      <span
-                        className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
-                        onClick={() => {
-                          router.push(`/album/${currentSong.albums_id}`)
-                          setFullScreen(false)
-                        }}
-                      >
-                        {currentSong.album_title === currentSong.song_title
-                          ? currentSong.album_title + ' - Single'
-                          : currentSong.album_title}
+                        <span>{index !== self.length - 1 && ' / '}</span>
                       </span>
+                    ))}
+                    <span> — </span>
+                    <span
+                      className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
+                      onClick={() => {
+                        router.push(`/album/${currentSong.albums_id}`)
+                        setFullScreen(false)
+                      }}
+                    >
+                      {currentSong.album_title === currentSong.song_title
+                        ? currentSong.album_title + ' - Single'
+                        : currentSong.album_title}
                     </span>
-                  </div>
+                  </span>
                 </div>
-                <div>
-                  <Slider
-                    min={0}
-                    max={currentSong.duration || 0}
-                    value={sliderValue}
-                    onValueChange={handleSliderChange}
-                    onValueCommit={handleSliderAfterChange}
-                  />
-                  <div className="flex justify-between">
-                    <span className="text-[#bab5bf]">
-                      {formatTime(currentTime)}
-                    </span>
-                    <span className="text-[#bab5bf]">
-                      {formatTime(currentSong.duration)}
-                    </span>
-                  </div>
+              </div>
+              <div>
+                <Slider
+                  className="dark"
+                  min={0}
+                  max={currentSong.duration || 0}
+                  value={sliderValue}
+                  onValueChange={handleSliderChange}
+                  onValueCommit={handleSliderAfterChange}
+                />
+                <div className="flex justify-between">
+                  <span className="text-[#bab5bf]">
+                    {formatTime(currentTime)}
+                  </span>
+                  <span className="text-[#bab5bf]">
+                    {formatTime(currentSong.duration)}
+                  </span>
                 </div>
-                <div className="relative flex items-center justify-center gap-4">
-                  <div className="absolute right-[70%]">
-                    {getPlayModeIcon('2')}
-                  </div>
-                  <Button
-                    size="large"
-                    type="text"
-                    icon={
-                      <StepBackwardOutlined
-                        style={{ fontSize: '32px', color: '#dddbde' }}
-                      />
-                    }
-                    onClick={handlePrevious}
-                  />
-                  <Button
-                    size="large"
-                    type="text"
+              </div>
+              <div className="relative flex items-center justify-center gap-4">
+                <div className="absolute right-[70%]">
+                  {getPlayModeIcon('2')}
+                </div>
+                <IoPlaySkipBack
+                  size={32}
+                  onClick={handlePrevious}
+                  className="cursor-pointer text-white"
+                />
+
+                {isPlaying ? (
+                  <IoPauseCircle
+                    size={50}
                     onClick={togglePlayPause}
-                    className="mx-2 rounded-full"
-                    icon={
-                      isPlaying ? (
-                        <PauseOutlined
-                          style={{ fontSize: '48px', color: '#fff' }}
-                        />
-                      ) : (
-                        <CaretRightOutlined
-                          style={{ fontSize: '48px', color: '#fff' }}
-                        />
-                      )
-                    }
+                    className="mx-2 transform cursor-pointer rounded-full text-white transition-transform duration-200 hover:scale-110"
                   />
-                  <Button
-                    size="large"
-                    type="text"
-                    icon={
-                      <StepForwardOutlined
-                        style={{ fontSize: '32px', color: '#dddbde' }}
-                      />
-                    }
-                    onClick={() => handleNext(true)}
+                ) : (
+                  <IoCaretForwardCircle
+                    size={50}
+                    onClick={togglePlayPause}
+                    className="mx-2 transform cursor-pointer rounded-full text-white transition-transform duration-200 hover:scale-110"
                   />
-                  <div className="absolute left-[70%]">
-                    <Button
-                      type="text"
-                      title="播放列表"
-                      icon={
-                        <Icons
-                          type="icon-bofangliebiao"
-                          size={20}
-                          onClick={showDrawer1}
-                          color="#f0ecf1"
-                        />
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {getVolumeIcon('2')}
-                  <Slider
-                    className="w-full"
-                    min={0}
-                    max={100}
-                    value={volume}
-                    onValueChange={handleVolumeChange} // 处理音量变化
+                )}
+
+                <IoPlaySkipForward
+                  size={32}
+                  onClick={() => handleNext(true)}
+                  className="cursor-pointer text-white"
+                />
+                <div className="absolute left-[70%]">
+                  <CgPlayList
+                    size={24}
+                    onClick={showDrawer1}
+                    title="播放列表"
+                    className="relative top-[2px] cursor-pointer text-white"
                   />
                 </div>
+              </div>
+              <div className="flex gap-2">
+                {getVolumeIcon('2')}
+                <Slider
+                  className="dark w-full"
+                  min={0}
+                  max={100}
+                  value={volume}
+                  onValueChange={handleVolumeChange} // 处理音量变化
+                />
               </div>
             </div>
           </div>
-        </ConfigProvider>
+        </div>
       )}
       <div className="relative flex items-center justify-between px-[40px] py-[16px]">
         <div className="flex items-center justify-center gap-[24px]">
@@ -480,28 +445,26 @@ const Player = () => {
               alt={currentSong.song_title}
             />
             <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 transition-opacity duration-300 hover:opacity-100">
-              <Icons
-                type="icon-zhankaiquanpingkuozhan"
+              <CgArrowsExpandRight
                 size={24}
                 style={{ color: '#fff' }}
-              ></Icons>
+              ></CgArrowsExpandRight>
             </div>
           </div>
-          <div className="flex flex-col justify-center gap-[8px]">
-            <span className="text-[16px] font-bold">
+          <div className="flex flex-col justify-center gap-[6px]">
+            <div className="flex text-[16px] font-bold">
               {currentSong.song_title}
-              <Icons
-                type="icon-yunyinle-tianjiadao"
+              <MdOutlineAddBox
                 size={14}
-                className="relative left-[8px]"
+                className="relative left-[8px] top-[4px] cursor-pointer"
                 onClick={showModal2}
               />
-            </span>
+            </div>
             <div className="flex gap-[8px]">
               {currentSong.song_artists?.map((artist, index, self) => (
                 <span key={index}>
                   <span
-                    className="overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
+                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
                     onClick={() => {
                       if (artist?.artist_id) {
                         router.push(`/artist/${artist.artist_id}`)
@@ -518,31 +481,30 @@ const Player = () => {
           </div>
         </div>
         <div className="absolute left-[50%] flex w-[800px] translate-x-[-50%] transform flex-col">
-          <div className="flex justify-center gap-[16px] pt-[15px]">
-            <Button
-              size="large"
-              type="text"
-              icon={<StepBackwardOutlined style={{ fontSize: '30px' }} />}
+          <div className="flex items-center justify-center gap-[16px] pt-[8px]">
+            <IoPlaySkipBack
+              size={24}
               onClick={handlePrevious}
+              className="cursor-pointer"
             />
-            <Button
-              size="large"
-              type="text"
-              onClick={togglePlayPause}
-              className="mx-[8px]"
-              icon={
-                isPlaying ? (
-                  <PauseOutlined style={{ fontSize: '40px' }} />
-                ) : (
-                  <CaretRightOutlined style={{ fontSize: '40px' }} />
-                )
-              }
-            />
-            <Button
-              size="large"
-              type="text"
-              icon={<StepForwardOutlined style={{ fontSize: '30px' }} />}
+
+            {isPlaying ? (
+              <IoPauseCircle
+                size={40}
+                onClick={togglePlayPause}
+                className="mx-[8px] cursor-pointer transform hover:scale-110 transition-transform duration-200"
+              />
+            ) : (
+              <IoCaretForwardCircle
+                size={40}
+                onClick={togglePlayPause}
+                className="mx-[8px] cursor-pointer transform hover:scale-110 transition-transform duration-200"
+              />
+            )}
+            <IoPlaySkipForward
+              size={24}
               onClick={() => handleNext(true)}
+              className="cursor-pointer"
             />
           </div>
           <div className="flex items-center gap-[12px]">
@@ -572,14 +534,13 @@ const Player = () => {
               onValueChange={handleVolumeChange} // 处理音量变化
             />
           </div>
-          <span className="relative text-[#e5e6eb]">|</span>
-          <Button
-            type="text"
+          <span>|</span>
+          <CgPlayList
+            size={24}
+            onClick={showDrawer}
             title="播放列表"
-            icon={
-              <Icons type="icon-bofangliebiao" size={20} onClick={showDrawer} />
-            }
-          ></Button>
+            className="relative top-[2px] cursor-pointer"
+          />
         </div>
       </div>
       <PlayDrawer
@@ -613,7 +574,7 @@ const Player = () => {
           }
         }}
       />
-    </>
+    </div>
   )
 }
 
