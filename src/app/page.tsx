@@ -10,13 +10,13 @@ export default function Home() {
   return (
     <Layout curActive="/">
       <div>
-        <Typography.Title level={4}>精选推荐</Typography.Title>
+        <h2 className="pb-2 pt-4 text-[20px] font-bold">精选推荐</h2>
         <MusicCard />
 
-        <Typography.Title level={4}>热门歌单</Typography.Title>
+        <h2 className="pb-2 pt-4 text-[20px] font-bold">热门歌单</h2>
         <Playlist></Playlist>
 
-        <Typography.Title level={4}>最新单曲</Typography.Title>
+        <h2 className="pb-2 pt-4 text-[20px] font-bold">最新单曲</h2>
         <SingleList></SingleList>
       </div>
     </Layout>

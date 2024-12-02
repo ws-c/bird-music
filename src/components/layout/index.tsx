@@ -10,6 +10,7 @@ import Head from '@/components/Head'
 import CreatePlaylist from './CreatePlayList'
 import useStore from '@/store/useStore'
 import useColorThief from 'use-color-thief'
+import { useTheme } from 'next-themes'
 
 interface IProps {
   children: React.ReactNode
@@ -132,36 +133,65 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   }
 
   //主题背景颜色
+  const { theme, setTheme } = useTheme()
   const { color } = useColorThief(colorTheme, {
     format: 'rgb',
     colorCount: 10,
     quality: 10,
   })
-  const style =
-    client && window.location.pathname === '/'
-      ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
-      : {
-          paddingLeft: '240px',
-          minHeight: '100vh',
-          background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
-        }
-  const siderStyle =
-    client && window.location.pathname === '/'
-      ? {
-          background: '#f0f3f6',
-          minHeight: '100vh',
-          position: 'fixed' as React.CSSProperties['position'],
-          left: '0',
-        }
-      : {
-          backgroundColor: '#f0f3f6',
-          background: `linear-gradient(to bottom, rgba(${color}, 0.01) 0%, #f0f3f6 25%)`,
-          minHeight: '100vh',
-          position: 'fixed' as React.CSSProperties['position'],
-          left: '0',
-        }
+  let style = {}
+  let siderStyle = {}
+  if (theme === 'dark') {
+    style =
+      client && window.location.pathname === '/'
+        ? { paddingLeft: '240px', minHeight: '100vh', background: '#121212' }
+        : {
+            paddingLeft: '240px',
+            minHeight: '100vh',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #121212 50%)`,
+          }
+    siderStyle =
+      client && window.location.pathname === '/'
+        ? {
+            background: '#1f1f1f',
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+        : {
+            backgroundColor: '#1f1f1f',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.01) 0%, #1f1f1f 25%)`,
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+  } else {
+    style =
+      client && window.location.pathname === '/'
+        ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
+        : {
+            paddingLeft: '240px',
+            minHeight: '100vh',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
+          }
+    siderStyle =
+      client && window.location.pathname === '/'
+        ? {
+            background: '#f0f3f6',
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+        : {
+            backgroundColor: '#f0f3f6',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.01) 0%, #f0f3f6 25%)`,
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+  }
   return (
-    <div className="min-h-screen bg-[#f9f9f9]">
+    <div className="min-h-screen">
       <Sider width={240} style={siderStyle}>
         <Flex className="mb-4 ml-8 h-16 items-baseline">
           <Icons type="icon-a-1f99c" size={24} className="mr-2" />
@@ -183,10 +213,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
         />
       </Sider>
       <div style={style}>
-        <div className="sticky top-0 z-50 h-[80px] p-[10px_60px_0_20px]">
+        <div className="sticky top-0 z-50 h-[70px] p-[10px_60px_0_20px]">
           <Head />
         </div>
-        <main className="max-h-[calc(100vh-64px)] flex-1 overflow-auto p-[0_60px] pb-[100px]">
+        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
           {children}
         </main>
       </div>

@@ -58,8 +58,8 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
-            </ThemeProvider>
             {isClient && showPlayer && <Player />}
+            </ThemeProvider>
           </AntdRegistry>
         </ConfigProvider>
       </body>

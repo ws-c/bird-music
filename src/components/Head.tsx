@@ -76,7 +76,7 @@ export default function Header() {
       <div className="flex items-center gap-[8px]">
         <Button
           type="text"
-          style={{ position: 'relative', top: '2px', height: '36px' }}
+          className="relative top-[2px] h-[36px]"
           disabled={isClient && window.location.pathname === '/'}
           icon={<LeftOutlined size={12} />}
           onClick={() => route.back()}

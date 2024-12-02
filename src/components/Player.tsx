@@ -302,7 +302,7 @@ const Player = () => {
     setOpen2(true)
   }
   return (
-    <div className="fixed bottom-0 z-[1000] w-full border-t border-[#e8e8e8] bg-[#fafafa] p-0 dark:bg-[#2d2d38]">
+    <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
       {fullScreen && (
         <div className="fixed bottom-0 left-0 right-0 top-0 z-[998] bg-black">
           <div
@@ -492,13 +492,13 @@ const Player = () => {
               <IoPauseCircle
                 size={40}
                 onClick={togglePlayPause}
-                className="mx-[8px] cursor-pointer transform hover:scale-110 transition-transform duration-200"
+                className="mx-[8px] transform cursor-pointer transition-transform duration-200 hover:scale-110"
               />
             ) : (
               <IoCaretForwardCircle
                 size={40}
                 onClick={togglePlayPause}
-                className="mx-[8px] cursor-pointer transform hover:scale-110 transition-transform duration-200"
+                className="mx-[8px] transform cursor-pointer transition-transform duration-200 hover:scale-110"
               />
             )}
             <IoPlaySkipForward
