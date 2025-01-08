@@ -79,7 +79,7 @@ export default function Home({
   }, [params.id])
   return (
     <Layout curActive="">
-      <div>
+      <div className="pt-4">
         {loading ? (
           <Spin size="large" />
         ) : (

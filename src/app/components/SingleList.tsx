@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Dropdown, Flex, MenuProps } from 'antd'
-import Icons from '@/components/Icons'
+import { Dropdown, MenuProps } from 'antd'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import { SongList } from '@/types'

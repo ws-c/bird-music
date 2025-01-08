@@ -195,7 +195,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       <Sider width={240} style={siderStyle}>
         <Flex className="mb-4 ml-8 h-16 items-baseline">
           <Icons type="icon-a-1f99c" size={24} className="mr-2" />
-          <Title level={3} className="mb-0 leading-[24px]">
+          <Title level={3} className="mb-0 pt-[14px]">
             Bird Music
           </Title>
         </Flex>

@@ -100,7 +100,7 @@ export default function Header() {
         </AutoComplete>
       </div>
       <div className="relative top-[2px] flex items-center gap-2">
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
         <Dropdown
           menu={{ items }}
           placement="bottomRight"
