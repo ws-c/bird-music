@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Flex, Layout, Menu } from 'antd'
-import { Content } from 'antd/es/layout/layout'
+import { Button, Flex, Menu } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useRouter } from 'next/navigation'
 import Icons from '@/components/Icons'
@@ -96,14 +95,14 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     },
     {
       label: (
-        <Flex style={{ position: 'relative' }}>
+        <Flex>
           创建的歌单
           <Button
             size="small"
             type="text"
             style={{
-              position: 'absolute',
-              right: '-30px',
+              position: 'relative',
+              right: '-20px',
               top: '8px',
             }}
             onClick={(e) => {
@@ -212,11 +211,11 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           onClick={(item) => onClick(item)}
         />
       </Sider>
-      <div style={style}>
+      <div style={{ ...style, maxWidth: 'calc(100vw-240px)' }}>
         <div className="sticky top-0 z-50 h-[70px] p-[10px_60px_0_20px]">
           <Head />
         </div>
-        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
+        <main className="max-h-[calc(100vh-70px)] max-w-[calc(100vw-240px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
           {children}
         </main>
       </div>

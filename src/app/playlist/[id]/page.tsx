@@ -162,12 +162,14 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 style={{ margin: '0', letterSpacing: '1px' }}
               >
                 {playList.name}
-                <Icons
-                  onClick={showModal}
-                  type="icon-xiugai"
-                  size={24}
-                  style={{ marginLeft: '10px' }}
-                />
+                {user.username === playList.author && (
+                  <Icons
+                    onClick={showModal}
+                    type="icon-xiugai"
+                    size={24}
+                    style={{ marginLeft: '10px' }}
+                  />
+                )}
               </Typography.Title>
               <Typography.Text
                 type="secondary"

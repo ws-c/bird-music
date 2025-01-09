@@ -4,7 +4,7 @@ export default async function handler(req: { method: string }, res: any) {
   if (req.method === 'GET') {
     try {
       const albums = await prisma.albums.findMany({
-        take: 6,
+        take: 7,
         orderBy: {
           release_date: 'desc',
         },

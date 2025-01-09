@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { PlayCircleOutlined } from '@ant-design/icons'
-import styles from './MusicCard.module.css' // 引入 CSS Module
-import { Flex, Typography } from 'antd'
 import { useRouter } from 'next/navigation'
 import NProgress from 'nprogress'
+import { FaPlayCircle } from 'react-icons/fa'
 export type Song = {
   albums_id: number
   artist_id: number
@@ -34,51 +32,30 @@ const MusicCard = () => {
   }, [])
 
   return (
-    <Flex gap={16} style={{ minWidth: '1700px' }}>
-      {albums.map((item) => {
-        return (
-          <div
-            className={styles.musicCard}
-            key={item.id}
-            onClick={() => router.push(`/album/${item.id}`)}
-          >
-            <div className={styles.cardCover}>
-              <img
-                alt="example"
-                src={item.cover}
-                style={{
-                  objectFit: 'cover',
-                  height: 250,
-                  width: '100%',
-                  filter: 'brightness(0.95)',
-                  verticalAlign: 'middle',
-                  borderRadius: 8,
-                }}
-              />
-              <div className={styles.overlay}>
-                <PlayCircleOutlined className={styles.playIcon} />
-              </div>
-              <Flex>
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 35,
-                    left: 15,
-                    color: 'white',
-                    textShadow: '0px 0px 2px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  {item.album_title}
-                </div>
-                <Typography.Text className={styles.title}>
-                  {item.artists.name}
-                </Typography.Text>
-              </Flex>
-            </div>
+    <div className="relative right-2.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+      {albums.map((item) => (
+        <div
+          key={item.id}
+          className="group relative transform cursor-pointer overflow-hidden rounded-lg p-2 transition-transform hover:bg-slate-50 hover:shadow-md"
+          onClick={() => router.push(`/album/${item.id}`)}
+        >
+          <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <FaPlayCircle className="absolute bottom-20 right-4 translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
           </div>
-        )
-      })}
-    </Flex>
+          <img
+            src={item.cover}
+            alt={item.album_title}
+            className="h-auto w-full rounded-lg object-cover"
+          />
+          <div className="py-2">
+            <h3 className="text-md font-semibold text-gray-800">
+              {item.album_title}
+            </h3>
+            <span className="text-sm text-gray-600">{item.artists.name}</span>
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 

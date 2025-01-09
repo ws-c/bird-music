@@ -5,7 +5,6 @@ import '@/styles/global.css'
 import React, { useEffect, useState } from 'react'
 import { ConfigProvider } from 'antd'
 import useStore from '@/store/useStore'
-import { Footer } from 'antd/es/layout/layout'
 import Player from '@/components/Player'
 import 'nprogress/nprogress.css'
 import '@/styles/nprogress.css'
@@ -58,7 +57,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
-            {isClient && showPlayer && <Player />}
+              {isClient && showPlayer && <Player />}
             </ThemeProvider>
           </AntdRegistry>
         </ConfigProvider>

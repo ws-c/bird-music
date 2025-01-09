@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { ConfigProvider } from 'antd'
 import { MdOutlineAddBox } from 'react-icons/md'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
@@ -48,7 +47,11 @@ const Player = () => {
   // 根据 isPlaying 状态播放或暂停
   useEffect(() => {
     if (audioRef.current) {
-      isPlaying ? audioRef.current.play() : audioRef.current.pause()
+      if (isPlaying) {
+        audioRef.current.play()
+      } else {
+        audioRef.current.pause()
+      }
     }
   }, [isPlaying])
 
@@ -383,29 +386,25 @@ const Player = () => {
                   {getPlayModeIcon('2')}
                 </div>
                 <IoPlaySkipBack
-                  size={32}
                   onClick={handlePrevious}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-3xl text-white"
                 />
 
                 {isPlaying ? (
                   <IoPauseCircle
-                    size={50}
                     onClick={togglePlayPause}
-                    className="mx-2 transform cursor-pointer rounded-full text-white transition-transform duration-200 hover:scale-110"
+                    className="mx-2 transform cursor-pointer rounded-full text-6xl text-white transition-transform duration-200 hover:scale-110"
                   />
                 ) : (
                   <IoCaretForwardCircle
-                    size={50}
                     onClick={togglePlayPause}
-                    className="mx-2 transform cursor-pointer rounded-full text-white transition-transform duration-200 hover:scale-110"
+                    className="mx-2 transform cursor-pointer rounded-full text-6xl text-white transition-transform duration-200 hover:scale-110"
                   />
                 )}
 
                 <IoPlaySkipForward
-                  size={32}
                   onClick={() => handleNext(true)}
-                  className="cursor-pointer text-white"
+                  className="cursor-pointer text-3xl text-white"
                 />
                 <div className="absolute left-[70%]">
                   <CgPlayList
@@ -483,28 +482,24 @@ const Player = () => {
         <div className="absolute left-[50%] flex w-[800px] translate-x-[-50%] transform flex-col">
           <div className="flex items-center justify-center gap-[16px] pt-[8px]">
             <IoPlaySkipBack
-              size={24}
               onClick={handlePrevious}
-              className="cursor-pointer"
+              className="cursor-pointer text-2xl"
             />
 
             {isPlaying ? (
               <IoPauseCircle
-                size={40}
                 onClick={togglePlayPause}
-                className="mx-[8px] transform cursor-pointer transition-transform duration-200 hover:scale-110"
+                className="mx-2 transform cursor-pointer text-5xl transition-transform duration-200 hover:scale-110"
               />
             ) : (
               <IoCaretForwardCircle
-                size={40}
                 onClick={togglePlayPause}
-                className="mx-[8px] transform cursor-pointer transition-transform duration-200 hover:scale-110"
+                className="mx-2 transform cursor-pointer text-5xl transition-transform duration-200 hover:scale-110"
               />
             )}
             <IoPlaySkipForward
-              size={24}
               onClick={() => handleNext(true)}
-              className="cursor-pointer"
+              className="cursor-pointer text-2xl"
             />
           </div>
           <div className="flex items-center gap-[12px]">
@@ -522,9 +517,9 @@ const Player = () => {
             <span>{formatTime(currentSong.duration)}</span>
           </div>
         </div>
-        <div className="flex items-center gap-[24px]">
+        <div className="flex items-center gap-6">
           {getPlayModeIcon('1')}
-          <div className="flex gap-[8px]">
+          <div className="flex gap-2">
             {getVolumeIcon('1')}
             <Slider
               style={{ width: '100px' }}

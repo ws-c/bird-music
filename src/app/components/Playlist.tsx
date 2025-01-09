@@ -1,9 +1,8 @@
 'use client'
+
 import React, { useEffect, useState } from 'react'
-import { Flex } from 'antd'
-import styles from './Playlist.module.css'
-import { PlayCircleOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
+import { FaPlayCircle } from 'react-icons/fa'
 
 type Playlist = {
   author: string
@@ -17,42 +16,44 @@ type Playlist = {
 }
 
 const Playlist = () => {
-  const nav = useRouter()
-  const [playlist, setPlaylist] = useState<Playlist[]>([])
+  const router = useRouter()
+  const [playlists, setPlaylists] = useState<Playlist[]>([])
 
   useEffect(() => {
-    const fetchPlaylist = async () => {
+    const fetchPlaylists = async () => {
       try {
         const response = await fetch('/api/home/playlist')
         const data = await response.json()
-        setPlaylist(data)
+        setPlaylists(data)
       } catch (error) {
-        console.error('Error fetching playlist:', error)
+        console.error('Error fetching playlists:', error)
       }
     }
-    fetchPlaylist()
+    fetchPlaylists()
   }, [])
+
   return (
-    <Flex style={{ minWidth: '1700px' }}>
-      {playlist.map((item) => (
+    <div className="relative right-2.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+      {playlists.map((item) => (
         <div
           key={item.id}
-          className={styles.musicCard}
-          onClick={() => nav.push(`/playlist/${item.id}`)}
+          className="group relative transform cursor-pointer overflow-hidden rounded-lg p-2 transition-transform hover:bg-slate-50 hover:shadow-md"
+          onClick={() => router.push(`/playlist/${item.id}`)}
         >
-          <div className={styles.overlay}>
-            <PlayCircleOutlined className={styles.playIcon} />
+          <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <FaPlayCircle className="absolute bottom-14 right-4 translate-y-4 transform text-4xl text-gray-100 shadow-sm transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
           </div>
-          <div className={styles.cardCover}>
-            <img alt={item.name} src={item.img} className={styles.cardImage} />
-          </div>
-          <div className={styles.cardInfo}>
-            <h3 className={styles.cardTitle}>{item.name}</h3>
-            {/* <p className={styles.cardDescription}>{item.tag}</p> */}
+          <img
+            src={item.img}
+            alt={item.name}
+            className="h-auto w-full rounded-lg object-cover"
+          />
+          <div className="py-2">
+            <h3 className="text-md font-semibold text-gray-800">{item.name}</h3>
           </div>
         </div>
       ))}
-    </Flex>
+    </div>
   )
 }
 

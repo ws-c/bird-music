@@ -11,7 +11,7 @@ export default async function handler(req: { method: string }, res: any) {
             release_date: 'desc', // 按专辑发布日期降序排序
           },
         },
-        take: 9, // 只获取最新的9条记录
+        take: 12, // 只获取最新记录
         include: {
           albums: {
             select: {
