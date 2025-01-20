@@ -8,7 +8,6 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     const { id } = req.query
-    console.log('id', id)
     try {
       const playlist = await prisma.playlist_songs.findMany({
         where: {

@@ -1,6 +1,6 @@
 'use client'
 import React, { FC, useEffect, useState } from 'react'
-import { Dropdown, Flex, MenuProps } from 'antd'
+import { Dropdown, MenuProps } from 'antd'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import type { SingleList_ } from '../page'
@@ -27,7 +27,7 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
   }, [currentId])
 
   return (
-    <Flex gap={24} wrap={true}>
+    <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {curSingleList.map((item) => {
         const menuItems: MenuProps['items'] = [
           {
@@ -39,7 +39,7 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
         return (
           <div
             key={item.id}
-            className={`group relative flex w-[383px] cursor-pointer items-center justify-between rounded-lg p-2 ${
+            className={`group relative flex cursor-pointer items-center justify-between rounded-lg p-2 ${
               onClicked === item.id
                 ? isPlaying
                   ? 'bg-gray-200 dark:bg-[#212127]'
@@ -98,7 +98,7 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
           </div>
         )
       })}
-    </Flex>
+    </div>
   )
 }
 

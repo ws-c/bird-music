@@ -450,7 +450,7 @@ const Player = () => {
               ></CgArrowsExpandRight>
             </div>
           </div>
-          <div className="flex flex-col justify-center gap-[6px]">
+          <div className="flex-col justify-center gap-2">
             <div className="flex text-[16px] font-bold">
               {currentSong.song_title}
               <MdOutlineAddBox
@@ -459,7 +459,7 @@ const Player = () => {
                 onClick={showModal2}
               />
             </div>
-            <div className="flex gap-[8px]">
+            <div className="flex gap-2">
               {currentSong.song_artists?.map((artist, index, self) => (
                 <span key={index}>
                   <span
@@ -479,7 +479,7 @@ const Player = () => {
             </div>
           </div>
         </div>
-        <div className="absolute left-[50%] flex w-[800px] translate-x-[-50%] transform flex-col">
+        <div className="absolute left-[50%] flex w-[400px] translate-x-[-50%] transform flex-col lg:w-[400px] xl:w-[800px]">
           <div className="flex items-center justify-center gap-[16px] pt-[8px]">
             <IoPlaySkipBack
               onClick={handlePrevious}
@@ -502,12 +502,10 @@ const Player = () => {
               className="cursor-pointer text-2xl"
             />
           </div>
-          <div className="flex items-center gap-[12px]">
+          <div className="flex items-center gap-4">
             <span>{formatTime(currentTime)}</span>
             <Slider
-              style={{
-                width: '100%',
-              }}
+              className="w-full"
               min={0}
               max={currentSong.duration || 0}
               value={sliderValue} // 使用 sliderValue
@@ -522,14 +520,14 @@ const Player = () => {
           <div className="flex gap-2">
             {getVolumeIcon('1')}
             <Slider
-              style={{ width: '100px' }}
+              className="w-24"
               min={0}
               max={100}
               value={volume}
               onValueChange={handleVolumeChange} // 处理音量变化
             />
           </div>
-          <span>|</span>
+          <div>|</div>
           <CgPlayList
             size={24}
             onClick={showDrawer}

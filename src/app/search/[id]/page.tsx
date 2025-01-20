@@ -68,7 +68,6 @@ export default function Home({
         setSingleList(singleRes)
         setArtistList(artistRes)
         setAlbumList(albumRes)
-        console.log('art', artistRes)
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
@@ -86,24 +85,23 @@ export default function Home({
           <Flex gap={8} vertical>
             {artistList.length > 0 && (
               <>
-                <Typography.Title level={4}>艺人</Typography.Title>
+                <h2 className="pb-2 pt-4 text-xl font-bold">艺人</h2>
                 <ArtistList artists={artistList}></ArtistList>
               </>
             )}
-
+            {albumList.length > 0 && (
+              <>
+                <h2 className="pb-2 pt-4 text-xl font-bold">专辑</h2>
+                <AlbumList albumList={albumList}></AlbumList>
+              </>
+            )}
             {singleList.length > 0 && (
               <>
-                <Typography.Title level={4}>单曲</Typography.Title>
+                <h2 className="pb-2 pt-4 text-xl font-bold">单曲</h2>
                 <SingleList curSingleList={singleList}></SingleList>
               </>
             )}
 
-            {albumList.length > 0 && (
-              <>
-                <Typography.Title level={4}>专辑</Typography.Title>
-                <AlbumList albumList={albumList}></AlbumList>
-              </>
-            )}
             {!artistList.length && !singleList.length && !albumList.length && (
               <div>没有相关结果</div>
             )}

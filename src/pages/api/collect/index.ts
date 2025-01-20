@@ -7,7 +7,6 @@ export default async function handler(
   if (req.method === 'POST') {
     try {
       const { songId, playListId } = req.body
-      console.log(songId, playListId)
       await prisma.playlist_songs.create({
         data: {
           playlist_id: +playListId,
