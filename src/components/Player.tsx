@@ -306,24 +306,25 @@ const Player = () => {
   }
   return (
     <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
+      {/* 全屏模式 */}
       {fullScreen && (
-        <div className="fixed bottom-0 left-0 right-0 top-0 z-[998] bg-black">
+        <div className="fixed inset-0 z-[998] bg-black">
+          <div className="absolute left-5 top-5">
+            <IoChevronDown
+              size={24}
+              onClick={() => setFullScreen(false)}
+              className="transform cursor-pointer text-xl text-white transition-transform duration-300 ease-in-out hover:scale-110"
+            />
+          </div>
           <div
-            style={{ ...gradientStyle }}
-            className="flex items-center justify-center backdrop-blur-[20px]"
+            style={{ ...gradientStyle, paddingLeft: '15%' }}
+            className="flex items-center gap-40"
           >
-            <div className="absolute left-5 top-5">
-              <IoChevronDown
-                size={24}
-                onClick={() => setFullScreen(false)}
-                className="transform cursor-pointer text-xl text-white transition-transform duration-300 ease-in-out hover:scale-110"
-              />
-            </div>
-            <div className="flex w-[650px] flex-col gap-4">
+            <div className="flex w-[450px] flex-col gap-4 pt-20">
               <div className="flex justify-center">
                 <img
                   src={currentSong.cover}
-                  className={`duration-400 ease-[cubic-bezier(0.68,-0.55,0.27,1.55)] w-[650px] transform transition-transform ${isPlaying ? '' : 'scale-90'} rounded-lg object-cover shadow-[0_4px_10px_rgba(255,255,255,0.04)]`}
+                  className={`w-[400px] transform transition-transform duration-300 ${isPlaying ? '' : 'scale-90'} shadow-inset rounded-lg object-cover`}
                 />
               </div>
               <div>
@@ -331,7 +332,7 @@ const Player = () => {
                   {currentSong.song_title}
                 </span>
                 <div>
-                  <span className="text-lg font-bold text-[#c6c2ca]">
+                  <span className="text-base font-bold text-[#c6c2ca]">
                     {currentSong.song_artists?.map((artist, index, self) => (
                       <span key={index}>
                         <span
@@ -372,7 +373,7 @@ const Player = () => {
                   onValueChange={handleSliderChange}
                   onValueCommit={handleSliderAfterChange}
                 />
-                <div className="flex justify-between">
+                <div className="flex justify-between pt-1">
                   <span className="text-[#bab5bf]">
                     {formatTime(currentTime)}
                   </span>
@@ -382,9 +383,7 @@ const Player = () => {
                 </div>
               </div>
               <div className="relative flex items-center justify-center gap-4">
-                <div className="absolute right-[70%]">
-                  {getPlayModeIcon('2')}
-                </div>
+                <div className="mx-2">{getPlayModeIcon('2')}</div>
                 <IoPlaySkipBack
                   onClick={handlePrevious}
                   className="cursor-pointer text-3xl text-white"
@@ -406,7 +405,7 @@ const Player = () => {
                   onClick={() => handleNext(true)}
                   className="cursor-pointer text-3xl text-white"
                 />
-                <div className="absolute left-[70%]">
+                <div className="mx-2">
                   <CgPlayList
                     size={24}
                     onClick={showDrawer1}
@@ -426,20 +425,26 @@ const Player = () => {
                 />
               </div>
             </div>
+            <div className="flex flex-col gap-4 pb-20">
+              <div className="text-2xl font-medium text-white">
+                纯音乐，请欣赏
+              </div>
+            </div>
           </div>
         </div>
       )}
-      <div className="relative flex items-center justify-between px-[40px] py-[16px]">
-        <div className="flex items-center justify-center gap-[24px]">
+      {/* 底部播放器 */}
+      <div className="relative flex items-center justify-between px-4 py-4">
+        <div className="flex items-center justify-center gap-6">
           <div
-            className="relative h-[60px] w-[60px] cursor-pointer rounded-lg"
+            className="relative h-14 w-14 cursor-pointer rounded-lg"
             onClick={() => {
               setFullScreen(true)
               onClose()
             }}
           >
             <img
-              className="h-full w-full rounded-lg"
+              className="h-full w-full rounded-lg shadow-inner"
               src={currentSong.cover}
               alt={currentSong.song_title}
             />
@@ -451,11 +456,11 @@ const Player = () => {
             </div>
           </div>
           <div className="flex-col justify-center gap-2">
-            <div className="flex text-[16px] font-bold">
+            <div className="flex text-base font-bold">
               {currentSong.song_title}
               <MdOutlineAddBox
                 size={14}
-                className="relative left-[8px] top-[4px] cursor-pointer"
+                className="relative left-2 top-1 cursor-pointer"
                 onClick={showModal2}
               />
             </div>
@@ -463,7 +468,7 @@ const Player = () => {
               {currentSong.song_artists?.map((artist, index, self) => (
                 <span key={index}>
                   <span
-                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap hover:underline"
+                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-xs hover:underline"
                     onClick={() => {
                       if (artist?.artist_id) {
                         router.push(`/artist/${artist.artist_id}`)
@@ -479,8 +484,8 @@ const Player = () => {
             </div>
           </div>
         </div>
-        <div className="absolute left-[50%] flex w-[400px] translate-x-[-50%] transform flex-col lg:w-[400px] xl:w-[800px]">
-          <div className="flex items-center justify-center gap-[16px] pt-[8px]">
+        <div className="absolute left-[50%] flex translate-x-[-50%] transform flex-col sm:w-[150px] md:w-[300px] lg:w-[450px] xl:w-[750px]">
+          <div className="flex items-center justify-center gap-4 pt-2">
             <IoPlaySkipBack
               onClick={handlePrevious}
               className="cursor-pointer text-2xl"
@@ -489,12 +494,12 @@ const Player = () => {
             {isPlaying ? (
               <IoPauseCircle
                 onClick={togglePlayPause}
-                className="mx-2 transform cursor-pointer text-5xl transition-transform duration-200 hover:scale-110"
+                className="mx-2 transform cursor-pointer text-5xl text-primary transition-transform duration-200 hover:scale-110"
               />
             ) : (
               <IoCaretForwardCircle
                 onClick={togglePlayPause}
-                className="mx-2 transform cursor-pointer text-5xl transition-transform duration-200 hover:scale-110"
+                className="mx-2 transform cursor-pointer text-5xl text-primary transition-transform duration-200 hover:scale-110"
               />
             )}
             <IoPlaySkipForward

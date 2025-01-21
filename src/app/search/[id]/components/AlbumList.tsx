@@ -31,7 +31,7 @@ const AlbumList: FC<AlbumListProps> = ({ albumList }) => {
             </div>
           </div>
           <div className="pt-4">
-            <h4 className="text-md font-semibold">{item.album_title}</h4>
+            <h4 className="font-semibold">{item.album_title}</h4>
             <span className="text-sm text-gray-600">{item.artists.name}</span>
             <p className="text-sm text-gray-400">
               {dayjs(item.release_date).format('YYYY年MM月DD日')}

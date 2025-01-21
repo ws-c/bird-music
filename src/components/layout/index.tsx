@@ -190,7 +190,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }
   }
   return (
-    <div className="min-h-screen">
+    <div className="h-screen">
       <Sider width={240} style={siderStyle}>
         <Flex className="mb-4 ml-8 h-16 items-baseline">
           <Icons type="icon-a-1f99c" size={24} className="mr-2" />
@@ -211,11 +211,11 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           onClick={(item) => onClick(item)}
         />
       </Sider>
-      <div style={{ ...style, maxWidth: 'calc(100vw-240px)' }}>
+      <div style={{ ...style }}>
         <div className="sticky top-0 z-50 h-[70px] p-[10px_60px_0_20px]">
           <Head />
         </div>
-        <main className="max-h-[calc(100vh-70px)] max-w-[calc(100vw-240px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
+        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
           {children}
         </main>
       </div>
