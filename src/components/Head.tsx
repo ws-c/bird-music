@@ -1,19 +1,13 @@
 'use client'
+
 import React, { useEffect, useState } from 'react'
-import {
-  AutoComplete,
-  Avatar,
-  Button,
-  Dropdown,
-  Flex,
-  Input,
-  message,
-} from 'antd'
+import { AutoComplete, Button, Dropdown, Flex, Input } from 'antd'
 import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
-import useStore from '../store/useStore'
-import styles from './Header.module.css'
+import useStore from '@/store/useStore'
 import HeadSetting from './HeadSetting'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { ThemeToggle } from '@/components/layouts/theme-toggle'
 
 type Option = {
   value: string
@@ -78,11 +72,11 @@ export default function Header() {
   }
 
   return (
-    <Flex className={styles.header}>
-      <Flex align="center" gap={8}>
+    <div className="flex justify-between">
+      <div className="flex items-center gap-[8px]">
         <Button
           type="text"
-          style={{ position: 'relative', top: '2px', height: '36px' }}
+          className="relative top-[2px] h-[36px]"
           disabled={isClient && window.location.pathname === '/'}
           icon={<LeftOutlined size={12} />}
           onClick={() => route.back()}
@@ -104,24 +98,25 @@ export default function Header() {
             onKeyDown={handleKeyDown}
           />
         </AutoComplete>
-      </Flex>
-      <div className={styles.right}>
+      </div>
+      <div className="relative top-[2px] flex items-center gap-2">
+        {/* <ThemeToggle /> */}
         <Dropdown
           menu={{ items }}
           placement="bottomRight"
           arrow
           trigger={['click']}
         >
-          <Avatar
-            src={isClient && user.cover}
-            icon={<UserOutlined />}
-            className={styles.avatar}
-          />
+          <Avatar>
+            <AvatarImage src={user.cover} />
+            <AvatarFallback>
+              <UserOutlined />
+            </AvatarFallback>
+          </Avatar>
         </Dropdown>
-        <span>{isClient && user.username}</span>
+        <span className="dark:text-black">{isClient && user.username}</span>
       </div>
-      
       <HeadSetting open={open} setOpen={setOpen} />
-    </Flex>
+    </div>
   )
 }

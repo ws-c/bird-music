@@ -1,21 +1,36 @@
 import React, { useEffect, useState } from 'react'
-import { PlayCircleOutlined } from '@ant-design/icons'
-import styles from './MusicCard.module.css' // 引入 CSS Module
-import { Flex, Typography } from 'antd'
 import { useRouter } from 'next/navigation'
 import NProgress from 'nprogress'
-export type Song = {
-  albums_id: number;
-  artist_id: number;
-  duration: number;
-  file_path: string;
-  id: number;
-  song_title: string;
-  [property: string]: any;
+import { FaPlayCircle } from 'react-icons/fa'
+import { Skeleton } from '@/components/ui/skeleton'
+
+export interface ApifoxModel {
+  album_title: string
+  artist_id: number
+  artists: Artists
+  cover: string
+  desc: null | string
+  id: number
+  release_date: string
+  songs: Song[]
 }
+
+export interface Artists {
+  id: number
+  name: string
+}
+
+export interface Song {
+  albums_id: number
+  duration: number
+  file_path: string
+  id: number
+  song_title: string
+}
+
 const MusicCard = () => {
   const router = useRouter()
-  const [albums, setAlbums] = useState<Song[]>([])
+  const [albums, setAlbums] = useState<ApifoxModel[]>([])
 
   useEffect(() => {
     const fetchAlbums = async () => {
@@ -34,51 +49,42 @@ const MusicCard = () => {
   }, [])
 
   return (
-    <Flex gap={16} style={{ minWidth: '1700px' }}>
-      {albums.map((item) => {
-        return (
+    <div className="flex gap-2">
+      {albums.length > 0 ? (
+        albums.map((item) => (
           <div
-            className={styles.musicCard}
             key={item.id}
+            className="group relative w-[176px] flex-shrink-0 transform cursor-pointer overflow-hidden rounded-lg p-2 transition-transform hover:bg-slate-50 hover:shadow-md"
             onClick={() => router.push(`/album/${item.id}`)}
           >
-            <div className={styles.cardCover}>
-              <img
-                alt="example"
-                src={item.cover}
-                style={{
-                  objectFit: 'cover',
-                  height: 250,
-                  width: '100%',
-                  filter: 'brightness(0.95)',
-                  verticalAlign: 'middle',
-                  borderRadius: 8,
-                }}
-              />
-              <div className={styles.overlay}>
-                <PlayCircleOutlined className={styles.playIcon} />
-              </div>
-              <Flex>
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 35,
-                    left: 15,
-                    color: 'white',
-                    textShadow: '0px 0px 2px rgba(0, 0, 0, 0.5)',
-                  }}
-                >
-                  {item.album_title}
-                </div>
-                <Typography.Text className={styles.title}>
-                  {item.artists.name}
-                </Typography.Text>
-              </Flex>
+            <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <FaPlayCircle className="absolute bottom-20 right-4 translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
+            </div>
+            <img
+              src={item.cover}
+              alt={item.album_title}
+              className="h-auto w-full rounded-lg object-cover"
+            />
+            <div className="py-2">
+              <h3 className="font-semibold text-gray-800">
+                {item.album_title}
+              </h3>
+              <span className="text-sm text-gray-600">{item.artists.name}</span>
             </div>
           </div>
-        )
-      })}
-    </Flex>
+        ))
+      ) : (
+        <div className="flex gap-2">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="w-[176px]">
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="mt-2 h-4 w-3/4 rounded" />
+              <Skeleton className="mt-1 h-3 w-1/2 rounded" />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 

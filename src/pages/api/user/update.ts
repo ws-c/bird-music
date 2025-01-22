@@ -1,4 +1,4 @@
-import prisma from '../../../lib/prisma'
+import prisma from '@/lib/prisma'
 
 // 更新用户信息
 export default async function handler(

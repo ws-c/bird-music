@@ -1,33 +1,17 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Flex, Layout, Menu } from 'antd'
-import { Content, Header } from 'antd/es/layout/layout'
+import { Button, Flex, Menu } from 'antd'
 import Sider from 'antd/es/layout/Sider'
-import { MenuInfo } from 'rc-menu/lib/interface'
 import { useRouter } from 'next/navigation'
-import Icons from '../Icons'
+import Icons from '@/components/Icons'
 import Title from 'antd/es/typography/Title'
-import Head from '../Head'
+import Head from '@/components/Head'
 import CreatePlaylist from './CreatePlayList'
-import useStore from '../../store/useStore'
+import useStore from '@/store/useStore'
 import useColorThief from 'use-color-thief'
-
-const headerStyle = {
-  padding: '10px 60px 0 20px',
-  height: '80',
-  position: 'sticky' as React.CSSProperties['position'],
-  top: 0,
-  zIndex: 1000,
-}
-
-const contentStyle = {
-  padding: '0 60px',
-  paddingBottom: '100px',
-  overflow: 'auto',
-  flex: 1, // 使 Content 区域占满剩余的空间
-  maxHeight: 'calc(100vh - 64px)', // 计算剩余空间，去掉 header 的高度
-}
-
+import { useTheme } from 'next-themes'
+import { ItemType } from 'antd/es/menu/interface'
+import { MenuInfo } from 'rc-menu/lib/interface'
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -46,7 +30,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     const data = await res.json()
     setMyPlayList(data)
   }
-  const myPlayList_ = myPlayList.map((item, index) => {
+  const myPlayList_ = myPlayList.map((item) => {
     return {
       label: (
         <Flex
@@ -84,10 +68,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           </div>
         </Flex>
       ),
-      key: `playlist/${item.id}`, // 使用 index 确保每个 item 有唯一的 key
+      key: `playlist/${item.id}`,
     }
   })
-  const items = [
+  const items: ItemType[] = [
     {
       label: '主页',
       key: '/',
@@ -111,23 +95,50 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       ),
     },
     {
+      type: 'divider',
+    },
+    {
+      label: '我喜欢的音乐',
+      key: 'love',
+      icon: (
+        <Icons
+          type="icon-love_fill"
+          size={20}
+          color={curActive === 'love' ? '#f30074' : ''}
+        ></Icons>
+      ),
+    },
+    {
+      label: '最近播放',
+      key: 'recent',
+      icon: (
+        <Icons
+          type="icon-zuijin"
+          size={20}
+          color={curActive === 'recent' ? '#f30074' : ''}
+        ></Icons>
+      ),
+    },
+    {
+      type: 'divider',
+    },
+    {
       label: (
-        <Flex style={{ position: 'relative' }}>
-          创建的歌单
+        <Flex className="text-xs leading-6">
+          创建的歌单 ({myPlayList.length})
           <Button
             size="small"
             type="text"
             style={{
-              position: 'absolute',
-              right: '-30px',
-              top: '8px',
+              position: 'relative',
+              right: '-8px',
             }}
             onClick={(e) => {
               e.stopPropagation()
               showModal()
             }}
           >
-            <Icons type="icon-add" size={16} />
+            <Icons type="icon-add" size={14} />
           </Button>
         </Flex>
       ),
@@ -135,7 +146,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       children: myPlayList_,
     },
     {
-      label: '收藏的歌单',
+      label: <Flex className="text-xs leading-6">收藏的歌单</Flex>,
       key: 'collect',
     },
   ]
@@ -149,58 +160,77 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   }
 
   //主题背景颜色
+  const { theme } = useTheme()
   const { color } = useColorThief(colorTheme, {
     format: 'rgb',
     colorCount: 10,
     quality: 10,
   })
-  const style =
-    client && window.location.pathname === '/'
-      ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
-      : {
-          paddingLeft: '240px',
-          minHeight: '100vh',
-          background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
-        }
-  const siderStyle =
-    client && window.location.pathname === '/'
-      ? {
-          background: '#f0f3f6',
-          minHeight: '100vh',
-          position: 'fixed' as React.CSSProperties['position'],
-          left: '0',
-        }
-      : {
-          backgroundColor: '#f0f3f6',
-          background: `linear-gradient(to bottom, rgba(${color}, 0.01) 0%, #f0f3f6 25%)`,
-          minHeight: '100vh',
-          position: 'fixed' as React.CSSProperties['position'],
-          left: '0',
-        }
+  let style = {}
+  let siderStyle = {}
+  if (theme === 'dark') {
+    style =
+      client && window.location.pathname === '/'
+        ? { paddingLeft: '240px', minHeight: '100vh', background: '#121212' }
+        : {
+            paddingLeft: '240px',
+            minHeight: '100vh',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #121212 50%)`,
+          }
+    siderStyle =
+      client && window.location.pathname === '/'
+        ? {
+            background: '#1f1f1f',
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+        : {
+            backgroundColor: '#1f1f1f',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.01) 0%, #1f1f1f 25%)`,
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+  } else {
+    style =
+      client &&
+      (window.location.pathname === '/' ||
+        window.location.pathname.startsWith('/search/'))
+        ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
+        : {
+            paddingLeft: '240px',
+            minHeight: '100vh',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
+          }
+    siderStyle =
+      client &&
+      (window.location.pathname === '/' ||
+        window.location.pathname.startsWith('/search/'))
+        ? {
+            background: '#f0f3f6',
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+        : {
+            backgroundColor: '#f0f3f6',
+            background: `linear-gradient(to bottom, rgba(${color}, 0.01) 0%, #f0f3f6 25%)`,
+            minHeight: '100vh',
+            position: 'fixed' as React.CSSProperties['position'],
+            left: '0',
+          }
+  }
   return (
-    <Layout
-      style={{
-        minHeight: '100vh',
-        background: '#f9f9f9',
-      }}
-    >
+    <div className="h-screen">
       <Sider width={240} style={siderStyle}>
-        <Flex
-          style={{
-            alignItems: 'baseline',
-            marginLeft: '32px',
-            height: '64px',
-            marginBottom: '16px',
-          }}
-        >
+        <Flex className="mb-4 ml-8 h-16 items-baseline">
           <Icons
-            type="icon-a-1f99c"
+            type="icon-Twitter_icon4948c882-copy"
             size={24}
-            style={{
-              marginRight: '8px',
-            }}
+            className="mr-2"
           />
-          <Title level={3} style={{ marginBottom: 0, lineHeight: '24px' }}>
+          <Title level={3} className="mb-0 pt-[14px]">
             Bird Music
           </Title>
         </Flex>
@@ -217,19 +247,21 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           onClick={(item) => onClick(item)}
         />
       </Sider>
-      <Layout style={style}>
-        <div style={headerStyle}>
-          <Head></Head>
+      <div style={{ ...style }}>
+        <div className="sticky top-0 z-50 h-[70px] p-[10px_60px_0_20px]">
+          <Head />
         </div>
-        <Content style={contentStyle}>{children}</Content>
-      </Layout>
+        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
+          {children}
+        </main>
+      </div>
       <CreatePlaylist
         open={open}
         setOpen={setOpen}
         name={user.username}
         getMyPlayList={getMyPlayList}
       ></CreatePlaylist>
-    </Layout>
+    </div>
   )
 }
 export default CommonLayout

@@ -1,10 +1,10 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
-import { formatTime } from '../../../utils/formatTime'
-import useStore from '../../../store/useStore'
+import { formatTime } from '@/helpers/formatTime'
+import useStore from '@/store/useStore'
 import { useRouter } from 'next/navigation'
-import { SongList } from '../../../types'
+import { SongList } from '@/types'
 const columns = [
   {
     title: '#',
@@ -238,8 +238,11 @@ export default function Home({ params }: { params: { id: string } }) {
             pagination={false}
             onRow={(record) => ({
               onClick: () => {
-                setCurrentId(record.id), setSingleList(curSingleList)
-                setShowPlayer(true), setOnClicked(record.id), setIsPlaying(true)
+                setCurrentId(record.id)
+                setSingleList(curSingleList)
+                setShowPlayer(true)
+                setOnClicked(record.id)
+                setIsPlaying(true)
               },
             })}
             rowClassName={(record) =>

@@ -1,10 +1,10 @@
-import prisma from '../../../../lib/prisma'
+import prisma from '@/lib/prisma'
 
 export default async function handler(req: { method: string }, res: any) {
   if (req.method === 'GET') {
     try {
       const albums = await prisma.albums.findMany({
-        take: 6,
+        take: 8,
         orderBy: {
           release_date: 'desc',
         },

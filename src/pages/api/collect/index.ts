@@ -1,4 +1,4 @@
-import prisma from '../../../lib/prisma'
+import prisma from '@/lib/prisma'
 // 单曲收藏至歌单
 export default async function handler(
   req: { method: string; body: { songId: any; playListId: any } },
@@ -7,7 +7,6 @@ export default async function handler(
   if (req.method === 'POST') {
     try {
       const { songId, playListId } = req.body
-      console.log(songId, playListId)
       await prisma.playlist_songs.create({
         data: {
           playlist_id: +playListId,

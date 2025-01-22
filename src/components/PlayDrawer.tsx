@@ -1,7 +1,7 @@
-import { Drawer, Flex, List } from 'antd'
-import { formatTime } from '../utils/formatTime'
+import { Drawer } from 'antd'
+import { formatTime } from '@/helpers/formatTime'
 import { FC } from 'react'
-// import styles from './PlayDrawer.module.css'
+import styles from './PlayDrawer.module.css'
 type Props = {
   open: boolean
   onClose: () => void
@@ -33,74 +33,73 @@ const PlayDrawer: FC<Props> = ({
         marginTop: '64px',
         marginBottom: '93px',
       }}
+      autoFocus={false}
     >
-      <List
-        dataSource={singleList}
-        renderItem={(item) => (
-          <List.Item
-            style={{
-              cursor: 'pointer',
-              padding: '4px 16px',
-              marginBottom: '8px',
-              overflow: 'hidden',
-            }}
-            className={`item ${onClicked == item.id ? 'clicked' : ''}`}
+      <div className="flex flex-col">
+        {singleList.map((item) => (
+          <div
+            key={item.id}
+            className={`flex cursor-pointer items-center gap-[8px] border-none bg-transparent px-4 py-2 transition-all duration-500 ease-in-out ${onClicked === item.id ? 'clicked' : 'item'}`}
             onClick={() => {
               setCurrentId(item.id)
               setOnClicked(item.id)
               setIsPlaying(true)
             }}
           >
-            {/* {onClicked == item.id && isPlaying ? (
-              <Flex align="flex-end" style={{ marginRight: '8px' }}>
-                <div className={styles.loading}>
-                  <div className={styles.load}></div>
-                  <div className={styles.load}></div>
-                  <div className={styles.load}></div>
-                  <div className={styles.load}></div>
+            {onClicked == item.id && isPlaying ? (
+              <div className="relative right-1 w-6">
+                <div className={styles.playing}>
+                  <div
+                    className={`${styles.lineContainer} ${styles['line-1']}`}
+                  ></div>
+                  <div
+                    className={`${styles.lineContainer} ${styles['line-2']}`}
+                  ></div>
+                  <div
+                    className={`${styles.lineContainer} ${styles['line-3']}`}
+                  ></div>
+                  <div
+                    className={`${styles.lineContainer} ${styles['line-4']}`}
+                  ></div>
+                  <div
+                    className={`${styles.lineContainer} ${styles['line-5']}`}
+                  ></div>
                 </div>
-              </Flex>
+              </div>
             ) : (
-              <Flex
-                align="center"
-                style={{ marginRight: '8px', height: '100%' }}
-              >
-                <div className={styles.play}></div>
-              </Flex>
-            )} */}
-
-            <List.Item.Meta
-              avatar={
-                <img
-                  src={item.cover}
-                  style={{
-                    position: 'relative',
-                    top: '4px',
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '4px',
-                  }}
-                ></img>
-              }
-              title={item.song_title}
-              description={item.song_artists.map(
-                (item: any, index: number, self: string | any[]) => (
-                  <span key={item.artist_id}>
-                    {item.artists.name}
-                    {index < self.length - 1 && '/'}
-                  </span>
-                )
-              )}
-              style={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            />
-            <div>{formatTime(item.duration)}</div>
-          </List.Item>
-        )}
-      />
+              <div className="align-center flex w-6">
+                <div
+                  className={styles.play}
+                  style={{ backgroundColor: '#000' }}
+                ></div>
+              </div>
+            )}
+            <div className="flex-shrink-0">
+              <img
+                src={item.cover}
+                className="relative h-[40px] w-[40px] rounded-[4px]"
+                alt={item.song_title}
+              />
+            </div>
+            <div className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap">
+              <div className="font-medium text-black">{item.song_title}</div>
+              <div className="text-sm text-gray-500">
+                {item.song_artists.map(
+                  (artist: any, index: number, self: any) => (
+                    <span key={artist.artist_id}>
+                      {artist.artists.name}
+                      {index < self.length - 1 && '/'}
+                    </span>
+                  )
+                )}
+              </div>
+            </div>
+            <div className="ml-4 text-sm text-gray-500">
+              {formatTime(item.duration)}
+            </div>
+          </div>
+        ))}
+      </div>
     </Drawer>
   )
 }

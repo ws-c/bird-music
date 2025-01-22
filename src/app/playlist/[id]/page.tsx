@@ -1,15 +1,15 @@
 'use client'
 import { useEffect, useState } from 'react'
-import useStore from '../../../store/useStore'
-import { formatTime } from '../../../utils/formatTime'
+import useStore from '@/store/useStore'
+import { formatTime } from '@/helpers/formatTime'
 import { useRouter } from 'next/navigation'
 import { Spin, Flex, Typography, Button, Table, Avatar } from 'antd'
 import dayjs from 'dayjs'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import Icons from '../../../components/Icons'
+import Icons from '@/components/Icons'
 import Edit from './Edit'
-import { SongList } from '../../../types'
+import { SongList } from '@/types'
 const columns = [
   {
     title: '#',
@@ -162,12 +162,14 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 style={{ margin: '0', letterSpacing: '1px' }}
               >
                 {playList.name}
-                <Icons
-                  onClick={showModal}
-                  type="icon-xiugai"
-                  size={24}
-                  style={{ marginLeft: '10px' }}
-                />
+                {user.username === playList.author && (
+                  <Icons
+                    onClick={showModal}
+                    type="icon-xiugai"
+                    size={24}
+                    style={{ marginLeft: '10px' }}
+                  />
+                )}
               </Typography.Title>
               <Typography.Text
                 type="secondary"

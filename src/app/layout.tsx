@@ -1,13 +1,15 @@
 'use client'
-import '../styles/global.css'
-import { ConfigProvider } from 'antd'
+
+import '@/styles/globals.css'
+import '@/styles/global.css'
 import React, { useEffect, useState } from 'react'
-import useStore from '../store/useStore'
-import { Footer } from 'antd/es/layout/layout'
-import Player from '../components/Player'
+import { ConfigProvider } from 'antd'
+import useStore from '@/store/useStore'
+import Player from '@/components/Player'
 import 'nprogress/nprogress.css'
-import '../styles/nprogress.css'
+import '@/styles/nprogress.css'
 import { AntdRegistry } from '@ant-design/nextjs-registry'
+import { ThemeProvider } from '@/components/providers/theme-provider'
 
 export default function RootLayout({
   children,
@@ -21,7 +23,7 @@ export default function RootLayout({
   }, [])
 
   return (
-    <html lang="en">
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <link
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -48,22 +50,15 @@ export default function RootLayout({
           }}
         >
           <AntdRegistry>
-            {children}
-            {isClient && showPlayer && (
-              <Footer
-                style={{
-                  padding: '0',
-                  borderTop: '1px solid #e8e8e8',
-                  background: '#fafafa',
-                  position: 'fixed',
-                  bottom: '0',
-                  width: '100%',
-                  zIndex: 1000,
-                }}
-              >
-                <Player />
-              </Footer>
-            )}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              {isClient && showPlayer && <Player />}
+            </ThemeProvider>
           </AntdRegistry>
         </ConfigProvider>
       </body>

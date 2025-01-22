@@ -26,7 +26,7 @@ export async function middleware(req: {
     try {
       // 校验 token
       const { payload } = await jwtVerify(token, JWT_SECRET)
-      console.log('Decoded payload:', payload)
+      // console.log('Decoded payload:', payload)
 
       // 如果 token 有效，允许访问受保护路径
       return NextResponse.next()

@@ -2,8 +2,8 @@
 import { useEffect, useState } from 'react'
 import { Form, Input, Button, notification, Tabs, Flex } from 'antd'
 import styles from './Auth.module.css'
-import useStore from '../../store/useStore'
-import Icons from '../../components/Icons'
+import useStore from '@/store/useStore'
+import Icons from '@/components/Icons'
 import Title from 'antd/es/typography/Title'
 
 export default function Auth() {

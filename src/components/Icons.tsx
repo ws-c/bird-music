@@ -2,7 +2,7 @@ import { createFromIconfontCN } from '@ant-design/icons'
 import React from 'react'
 
 const IconFont = createFromIconfontCN({
-  scriptUrl: '//at.alicdn.com/t/c/font_4530194_42dq248ik16.js',
+  scriptUrl: '//at.alicdn.com/t/c/font_4530194_cgsy27dpqr.js',
 })
 
 function Index(props: {
@@ -10,12 +10,14 @@ function Index(props: {
   size: number
   color?: string
   onClick?: (e?: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void
-  rootClassName?: string
+  className?: string
   style?: object
   alt?: string
+  title?: string
 }) {
   return (
     <IconFont
+      title={props.title}
       alt=""
       type={props.type}
       style={{
@@ -23,7 +25,7 @@ function Index(props: {
         fontSize: props.size,
         ...props.style,
       }}
-      className={` ${props.rootClassName}`}
+      className={` ${props.className}`}
       onClick={(e) => {
         // e.stopPropagation()
         if (props.onClick) {
