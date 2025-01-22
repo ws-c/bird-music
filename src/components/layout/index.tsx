@@ -10,6 +10,7 @@ import CreatePlaylist from './CreatePlayList'
 import useStore from '@/store/useStore'
 import useColorThief from 'use-color-thief'
 import { useTheme } from 'next-themes'
+import { ItemType } from 'antd/es/menu/interface'
 
 interface IProps {
   children: React.ReactNode
@@ -29,7 +30,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     const data = await res.json()
     setMyPlayList(data)
   }
-  const myPlayList_ = myPlayList.map((item, index) => {
+  const myPlayList_ = myPlayList.map((item) => {
     return {
       label: (
         <Flex
@@ -70,7 +71,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       key: `playlist/${item.id}`,
     }
   })
-  const items = [
+  const items: ItemType[] = [
     {
       label: '主页',
       key: '/',
