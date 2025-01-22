@@ -11,7 +11,6 @@ import useStore from '@/store/useStore'
 import useColorThief from 'use-color-thief'
 import { useTheme } from 'next-themes'
 import { ItemType } from 'antd/es/menu/interface'
-import { MenuInfo } from 'rc-menu/lib/interface'
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -151,7 +150,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     },
   ]
 
-  const onClick = (item: MenuInfo) => {
+  const onClick = (item: any) => {
     router.push(`/${item.key}`)
   }
   const [open, setOpen] = useState(false)
