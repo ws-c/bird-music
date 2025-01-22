@@ -1,11 +1,10 @@
 'use client'
 import React, { FC, useEffect, useState } from 'react'
-import { Dropdown, MenuProps } from 'antd'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import type { SingleList_ } from '../page'
 import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
-import { IoEllipsisHorizontalSharp } from 'react-icons/io5'
+
 type SingleListProps = {
   curSingleList: SingleList_[]
 }
@@ -29,17 +28,10 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
   return (
     <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {curSingleList.map((item) => {
-        const menuItems: MenuProps['items'] = [
-          {
-            key: '1',
-            label: <span>分享</span>,
-          },
-        ]
-
         return (
           <div
             key={item.id}
-            className={`group relative flex cursor-pointer items-center justify-between rounded-lg p-2 ${
+            className={`group relative flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 ${
               onClicked === item.id
                 ? isPlaying
                   ? 'bg-gray-200 dark:bg-[#212127]'
@@ -61,12 +53,12 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
             {onClicked === item.id && isPlaying ? (
               <FaPauseCircle
                 size={18}
-                className="absolute left-[20px] top-[20px] z-[100] text-white dark:text-gray-300"
+                className="absolute left-[28px] top-[20px] z-[100] text-white dark:text-gray-300"
               />
             ) : (
               <FaPlayCircle
                 size={18}
-                className="absolute left-[20px] top-[20px] z-[100] text-white opacity-0 group-hover:opacity-100 dark:text-gray-300"
+                className="absolute left-[28px] top-[20px] z-[100] text-white opacity-0 group-hover:opacity-100 dark:text-gray-300"
               />
             )}
 
@@ -89,11 +81,6 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {formatTime(item.duration)}
               </span>
-              <div onClick={(e) => e.stopPropagation()}>
-                <Dropdown menu={{ items: menuItems }} placement="topLeft" arrow>
-                  <IoEllipsisHorizontalSharp />
-                </Dropdown>
-              </div>
             </div>
           </div>
         )

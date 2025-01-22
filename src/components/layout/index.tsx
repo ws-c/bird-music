@@ -67,7 +67,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           </div>
         </Flex>
       ),
-      key: `playlist/${item.id}`, // 使用 index 确保每个 item 有唯一的 key
+      key: `playlist/${item.id}`,
     }
   })
   const items = [
@@ -94,23 +94,50 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       ),
     },
     {
+      type: 'divider',
+    },
+    {
+      label: '我喜欢的音乐',
+      key: 'love',
+      icon: (
+        <Icons
+          type="icon-love_fill"
+          size={20}
+          color={curActive === 'love' ? '#f30074' : ''}
+        ></Icons>
+      ),
+    },
+    {
+      label: '最近播放',
+      key: 'recent',
+      icon: (
+        <Icons
+          type="icon-zuijin"
+          size={20}
+          color={curActive === 'recent' ? '#f30074' : ''}
+        ></Icons>
+      ),
+    },
+    {
+      type: 'divider',
+    },
+    {
       label: (
-        <Flex>
-          创建的歌单
+        <Flex className="text-xs leading-6">
+          创建的歌单 ({myPlayList.length})
           <Button
             size="small"
             type="text"
             style={{
               position: 'relative',
-              right: '-20px',
-              top: '8px',
+              right: '-8px',
             }}
             onClick={(e) => {
               e.stopPropagation()
               showModal()
             }}
           >
-            <Icons type="icon-add" size={16} />
+            <Icons type="icon-add" size={14} />
           </Button>
         </Flex>
       ),
@@ -118,7 +145,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       children: myPlayList_,
     },
     {
-      label: '收藏的歌单',
+      label: <Flex className="text-xs leading-6">收藏的歌单</Flex>,
       key: 'collect',
     },
   ]
@@ -166,7 +193,9 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }
   } else {
     style =
-      client && window.location.pathname === '/'
+      client &&
+      (window.location.pathname === '/' ||
+        window.location.pathname.startsWith('/search/'))
         ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
         : {
             paddingLeft: '240px',
@@ -174,7 +203,9 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
             background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
           }
     siderStyle =
-      client && window.location.pathname === '/'
+      client &&
+      (window.location.pathname === '/' ||
+        window.location.pathname.startsWith('/search/'))
         ? {
             background: '#f0f3f6',
             minHeight: '100vh',
@@ -193,7 +224,11 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     <div className="h-screen">
       <Sider width={240} style={siderStyle}>
         <Flex className="mb-4 ml-8 h-16 items-baseline">
-          <Icons type="icon-a-1f99c" size={24} className="mr-2" />
+          <Icons
+            type="icon-Twitter_icon4948c882-copy"
+            size={24}
+            className="mr-2"
+          />
           <Title level={3} className="mb-0 pt-[14px]">
             Bird Music
           </Title>

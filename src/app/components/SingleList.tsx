@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Dropdown, MenuProps } from 'antd'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import { SongList } from '@/types'
 import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
-import { IoEllipsisHorizontalSharp } from 'react-icons/io5'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const SingleList = () => {
@@ -53,17 +51,10 @@ const SingleList = () => {
         chunkedItems(curSingleList, 4).map((group, groupIndex) => (
           <div key={groupIndex} className="mb-4 flex gap-4">
             {group.map((item) => {
-              const menuItems: MenuProps['items'] = [
-                {
-                  key: '1',
-                  label: <span>分享</span>,
-                },
-              ]
-
               return (
                 <div
                   key={item.id}
-                  className={`group relative flex w-[362px] flex-shrink-0 cursor-pointer items-center justify-between rounded-lg p-2 ${
+                  className={`group relative flex w-[353px] flex-shrink-0 cursor-pointer items-center justify-between rounded-lg p-2 ${
                     onClicked === item.id
                       ? isPlaying
                         ? 'bg-gray-200 dark:bg-[#212127]'
@@ -98,7 +89,7 @@ const SingleList = () => {
                     <img
                       src={item.cover}
                       alt=""
-                      className="h-10 w-10 rounded-lg brightness-100 group-hover:brightness-90"
+                      className="h-10 w-10 rounded-lg group-hover:brightness-75"
                     />
                     <div className="flex flex-col gap-1">
                       <span className="text-gray-900 dark:text-gray-100">
@@ -109,19 +100,10 @@ const SingleList = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-5">
+                  <div className="flex items-center">
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       {formatTime(item.duration)}
                     </span>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <Dropdown
-                        menu={{ items: menuItems }}
-                        placement="topLeft"
-                        arrow
-                      >
-                        <IoEllipsisHorizontalSharp />
-                      </Dropdown>
-                    </div>
                   </div>
                 </div>
               )
@@ -132,7 +114,7 @@ const SingleList = () => {
         <div className="flex gap-4">
           {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="mb-4">
-              <Skeleton className="h-[50px] w-[362px] rounded-lg" />
+              <Skeleton className="h-[56px] w-[353px] rounded-lg" />
             </div>
           ))}
         </div>

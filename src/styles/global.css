@@ -83,6 +83,7 @@ body {
 }
 .ant-drawer-header {
   padding: 16px 16px !important;
+  border: 0 !important;
 }
 .ant-drawer-body {
   padding: 24px 8px !important;
@@ -96,6 +97,9 @@ body {
 .ant-menu-submenu-title {
   padding: 8px !important;
 }
+.ant-menu-item-divider{
+  border-color: rgba(0, 0, 0, 0.04) !important;
+}
 /* 定义整个滚动条的宽度 */
 ::-webkit-scrollbar {
   width: 14px; /* 垂直滚动条宽度 */
@@ -104,7 +108,7 @@ body {
 
 /* 滚动条轨道（背景） */
 ::-webkit-scrollbar-track {
-  background-color: #ffffff; /* 滚动条轨道的颜色 */
+  background-color: #f9f9f9; /* 滚动条轨道的颜色 */
   border-radius: 8px; /* 圆角 */
 }
 

@@ -1,6 +1,7 @@
 import { ConfigProvider, Drawer } from 'antd'
 import { formatTime } from '@/helpers/formatTime'
 import { FC } from 'react'
+import styles from './PlayDrawer.module.css'
 type Props = {
   open: boolean
   onClose: () => void
@@ -55,20 +56,34 @@ const PlayDrawerFull: FC<Props> = ({
                 setIsPlaying(true)
               }}
             >
-              {/* {onClicked === item.id && isPlaying ? (
-                <div className="mr-1 flex items-end">
-                  <div className="ml-1 mt-4 flex rotate-180 transform">
-                    <div className="animate-move6 my-[0.1em] h-[0.2em] w-[2px] rounded-[5px] bg-[#f30074] delay-200"></div>
-                    <div className="animate-move6 delay-400 my-[0.1em] h-[0.2em] w-[2px] rounded-[5px] bg-[#f30074]"></div>
-                    <div className="animate-move6 delay-600 my-[0.1em] h-[0.2em] w-[2px] rounded-[5px] bg-[#f30074]"></div>
-                    <div className="animate-move6 my-[0.1em] h-[0.2em] w-[2px] rounded-[5px] bg-[#f30074]"></div>
+              {onClicked == item.id && isPlaying ? (
+                <div className="relative right-1 w-6">
+                  <div className={styles.playing}>
+                    <div
+                      className={`${styles.lineContainer} ${styles['line-1']}`}
+                    ></div>
+                    <div
+                      className={`${styles.lineContainer} ${styles['line-2']}`}
+                    ></div>
+                    <div
+                      className={`${styles.lineContainer} ${styles['line-3']}`}
+                    ></div>
+                    <div
+                      className={`${styles.lineContainer} ${styles['line-4']}`}
+                    ></div>
+                    <div
+                      className={`${styles.lineContainer} ${styles['line-5']}`}
+                    ></div>
                   </div>
                 </div>
               ) : (
-                <div className=" flex h-full items-center">
-                  <div className="clip-path-polygon-50-50-100-50-75-6.6 relative left-[-0.35em] mt-[-0.7em] h-[1.6em] w-[1.6em] rotate-90 transform self-center justify-self-center bg-white"></div>
+                <div className="align-center flex w-6">
+                  <div
+                    className={styles.play}
+                    style={{ backgroundColor: '#fff' }}
+                  ></div>
                 </div>
-              )} */}
+              )}
               <div className="flex-shrink-0">
                 <img
                   src={item.cover}

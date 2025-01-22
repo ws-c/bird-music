@@ -4,14 +4,14 @@ export default async function handler(req: { method: string }, res: any) {
   if (req.method === 'GET') {
     try {
       const playlist = await prisma.playlist.findMany({
-        take: 7,
+        take: 8,
         orderBy: {
           createTime: 'desc',
         },
       })
       res.status(200).json(playlist)
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch playlist' })
+      res.status(500).json({ error: `Failed to fetch playlist: ${error}`, })
     }
   } else {
     res.setHeader('Allow', ['GET'])

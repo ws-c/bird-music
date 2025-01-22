@@ -34,12 +34,12 @@ const Playlist = () => {
   }, [])
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-2">
       {playlists.length > 0 ? (
         playlists.map((item) => (
           <div
             key={item.id}
-            className="group relative w-[200px] flex-shrink-0 transform cursor-pointer overflow-hidden rounded-lg p-2 transition-transform hover:bg-slate-50 hover:shadow-md"
+            className="group relative w-[176px] flex-shrink-0 transform cursor-pointer overflow-hidden rounded-lg p-2 transition-transform hover:bg-slate-50 hover:shadow-md"
             onClick={() => router.push(`/playlist/${item.id}`)}
           >
             <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -56,9 +56,9 @@ const Playlist = () => {
           </div>
         ))
       ) : (
-        <div className="flex gap-4">
-          {Array.from({ length: 7 }).map((_, index) => (
-            <div key={index} className="w-[200px]">
+        <div className="flex gap-2">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="w-[176px]">
               <Skeleton className="h-48 w-full rounded-lg" />
               <Skeleton className="mt-2 h-4 w-3/4 rounded" />
               <Skeleton className="mt-1 h-3 w-1/2 rounded" />

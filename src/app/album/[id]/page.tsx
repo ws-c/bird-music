@@ -238,8 +238,11 @@ export default function Home({ params }: { params: { id: string } }) {
             pagination={false}
             onRow={(record) => ({
               onClick: () => {
-                setCurrentId(record.id), setSingleList(curSingleList)
-                setShowPlayer(true), setOnClicked(record.id), setIsPlaying(true)
+                setCurrentId(record.id)
+                setSingleList(curSingleList)
+                setShowPlayer(true)
+                setOnClicked(record.id)
+                setIsPlaying(true)
               },
             })}
             rowClassName={(record) =>
