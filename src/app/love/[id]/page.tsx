@@ -4,11 +4,8 @@ import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import { useRouter } from 'next/navigation'
 import { Spin, Button, Table, Avatar } from 'antd'
-import dayjs from 'dayjs'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
-import Icons from '@/components/Icons'
-import Edit from './Edit'
 import { SongList } from '@/types'
 import Link from 'next/link'
 const columns = [
@@ -86,6 +83,11 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   } = useStore()
   const router = useRouter()
 
+  if (user.id !== +id) {
+    alert('你没有权限访问此页面')
+    router.push('/')
+  }
+
   const [playList, setPlayList] = useState<Playlist>({
     author: '',
     createTime: '',
@@ -127,45 +129,26 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       setOnClicked(currentId)
     }
   }, [currentId])
-  // 修改歌单信息
-  const [open, setOpen] = useState(false)
-  const showModal = () => {
-    setOpen(true)
-  }
+
   return (
     <div className="mt-8">
       {loading ? (
         <Spin size="large" />
       ) : (
         <>
-          <Edit
-            open={open}
-            setOpen={setOpen}
-            name={user.username}
-            fetchAllData={fetchAllData}
-            playList={playList}
-          />
           <div className="flex w-[768px] items-end gap-8">
-            <div className="h-56 overflow-hidden rounded-lg shadow-lg">
+            <div className="h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
               <img
                 src={playList.img}
                 alt=""
-                className="cover-animation h-56 w-56 rounded-lg object-cover"
+                className="cover-animation h-56 transform rounded-lg object-cover"
               />
             </div>
             <div className="relative flex flex-col">
               <h2 className="m-0 text-2xl font-semibold tracking-wide">
-                {playList.name}
-                {user.username === playList.author && (
-                  <Icons
-                    onClick={showModal}
-                    type="icon-xiugai"
-                    size={24}
-                    className="ml-2 cursor-pointer"
-                  />
-                )}
+                我喜欢的音乐
               </h2>
-              <div className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
+              <p className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
                 {playList.desc
                   ? playList.desc.split('\n').map((line, index) => (
                       <p key={index} className="m-0 mb-3">
@@ -180,25 +163,8 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                     size={28}
                   />
                   <span>{playList.author}</span>
-                  {playList.tags && (
-                    <span>
-                      标签：
-                      {playList.tags.map((item, index) => (
-                        <React.Fragment key={item}>
-                          {index !== 0 && ' / '}
-                          <a href="#" className="text-blue-500">
-                            {item}
-                          </a>
-                        </React.Fragment>
-                      ))}
-                    </span>
-                  )}
-                  <span>
-                    创建于
-                    {dayjs(playList.createTime).format('YYYY-MM-DD')}
-                  </span>
                 </div>
-              </div>
+              </p>
 
               <div className="flex gap-2">
                 <Button
@@ -214,9 +180,6 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   }}
                 >
                   播放全部
-                </Button>
-                <Button disabled={user.username === playList.author}>
-                  收藏歌单
                 </Button>
               </div>
             </div>
