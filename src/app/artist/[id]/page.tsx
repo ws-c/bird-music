@@ -1,10 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
+import { Button, Table, Spin, Modal } from 'antd'
 import { formatTime } from '@/helpers/formatTime'
 import useStore from '@/store/useStore'
 import flattenObject from '@/helpers/flattenObject'
 import { SongList } from '@/types'
+import Link from 'next/link'
 const columns = [
   {
     title: '#',
@@ -25,14 +26,24 @@ const columns = [
     dataIndex: 'song_artists',
     key: 'name',
     width: '15%',
-    render: (text: any) =>
-      text.map((item: any) => item.artists.name).join(' / '),
+    render: (text: SongList[]) =>
+      text.map((item: SongList, index) => {
+        return (
+          <>
+            <Link href={`/artist/${item.artist_id}`}>{item.artists.name}</Link>
+            {index < text.length - 1 && <span className="mx-1">/</span>}
+          </>
+        )
+      }),
   },
   {
     title: '专辑',
     dataIndex: 'album_title',
     key: 'name',
     width: '15%',
+    render: (_: SongList[], record: SongList) => (
+      <Link href={`/album/${record.albums_id}`}>{record.album_title}</Link>
+    ),
   },
 
   {
@@ -115,7 +126,6 @@ export default function Home({ params }: { params: { id: string } }) {
         const newData = data.song_artists.map((song: any) => ({
           ...flattenObject(song.songs),
         }))
-        console.log('456', newData)
         setCurSingleList(newData)
 
         setColorTheme(data.image_url)
@@ -145,69 +155,37 @@ export default function Home({ params }: { params: { id: string } }) {
   }, [currentId])
 
   return (
-    <div style={{ marginTop: '30px' }}>
+    <div className="mt-8">
       {loading ? (
         <Spin size="large" />
       ) : (
         <>
-          <Flex align="flex-end" gap={35} style={{ width: '700px' }}>
-            <div
-              style={{
-                overflow: 'hidden',
-                height: '250px',
-                borderRadius: '50%',
-                boxShadow:
-                  '0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1)',
-              }}
-            >
+          <div className="flex w-[700px] items-end gap-8">
+            <div className="h-56 w-56 overflow-hidden rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
               <img
                 src={artist.image_url}
                 alt=""
-                style={{
-                  height: '250px',
-                  width: '250px',
-                  objectFit: 'cover',
-                }}
-                className="cover-animation"
+                className="cover-animation h-56 object-cover"
               />
             </div>
-            <Flex vertical style={{ position: 'relative' }}>
-              <Typography.Title
-                level={2}
-                style={{ margin: '0', letterSpacing: '1px' }}
-              >
+            <div className="relative flex flex-col">
+              <h2 className="m-0 text-2xl font-semibold tracking-wide">
                 {artist.name}
-              </Typography.Title>
-              <Typography.Text
-                type="secondary"
-                style={{
-                  position: 'relative',
-                  margin: '20px 0',
-                  height: '90px',
-                  width: '350px',
-                  overflow: 'hidden',
-                }}
-              >
-                {artist.biography ? (
-                  artist.biography.split('\n').map((line, index) => (
-                    <p key={index} style={{ margin: '0 0 4px 0' }}>
-                      {line}
-                    </p>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </Typography.Text>
+              </h2>
+              <div className="my-5 h-[80px] w-[400px] overflow-hidden text-sm text-gray-500">
+                {artist.biography
+                  ? artist.biography.split('\n').map((line, index) => (
+                      <p key={index} className="m-0 mb-1">
+                        {line}
+                      </p>
+                    ))
+                  : null}
+              </div>
               {String(artist.biography).length > 120 && (
                 <Button
                   color="primary"
                   variant="link"
-                  style={{
-                    position: 'absolute',
-                    bottom: '53px',
-                    right: '-50px',
-                    border: 'none',
-                  }}
+                  className="absolute bottom-[20px] right-[-175px] border-none"
                   size="small"
                   onClick={() => setIsModalOpen(true)}
                 >
@@ -216,29 +194,32 @@ export default function Home({ params }: { params: { id: string } }) {
               )}
               <Button
                 type="primary"
-                style={{ width: '100px' }}
+                className="w-24"
                 onClick={() => {
-                  setSingleList(curSingleList),
-                    setCurrentId(curSingleList[0].id),
-                    setShowPlayer(true),
-                    setOnClicked(curSingleList[0].id),
-                    setIsPlaying(true)
+                  setSingleList(curSingleList)
+                  setCurrentId(curSingleList[0].id)
+                  setShowPlayer(true)
+                  setOnClicked(curSingleList[0].id)
+                  setIsPlaying(true)
                 }}
               >
                 播放全部
               </Button>
-            </Flex>
-          </Flex>
+            </div>
+          </div>
           <Table
             rowKey={(record) => record.id}
             dataSource={curSingleList}
             columns={columns}
-            style={{ marginTop: '50px', width: '80%' }}
+            className="mt-12 w-[80%]"
             pagination={false}
             onRow={(record) => ({
               onClick: () => {
-                setCurrentId(record.id), setSingleList(curSingleList)
-                setShowPlayer(true), setOnClicked(record.id), setIsPlaying(true)
+                setCurrentId(record.id)
+                setSingleList(curSingleList)
+                setShowPlayer(true)
+                setOnClicked(record.id)
+                setIsPlaying(true)
               },
             })}
             rowClassName={(record) =>
@@ -253,15 +234,13 @@ export default function Home({ params }: { params: { id: string } }) {
             footer={null}
             width={800}
           >
-            <Typography.Text type="secondary">
-              {artist.biography ? (
-                artist.biography
-                  .split('\n')
-                  .map((line, index) => <p key={index}>{line}</p>)
-              ) : (
-                <></>
-              )}
-            </Typography.Text>
+            <div className="text-gray-500">
+              {artist.biography
+                ? artist.biography
+                    .split('\n')
+                    .map((line, index) => <p key={index}>{line}</p>)
+                : null}
+            </div>
           </Modal>
         </>
       )}

@@ -98,7 +98,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     },
     {
       label: '我喜欢的音乐',
-      key: 'love',
+      key: `love/${user.id}`,
       icon: (
         <Icons
           type="icon-love_fill"

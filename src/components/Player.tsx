@@ -330,6 +330,11 @@ const Player = () => {
               <div>
                 <span className="text-lg font-bold text-[#f3f2f4]">
                   {currentSong.song_title}
+                  <Icons
+                    type="icon-heart"
+                    size={20}
+                    className="ml-2 hover:text-primary"
+                  />
                 </span>
                 <div>
                   <span className="text-base font-bold text-[#c6c2ca]">
@@ -485,7 +490,8 @@ const Player = () => {
           </div>
         </div>
         <div className="absolute left-[50%] flex translate-x-[-50%] transform flex-col sm:w-[150px] md:w-[300px] lg:w-[450px] xl:w-[750px]">
-          <div className="flex items-center justify-center gap-4 pt-2">
+          <div className="flex items-center justify-center gap-6 pt-2">
+            <Icons type="icon-heart" size={24} className="hover:text-primary" />
             <IoPlaySkipBack
               onClick={handlePrevious}
               className="cursor-pointer text-2xl"
@@ -494,18 +500,19 @@ const Player = () => {
             {isPlaying ? (
               <IoPauseCircle
                 onClick={togglePlayPause}
-                className="mx-2 transform cursor-pointer text-5xl text-primary transition-transform duration-200 hover:scale-110"
+                className="transform cursor-pointer text-5xl text-primary transition-transform duration-200 hover:scale-110"
               />
             ) : (
               <IoCaretForwardCircle
                 onClick={togglePlayPause}
-                className="mx-2 transform cursor-pointer text-5xl text-primary transition-transform duration-200 hover:scale-110"
+                className="transform cursor-pointer text-5xl text-primary transition-transform duration-200 hover:scale-110"
               />
             )}
             <IoPlaySkipForward
               onClick={() => handleNext(true)}
               className="cursor-pointer text-2xl"
             />
+            {getPlayModeIcon('1')}
           </div>
           <div className="flex items-center gap-4">
             <span>{formatTime(currentTime)}</span>
@@ -521,7 +528,6 @@ const Player = () => {
           </div>
         </div>
         <div className="flex items-center gap-6">
-          {getPlayModeIcon('1')}
           <div className="flex gap-2">
             {getVolumeIcon('1')}
             <Slider

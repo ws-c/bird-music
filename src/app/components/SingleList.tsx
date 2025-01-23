@@ -111,13 +111,22 @@ const SingleList = () => {
           </div>
         ))}
       {!curSingleList.length && (
-        <div className="flex gap-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="mb-4">
-              <Skeleton className="h-[56px] w-[353px] rounded-lg" />
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="flex gap-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="mb-4">
+                <Skeleton className="h-[56px] w-[353px] rounded-lg" />
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="mb-4">
+                <Skeleton className="h-[56px] w-[353px] rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

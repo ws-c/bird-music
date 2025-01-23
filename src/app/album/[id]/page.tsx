@@ -1,10 +1,11 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Flex, Table, Typography, Spin, Modal } from 'antd'
+import { Button, Table, Spin, Modal } from 'antd'
 import { formatTime } from '@/helpers/formatTime'
 import useStore from '@/store/useStore'
 import { useRouter } from 'next/navigation'
 import { SongList } from '@/types'
+import Link from 'next/link'
 const columns = [
   {
     title: '#',
@@ -25,8 +26,15 @@ const columns = [
     dataIndex: 'song_artists',
     key: 'name',
     width: '15%',
-    render: (text: any) =>
-      text.map((item: any) => item.artists.name).join(' / '),
+    render: (text: SongList[]) =>
+      text.map((item: SongList, index) => {
+        return (
+          <>
+            <Link href={`/artist/${item.artist_id}`}>{item.artists.name}</Link>
+            {index < text.length - 1 && <span className="mx-1">/</span>}
+          </>
+        )
+      }),
   },
   {
     title: '时长',
@@ -134,80 +142,43 @@ export default function Home({ params }: { params: { id: string } }) {
     }
   }, [currentId])
   return (
-    <div style={{ marginTop: '30px' }}>
-      {loading ? ( // 根据加载状态渲染不同的内容
+    <div className="mt-8">
+      {loading ? (
         <Spin size="large" />
       ) : (
         <>
-          <Flex align="flex-end" gap={35} style={{ width: '700px' }}>
-            <div
-              style={{
-                overflow: 'hidden',
-                height: '250px',
-                borderRadius: '8px',
-                boxShadow:
-                  '0 10px 30px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1)',
-              }}
-            >
+          <div className="flex w-[700px] items-end gap-8">
+            <div className="h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
               <img
                 src={album.cover}
                 alt=""
-                style={{
-                  height: '250px',
-                  borderRadius: '8px',
-                }}
-                className="cover-animation"
+                className="cover-animation h-56 rounded-lg object-cover"
               />
             </div>
-            <Flex vertical style={{ position: 'relative' }}>
-              <Typography.Title
-                level={3}
-                style={{ margin: '0', letterSpacing: '1px' }}
-              >
+            <div className="relative flex h-56 flex-col">
+              <h2 className="m-0 text-2xl tracking-wide">
                 {album.album_title}
-              </Typography.Title>
-              <Typography.Title
-                level={3}
-                style={{
-                  margin: '0',
-                  letterSpacing: '1px',
-                  color: '#f30074',
-                }}
-                className="link"
+              </h2>
+              <h2
+                className="m-0 cursor-pointer text-2xl tracking-wide text-primary hover:underline"
                 onClick={() => router.push(`/artist/${album.artist_id}`)}
               >
                 {album.artists.name}
-              </Typography.Title>
-              <Typography.Text
-                type="secondary"
-                style={{
-                  position: 'relative',
-                  margin: '20px 0',
-                  height: '95px',
-                  width: '350px',
-                  overflow: 'hidden',
-                }}
-              >
-                {album.desc ? (
-                  album.desc.split('\n').map((line, index) => (
-                    <p key={index} style={{ margin: '0 0 4px 0' }}>
-                      {line}
-                    </p>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </Typography.Text>
+              </h2>
+              <div className="my-5 h-[80px] w-[400px] overflow-hidden text-sm text-gray-500">
+                {album.desc
+                  ? album.desc.split('\n').map((line, index) => (
+                      <p key={index} className="m-0 mb-1">
+                        {line}
+                      </p>
+                    ))
+                  : null}
+              </div>
               {String(album.desc).length > 120 && (
                 <Button
                   color="primary"
                   variant="link"
-                  style={{
-                    position: 'absolute',
-                    bottom: '50px',
-                    right: '-50px',
-                    border: 'none',
-                  }}
+                  className="absolute bottom-[20px] right-[-175px] border-none"
                   type="link"
                   size="small"
                   onClick={() => setIsModalOpen(true)}
@@ -217,24 +188,24 @@ export default function Home({ params }: { params: { id: string } }) {
               )}
               <Button
                 type="primary"
-                style={{ width: '100px' }}
+                className="w-24"
                 onClick={() => {
-                  setSingleList(curSingleList),
-                    setCurrentId(curSingleList[0].id),
-                    setShowPlayer(true),
-                    setOnClicked(curSingleList[0].id),
-                    setIsPlaying(true)
+                  setSingleList(curSingleList)
+                  setCurrentId(curSingleList[0].id)
+                  setShowPlayer(true)
+                  setOnClicked(curSingleList[0].id)
+                  setIsPlaying(true)
                 }}
               >
                 播放全部
               </Button>
-            </Flex>
-          </Flex>
+            </div>
+          </div>
           <Table
             rowKey={(record) => record.id}
             dataSource={curSingleList}
             columns={columns}
-            style={{ marginTop: '50px', width: '80%' }}
+            className="mt-12 w-[80%]"
             pagination={false}
             onRow={(record) => ({
               onClick: () => {
@@ -257,15 +228,13 @@ export default function Home({ params }: { params: { id: string } }) {
             footer={null}
             width={800}
           >
-            <Typography.Text type="secondary">
-              {album.desc ? (
-                album.desc
-                  .split('\n')
-                  .map((line, index) => <p key={index}>{line}</p>)
-              ) : (
-                <></>
-              )}
-            </Typography.Text>
+            <div className="text-gray-500">
+              {album.desc
+                ? album.desc
+                    .split('\n')
+                    .map((line, index) => <p key={index}>{line}</p>)
+                : null}
+            </div>
           </Modal>
         </>
       )}

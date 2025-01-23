@@ -17,6 +17,14 @@ body {
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   background: rgba(0, 0, 0, 0.05);
 }
+
+a {
+  color: inherit !important;
+}
+a:hover {
+  color: #f30074 !important;
+  text-decoration: underline !important;
+}
 .link {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -102,13 +110,13 @@ body {
 }
 /* 定义整个滚动条的宽度 */
 ::-webkit-scrollbar {
-  width: 14px; /* 垂直滚动条宽度 */
-  height: 14px; /* 水平滚动条高度 */
+  width: 8px; /* 垂直滚动条宽度 */
+  height: 8px; /* 水平滚动条高度 */
 }
 
 /* 滚动条轨道（背景） */
 ::-webkit-scrollbar-track {
-  background-color: #f9f9f9; /* 滚动条轨道的颜色 */
+  background-color: transparent; /* 滚动条轨道的颜色 */
   border-radius: 8px; /* 圆角 */
 }
 
@@ -116,7 +124,6 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: #888; /* 滑块颜色 */
   border-radius: 8px; /* 圆角 */
-  border: 3px solid #f1f1f1; /* 滑块边框 */
 }
 
 /* 滚动条滑块悬停时的样式 */
