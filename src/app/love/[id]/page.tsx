@@ -8,6 +8,7 @@ import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
 import Link from 'next/link'
+import Icons from '@/components/Icons'
 const columns = [
   {
     title: '#',
@@ -61,7 +62,6 @@ export type Playlist = {
   createTime: string
   desc: string
   id: number
-  img: string
   isPrivate: string
   name: string
   tags: string[]
@@ -89,15 +89,15 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   }
 
   const [playList, setPlayList] = useState<Playlist>({
-    author: '',
+    author: user.username,
     createTime: '',
     desc: '',
-    id: 0,
-    img: '',
+    id: user.id,
+    img: user.cover,
     isPrivate: '',
     name: '',
     tags: [],
-    cover: '',
+    cover: user.cover,
   })
   const [loading, setLoading] = useState(true)
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
@@ -109,15 +109,10 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const fetchAllData = async () => {
     setLoading(true)
     try {
-      const [playlistRes, contentRes] = await Promise.all([
-        fetch(`/api/playlist/get/${id}`),
-        fetch(`/api/playlist_content?id=${id}`),
-      ])
-      const playlistData = await playlistRes.json()
-      const contentData = await contentRes.json()
-      setPlayList(playlistData)
-      setColorTheme(playlistData.img)
-      setCurSingleList(contentData)
+      const res = await fetch(`/api/love/getList?id=${id}`)
+      const Data = await res.json()
+      setColorTheme(Data.img)
+      setCurSingleList(Data)
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -137,11 +132,17 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       ) : (
         <>
           <div className="flex w-[768px] items-end gap-8">
-            <div className="h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
+            <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
               <img
-                src={playList.img}
+                src={curSingleList[0].cover}
                 alt=""
                 className="cover-animation h-56 transform rounded-lg object-cover"
+              />
+              <Icons
+                type="icon-heart-fill"
+                size={100}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-25"
+                style={{ cursor: 'default' }}
               />
             </div>
             <div className="relative flex flex-col">
@@ -149,13 +150,6 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 我喜欢的音乐
               </h2>
               <p className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
-                {playList.desc
-                  ? playList.desc.split('\n').map((line, index) => (
-                      <p key={index} className="m-0 mb-3">
-                        {line}
-                      </p>
-                    ))
-                  : null}
                 <div className="flex items-center gap-3">
                   <Avatar
                     src={playList.cover}
