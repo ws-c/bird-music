@@ -17,7 +17,7 @@ const AlbumList: FC<AlbumListProps> = ({ albumList }) => {
       {albumList.map((item) => (
         <div
           key={item.id}
-          className="group relative w-48 cursor-pointer rounded-lg bg-[#f2f2f2] p-3 transition-transform hover:bg-white hover:shadow-lg"
+          className="group relative w-48 cursor-pointer rounded-lg p-3 transition-transform hover:bg-white hover:shadow-lg"
           onClick={() => route.push(`/album/${item.id}`)}
         >
           <div className="relative">

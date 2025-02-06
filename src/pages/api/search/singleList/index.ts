@@ -15,7 +15,7 @@ export default async function handler(
       }
 
       const songs = await prisma.songs.findMany({
-        distinct: ['albums_id'],
+        // distinct: ['albums_id'],
         where: {
           OR: [
             {
@@ -46,7 +46,7 @@ export default async function handler(
             release_date: 'desc', // 按专辑发布日期降序排序
           },
         },
-        take: 6,
+        take: 12,
         include: {
           albums: {
             select: {
