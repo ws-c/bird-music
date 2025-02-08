@@ -30,7 +30,12 @@ const columns = [
       text.map((item: SongList, index) => {
         return (
           <>
-            <Link href={`/artist/${item.artist_id}`}>{item.artists.name}</Link>
+            <Link
+              href={`/artist/${item.artist_id}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {item.artists.name}
+            </Link>
             {index < text.length - 1 && <span className="mx-1">/</span>}
           </>
         )

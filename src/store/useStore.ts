@@ -18,6 +18,7 @@ interface User {
 // 定义 Store 的状态和方法类型
 interface StoreState {
   singleList: SongList[]
+  preSingleList: SongList[]
   currentId: number
   showPlayer: boolean
   user: User
@@ -29,6 +30,7 @@ interface StoreState {
   setInputValue: (value: string) => void
   setIsPlaying: (playing: boolean) => void
   setSingleList: (list: any[]) => void
+  setPreSingleList: (list: any[]) => void
   setCurrentId: (id: number) => void
   setShowPlayer: (show: boolean) => void
   setUser: (newUser: User) => void
@@ -42,6 +44,10 @@ const useStore = create<StoreState>((set) => ({
   singleList:
     typeof window !== 'undefined'
       ? JSON.parse(localStorage.getItem('singleList') || '[]')
+      : [],
+  preSingleList:
+    typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem('preSingleList') || '[]')
       : [],
   currentId:
     typeof window !== 'undefined'
@@ -76,6 +82,13 @@ const useStore = create<StoreState>((set) => ({
     set({ singleList: list })
     if (typeof window !== 'undefined') {
       localStorage.setItem('singleList', JSON.stringify(list))
+    }
+  },
+  // 更新历史单曲列表并存储到 localStorage
+  setPreSingleList: (list: any[]) => {
+    set({ preSingleList: list })
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('preSingleList', JSON.stringify(list))
     }
   },
   // 更新当前 ID 并存储到 localStorage

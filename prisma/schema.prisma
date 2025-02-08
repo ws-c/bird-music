@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://wangshuai:Ws-118816742@rm-wz910td2iz8v3hmjyho.mysql.rds.aliyuncs.com:3306/music"
+  url      = "mysql://root:root@localhost:3306/music"
 }
 
 model playlist {
@@ -22,14 +22,15 @@ model playlist {
 }
 
 model songs {
-  id             Int              @id @default(autoincrement())
-  song_title     String           @db.VarChar(255)
-  duration       Int?
-  file_path      String           @db.Text
-  albums_id      Int
-  playlist_songs playlist_songs[]
-  song_artists   song_artists[]
-  albums         albums           @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
+  id               Int                @id @default(autoincrement())
+  song_title       String             @db.VarChar(255)
+  duration         Int?
+  file_path        String             @db.Text
+  albums_id        Int
+  playlist_songs   playlist_songs[]
+  song_artists     song_artists[]
+  albums           albums             @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
+  user_likes_songs user_likes_songs[]
 
   @@index([albums_id], map: "albums_id")
 }
@@ -57,11 +58,12 @@ model artists {
 }
 
 model users {
-  id        Int       @id @default(autoincrement())
-  username  String    @unique(map: "unique_username") @db.VarChar(255)
-  password  String    @db.VarChar(255)
-  createdAt DateTime? @db.Date
-  cover     String?   @db.VarChar(255)
+  id               Int                @id @default(autoincrement())
+  username         String             @unique(map: "unique_username") @db.VarChar(255)
+  password         String             @db.VarChar(255)
+  createdAt        DateTime?          @db.Date
+  cover            String?            @db.VarChar(255)
+  user_likes_songs user_likes_songs[]
 }
 
 model playlist_songs {
@@ -83,4 +85,16 @@ model song_artists {
 
   @@id([song_id, artist_id])
   @@index([artist_id], map: "fk_song_artists_artist")
+}
+
+model user_likes_songs {
+  user_id  Int
+  song_id  Int
+  liked_at DateTime? @default(now()) @db.DateTime(0)
+  users    users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_likes_songs_ibfk_1")
+  songs    songs     @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_likes_songs_ibfk_2")
+
+  @@id([user_id, song_id])
+  @@index([song_id], map: "idx_user_likes_songs_song_id")
+  @@index([user_id], map: "idx_user_likes_songs_user_id")
 }
