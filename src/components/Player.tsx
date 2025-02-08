@@ -23,8 +23,16 @@ import {
 } from 'react-icons/io5'
 const Player = () => {
   const router = useRouter()
-  const { singleList, currentId, setCurrentId, isPlaying, setIsPlaying, user } =
-    useStore()
+  const {
+    singleList,
+    preSingleList,
+    setPreSingleList,
+    currentId,
+    setCurrentId,
+    isPlaying,
+    setIsPlaying,
+    user,
+  } = useStore()
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
   )
@@ -38,11 +46,16 @@ const Player = () => {
       audioRef.current.play()
     }
   }, [currentSongIndex, isPlaying])
-
   // 当 currentId 或 singleList 变化时，更新 currentSongIndex
   useEffect(() => {
-    const index = singleList.findIndex((song) => song.id === currentId)
-    setCurrentSongIndex(index >= 0 ? index : 0)
+    const index = singleList.findIndex((song) => song.id === currentId) || 0
+    setCurrentSongIndex(index)
+    // 更新历史播放列表
+    const newPreSingleList = [singleList[index], ...preSingleList]
+    const uniquePreSingleList = newPreSingleList.filter(
+      (value, index, self) => index === self.findIndex((t) => t.id === value.id)
+    )
+    setPreSingleList(uniquePreSingleList)
   }, [singleList, currentId])
   // 根据 isPlaying 状态播放或暂停
   useEffect(() => {
