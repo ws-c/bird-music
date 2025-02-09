@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma'
-
+// 搜索框模糊查询
 export default async function handler(
   req: { method: string; query: { q: string } },
   res: any
@@ -44,6 +44,16 @@ export default async function handler(
           name: true,
         },
       })
+      const results4 = await prisma.playlist.findMany({
+        where: {
+          name: {
+            startsWith: query, // 模糊匹配，匹配以 query 开头的标题
+          },
+        },
+        select: {
+          name: true,
+        },
+      })
       // 将结果合并并去重
       const mergedResults = [
         ...results1.map((item) => ({
@@ -55,6 +65,7 @@ export default async function handler(
           value: item.album_title,
         })),
         ...results3.map((item) => ({ label: item.name, value: item.name })),
+        ...results4.map((item) => ({ label: item.name, value: item.name })),
       ]
 
       // 根据 title 去重

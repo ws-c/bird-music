@@ -2,8 +2,7 @@
 import { useEffect, useState } from 'react'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
-import { useRouter } from 'next/navigation'
-import { Spin, Button, Table, Avatar } from 'antd'
+import { Spin, Button, Table, Avatar, notification } from 'antd'
 import dayjs from 'dayjs'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
@@ -94,7 +93,6 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     refreshCount,
     setColorTheme,
   } = useStore()
-  const router = useRouter()
 
   const [playList, setPlayList] = useState<Playlist>({
     author: '',
@@ -141,6 +139,31 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const [open, setOpen] = useState(false)
   const showModal = () => {
     setOpen(true)
+  }
+
+  // 收藏歌单
+  const handleCollect = async (id: string) => {
+    const res = await fetch('/api/playlist/collect/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user.id,
+        playlistId: +id,
+      }),
+    })
+    res.json().then((res) => {
+      if (res.code == 200) {
+        notification.success({
+          message: res.message,
+        })
+      } else {
+        notification.error({
+          message: res.error,
+        })
+      }
+    })
   }
   return (
     <div className="mt-8">
@@ -225,7 +248,10 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 >
                   播放全部
                 </Button>
-                <Button disabled={user.username === playList.author}>
+                <Button
+                  disabled={user.username === playList.author}
+                  onClick={() => handleCollect(id)}
+                >
                   收藏歌单
                 </Button>
               </div>

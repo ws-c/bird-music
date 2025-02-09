@@ -5,6 +5,7 @@ import Layout from '@/components/layout'
 import SingleList from './components/SingleList'
 import ArtistList from './components/ArtistList'
 import AlbumList from './components/AlbumList'
+import PlayList from './components/PlayList'
 
 export type SingleList_ = {
   album_title: string
@@ -36,7 +37,11 @@ export type Artists = {
   name: string
   [property: string]: any
 }
-
+export type PlayList_ = {
+  id: number
+  name: string
+  img: string
+}
 export default function Home({
   params,
 }: {
@@ -48,26 +53,32 @@ export default function Home({
   const [singleList, setSingleList] = useState<SingleList_[]>([])
   const [artistList, setArtistList] = useState<ArtistList_[]>([])
   const [albumList, setAlbumList] = useState<AlbumList_[]>([])
-
+  const [playList, setPlayList] = useState<PlayList_[]>([])
   useEffect(() => {
     // 使用 Promise.all 使请求并行
     const fetchData = async () => {
       try {
-        const [singleRes, artistRes, albumRes] = await Promise.all([
-          fetch(`/api/search/singleList?keyword=${params.id}`).then((res) =>
-            res.json()
-          ),
-          fetch(`/api/search/artistList?keyword=${params.id}`).then((res) =>
-            res.json()
-          ),
-          fetch(`/api/search/albumList?keyword=${params.id}`).then((res) =>
-            res.json()
-          ),
-        ])
+        const [singleRes, artistRes, albumRes, playListRes] = await Promise.all(
+          [
+            fetch(`/api/search/singleList?keyword=${params.id}`).then((res) =>
+              res.json()
+            ),
+            fetch(`/api/search/artistList?keyword=${params.id}`).then((res) =>
+              res.json()
+            ),
+            fetch(`/api/search/albumList?keyword=${params.id}`).then((res) =>
+              res.json()
+            ),
+            fetch(`/api/search/playList?keyword=${params.id}`).then((res) =>
+              res.json()
+            ),
+          ]
+        )
 
         setSingleList(singleRes)
         setArtistList(artistRes)
         setAlbumList(albumRes)
+        setPlayList(playListRes)
       } catch (error) {
         console.error('Error fetching data:', error)
       } finally {
@@ -95,6 +106,12 @@ export default function Home({
                 <AlbumList albumList={albumList}></AlbumList>
               </>
             )}
+            {playList.length > 0 && (
+              <>
+                <h2 className="pb-2 pt-4 text-xl font-bold">歌单</h2>
+                <PlayList playList={playList}></PlayList>
+              </>
+            )}
             {singleList.length > 0 && (
               <>
                 <h2 className="pb-2 pt-4 text-xl font-bold">单曲</h2>
@@ -102,9 +119,10 @@ export default function Home({
               </>
             )}
 
-            {!artistList.length && !singleList.length && !albumList.length && (
-              <div>没有相关结果</div>
-            )}
+            {!artistList.length &&
+              !singleList.length &&
+              !albumList.length &&
+              !playList.length && <div>没有相关结果</div>}
           </Flex>
         )}
       </div>
