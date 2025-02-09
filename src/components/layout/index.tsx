@@ -17,19 +17,75 @@ interface IProps {
 }
 
 const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
-  const { user, myPlayList, setMyPlayList, colorTheme } = useStore()
+  const {
+    user,
+    myPlayList,
+    setMyPlayList,
+    collectPlayList,
+    setCollectPlayList,
+    colorTheme,
+  } = useStore()
   const router = useRouter()
   const [client, setClient] = useState(false)
   useEffect(() => {
     getMyPlayList()
+    getCollectPlayList()
     setClient(true)
   }, [])
+  // 创建的歌单
   const getMyPlayList = async () => {
-    const res = await fetch(`/api/playlist/get?author=${user.username}`)
+    const res = await fetch(`/api/playlist/get?id=${user.id}`)
     const data = await res.json()
     setMyPlayList(data)
   }
   const myPlayList_ = myPlayList.map((item) => {
+    return {
+      label: (
+        <Flex
+          align="center"
+          style={{
+            fontSize: '12px',
+            color: '#999',
+          }}
+          gap={8}
+        >
+          <img
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '4px',
+            }}
+            src={
+              item.img
+                ? item.img
+                : 'https://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg'
+            }
+            alt="Image"
+          />
+          <div
+            style={{
+              height: '32px',
+              width: '127px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              lineHeight: '32px',
+            }}
+          >
+            {item.name}
+          </div>
+        </Flex>
+      ),
+      key: `playlist/${item.id}`,
+    }
+  })
+  // 收藏的歌单
+  const getCollectPlayList = async () => {
+    const res = await fetch(`/api/playlist/collect/get?id=${user.id}`)
+    const data = await res.json()
+    setCollectPlayList(data)
+  }
+  const collectPlayList_ = collectPlayList.map((item) => {
     return {
       label: (
         <Flex
@@ -145,8 +201,13 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       children: myPlayList_,
     },
     {
-      label: <Flex className="text-xs leading-6">收藏的歌单</Flex>,
+      label: (
+        <Flex className="text-xs leading-6">
+          收藏的歌单 ({collectPlayList.length})
+        </Flex>
+      ),
       key: 'collect',
+      children: collectPlayList_,
     },
   ]
 
@@ -241,7 +302,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }}
           mode="inline"
           selectedKeys={[curActive]}
-          defaultOpenKeys={['create']}
+          defaultOpenKeys={['create', 'collect']}
           items={items}
           onClick={(item) => onClick(item)}
         />

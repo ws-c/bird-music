@@ -25,8 +25,10 @@ interface StoreState {
   isPlaying: boolean
   inputValue: string
   myPlayList: PlayList[]
+  collectPlayList: PlayList[]
   colorTheme: string
   setMyPlayList: (list: PlayList[]) => void
+  setCollectPlayList: (list: PlayList[]) => void
   setInputValue: (value: string) => void
   setIsPlaying: (playing: boolean) => void
   setSingleList: (list: any[]) => void
@@ -67,11 +69,16 @@ const useStore = create<StoreState>((set) => ({
   isPlaying: false,
   inputValue: '',
   myPlayList: [],
+  collectPlayList: [],
   refreshCount: 0,
   colorTheme: '',
-  // 更新歌单
+  // 更新我创建的歌单
   setMyPlayList: (list: PlayList[]) => {
     set({ myPlayList: list })
+  },
+  // 更新我收藏的歌单
+  setCollectPlayList: (list: PlayList[]) => {
+    set({ collectPlayList: list })
   },
   // 更新输入值
   setInputValue: (value: string) => set({ inputValue: value }),

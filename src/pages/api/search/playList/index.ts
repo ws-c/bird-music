@@ -1,15 +1,14 @@
 import prisma from '@/lib/prisma'
-// 获取用户自己创建的歌单
+
 export default async function handler(
-  req: { method: string; query: { id: any } },
+  req: { method: string; query: { keyword: string } },
   res: any
 ) {
   if (req.method === 'GET') {
-    // 获取用户的所有歌单
     try {
       const playlist = await prisma.playlist.findMany({
         where: {
-          user_id: +req.query.id,
+          name: req.query.keyword,
         },
         select: {
           id: true,
@@ -19,7 +18,8 @@ export default async function handler(
       })
       res.status(200).json(playlist)
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch playlist' })
+      console.error('Error during search:', error)
+      res.status(500).json({ error: 'Failed to fetch search results' })
     }
   } else {
     res.setHeader('Allow', ['GET'])
