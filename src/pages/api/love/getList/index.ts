@@ -1,7 +1,7 @@
 import prisma from '@/lib/prisma'
 import flattenObject from '@/helpers/flattenObject'
 
-// 获取用户喜欢歌单
+// 获取用户:我喜欢的歌单
 export default async function handler(
   req: { method: string; query: { id: any } },
   res: any

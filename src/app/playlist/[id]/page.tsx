@@ -10,69 +10,14 @@ import Icons from '@/components/Icons'
 import Edit from './Edit'
 import { SongList } from '@/types'
 import Link from 'next/link'
-const columns = [
-  {
-    title: '#',
-    dataIndex: 'index',
-    key: 'index',
-    width: '1%',
-    render: (_: any, __: any, index: number) =>
-      (index + 1).toString().padStart(2, '0'),
-  },
-  {
-    title: '歌名',
-    dataIndex: 'song_title',
-    key: 'song_title',
-    width: '20%',
-  },
-  {
-    title: '艺人',
-    dataIndex: 'song_artists',
-    key: 'name',
-    width: '15%',
-    render: (text: SongList[]) =>
-      text.map((item: SongList, index) => {
-        return (
-          <>
-            <Link
-              href={`/artist/${item.artist_id}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {item.artists.name}
-            </Link>
-            {index < text.length - 1 && <span className="mx-1">/</span>}
-          </>
-        )
-      }),
-  },
-  {
-    title: '专辑',
-    dataIndex: 'album_title',
-    key: 'name',
-    width: '15%',
-    render: (_: SongList[], record: SongList) => (
-      <Link
-        href={`/album/${record.albums_id}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {record.album_title}
-      </Link>
-    ),
-  },
+import type { TableRowSelection } from 'antd/es/table/interface'
 
-  {
-    title: '时长',
-    dataIndex: 'duration',
-    key: 'duration',
-    width: '5%',
-    render: (text: number) => formatTime(text),
-  },
-]
 export type Playlist = {
   author: string
   createTime: string
   desc: string
   id: number
+  user_id: number
   img: string
   isPrivate: string
   name: string
@@ -92,6 +37,9 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     setSingleList,
     refreshCount,
     setColorTheme,
+    collectPlayList,
+    setIsLove,
+    isLove,
   } = useStore()
 
   const [playList, setPlayList] = useState<Playlist>({
@@ -104,6 +52,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     name: '',
     tags: [],
     cover: '',
+    user_id: 0,
   })
   const [loading, setLoading] = useState(true)
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
@@ -112,6 +61,37 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     fetchAllData()
   }, [refreshCount])
+  // 批量获取喜欢状态
+  const getLove = async (contentData: SongList[]) => {
+    const response = await fetch('/api/love/batch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        song_ids: contentData.map((item) => item.id),
+      }),
+    })
+    const res = await response.json()
+    if (res.code === 200) {
+      return contentData.map((item, index) => ({
+        ...item,
+        isLove: res.values[index],
+      }))
+    }
+    return contentData.map((item, index) => ({
+      ...item,
+      isLove: false,
+    })) // 如果请求失败，保持原始数据不变
+  }
+  useEffect(() => {
+    const updateLoveStatus = async () => {
+      const updatedList = await getLove(curSingleList)
+      setCurSingleList(updatedList)
+    }
+    updateLoveStatus()
+  }, [isLove])
   const fetchAllData = async () => {
     setLoading(true)
     try {
@@ -121,9 +101,10 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       ])
       const playlistData = await playlistRes.json()
       const contentData = await contentRes.json()
+      const finalData = await getLove(contentData)
       setPlayList(playlistData)
       setColorTheme(playlistData.img)
-      setCurSingleList(contentData)
+      setCurSingleList(finalData)
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -165,6 +146,121 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       }
     })
   }
+  // 喜欢歌曲
+  const handleLove = (id: number) => {
+    fetch('/api/love', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        song_id: id,
+        user_id: user.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code == 200) {
+          setCurSingleList(
+            curSingleList.map((item) => {
+              if (item.id === id) {
+                if (id === currentId) {
+                  setIsLove(!isLove)
+                }
+                return { ...item, isLove: res.value }
+              } else {
+                return item
+              }
+            })
+          )
+        }
+      })
+  }
+
+  // 在组件内部添加状态
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+
+  // 配置rowSelection
+  const rowSelection: TableRowSelection<SongList> = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys)
+    },
+  }
+  const columns = [
+    {
+      title: '#',
+      dataIndex: 'index',
+      key: 'index',
+      width: '2%',
+      render: (_: any, __: any, index: number) =>
+        (index + 1).toString().padStart(2, '0'),
+    },
+    {
+      title: '歌名',
+      dataIndex: 'song_title',
+      key: 'song_title',
+      width: '30%',
+    },
+    {
+      title: '艺人',
+      dataIndex: 'song_artists',
+      key: 'name',
+      width: '20%',
+      render: (text: SongList[]) =>
+        text.map((item: SongList, index) => {
+          return (
+            <>
+              <Link
+                href={`/artist/${item.artist_id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {item.artists.name}
+              </Link>
+              {index < text.length - 1 && <span className="mx-1">/</span>}
+            </>
+          )
+        }),
+    },
+    {
+      title: '专辑',
+      dataIndex: 'album_title',
+      key: 'name',
+      width: '20%',
+      render: (_: SongList[], record: SongList) => (
+        <Link
+          href={`/album/${record.albums_id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {record.album_title}
+        </Link>
+      ),
+    },
+    {
+      title: '喜欢',
+      dataIndex: 'isLove',
+      key: 'love',
+      width: '10%',
+      render: (_: any, record: SongList) => (
+        <Icons
+          type={record.isLove ? 'icon-heart-fill' : 'icon-heart'}
+          size={20}
+          className={`ml-1 ${record.isLove ? '' : 'hover:text-primary'}`}
+          onClick={(e?: React.MouseEvent<HTMLElement>) => {
+            handleLove(record.id)
+            e?.stopPropagation()
+          }}
+        />
+      ),
+    },
+    {
+      title: '时长',
+      dataIndex: 'duration',
+      key: 'duration',
+      width: '10%',
+      render: (text: number) => formatTime(text),
+    },
+  ]
   return (
     <div className="mt-8">
       {loading ? (
@@ -189,7 +285,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
             <div className="relative flex flex-col">
               <h2 className="m-0 text-2xl font-semibold tracking-wide">
                 {playList.name}
-                {user.username === playList.author && (
+                {user.id === playList.user_id && (
                   <Icons
                     onClick={showModal}
                     type="icon-xiugai"
@@ -249,10 +345,33 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   播放全部
                 </Button>
                 <Button
-                  disabled={user.username === playList.author}
+                  style={
+                    user.id !== playList.user_id &&
+                    collectPlayList.every((item) => item.id !== +id)
+                      ? { display: 'block' }
+                      : { display: 'none' }
+                  }
                   onClick={() => handleCollect(id)}
                 >
                   收藏歌单
+                </Button>
+                <Button
+                  type="primary"
+                  danger
+                  disabled={selectedRowKeys.length === 0}
+                  onClick={() => {
+                    console.log('删除选中项:', selectedRowKeys)
+                  }}
+                  style={
+                    user.id === playList.user_id
+                      ? { display: 'block' }
+                      : { display: 'none' }
+                  }
+                >
+                  批量删除
+                  {selectedRowKeys.length > 0 && (
+                    <span>({selectedRowKeys.length})</span>
+                  )}
                 </Button>
               </div>
             </div>
@@ -263,6 +382,9 @@ const PlayList = ({ params }: { params: { id: string } }) => {
             columns={columns}
             className="mt-12 w-4/5"
             pagination={false}
+            {...(collectPlayList.every((item) => item.id !== +id)
+              ? { rowSelection }
+              : {})}
             onRow={(record) => ({
               onClick: () => {
                 setCurrentId(record.id)
