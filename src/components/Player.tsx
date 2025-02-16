@@ -32,6 +32,8 @@ const Player = () => {
     isPlaying,
     setIsPlaying,
     user,
+    isLove,
+    setIsLove,
   } = useStore()
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
@@ -319,7 +321,6 @@ const Player = () => {
   }
 
   // 喜欢歌曲
-  const [isLove, setIsLove] = useState(false)
   const handleLove = () => {
     fetch('/api/love', {
       method: 'POST',
@@ -352,7 +353,6 @@ const Player = () => {
       .then((res) => res.json())
       .then((res) => {
         if (res.code == 200) {
-          console.log(res.value)
           setIsLove(res.value)
         }
       })
@@ -386,21 +386,12 @@ const Player = () => {
               <div>
                 <span className="text-lg font-bold text-[#f3f2f4]">
                   {currentSong.song_title}
-                  {isLove ? (
-                    <Icons
-                      type="icon-heart-fill"
-                      className="ml-2"
-                      size={20}
-                      onClick={handleLove}
-                    />
-                  ) : (
-                    <Icons
-                      type="icon-heart"
-                      size={20}
-                      className="ml-2 hover:text-primary"
-                      onClick={handleLove}
-                    />
-                  )}
+                  <Icons
+                    type={isLove ? 'icon-heart-fill' : 'icon-heart'}
+                    size={20}
+                    className={`ml-2 ${isLove ? '' : 'hover:text-primary'}`}
+                    onClick={handleLove}
+                  />
                 </span>
                 <div>
                   <span className="text-base font-bold text-[#c6c2ca]">
@@ -557,16 +548,12 @@ const Player = () => {
         </div>
         <div className="absolute left-[50%] flex translate-x-[-50%] transform flex-col sm:w-[150px] md:w-[300px] lg:w-[450px] xl:w-[750px]">
           <div className="flex items-center justify-center gap-6 pt-2">
-            {isLove ? (
-              <Icons type="icon-heart-fill" size={24} onClick={handleLove} />
-            ) : (
-              <Icons
-                type="icon-heart"
-                size={24}
-                className="hover:text-primary"
-                onClick={handleLove}
-              />
-            )}
+            <Icons
+              type={isLove ? 'icon-heart-fill' : 'icon-heart'}
+              size={24}
+              className={`${isLove ? '' : 'hover:text-primary'}`}
+              onClick={handleLove}
+            />
 
             <IoPlaySkipBack
               onClick={handlePrevious}

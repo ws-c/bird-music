@@ -23,6 +23,7 @@ interface StoreState {
   showPlayer: boolean
   user: User
   isPlaying: boolean
+  isLove: boolean
   inputValue: string
   myPlayList: PlayList[]
   collectPlayList: PlayList[]
@@ -39,6 +40,7 @@ interface StoreState {
   refreshCount: number
   triggerRefresh: () => void
   setColorTheme: (theme: string) => void
+  setIsLove: (love: boolean) => void
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -72,6 +74,7 @@ const useStore = create<StoreState>((set) => ({
   collectPlayList: [],
   refreshCount: 0,
   colorTheme: '',
+  isLove: false,
   // 更新我创建的歌单
   setMyPlayList: (list: PlayList[]) => {
     set({ myPlayList: list })
@@ -84,6 +87,8 @@ const useStore = create<StoreState>((set) => ({
   setInputValue: (value: string) => set({ inputValue: value }),
   // 更新播放状态
   setIsPlaying: (playing: boolean) => set({ isPlaying: playing }),
+  // 更新喜欢状态
+  setIsLove: (isLove: boolean) => set({ isLove: isLove }),
   // 更新单曲列表并存储到 localStorage
   setSingleList: (list: any[]) => {
     set({ singleList: list })

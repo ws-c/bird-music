@@ -8,6 +8,7 @@ export type SongList = {
   song_artists: SongArtist[]
   song_title: string
   name?: string
+  isLove?: boolean
   [property: string]: any
 }
 
