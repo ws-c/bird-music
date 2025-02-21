@@ -11,11 +11,14 @@ import {
   Select,
   Checkbox,
   Image,
+  Button,
+  Popconfirm,
 } from 'antd'
 import { FC, useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { UploadChangeParam } from 'antd/es/upload'
 import type { Playlist } from './page'
+import { useRouter } from 'next/navigation'
 
 type props = {
   open: boolean
@@ -25,6 +28,7 @@ type props = {
   playList: Playlist
 }
 const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
+  const nav = useRouter()
   const [form] = Form.useForm()
 
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -129,6 +133,18 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       setPreviewOpen(true)
     },
   }
+  const confirmDelete = async () => {
+    const res = await fetch('/api/playlist/delete', {
+      method: 'DELETE',
+      body: JSON.stringify({ id: +playList.id }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    if (res.ok) {
+      nav.push('/')
+    } else {
+      message.error('删除失败')
+    }
+  }
   return (
     <Modal
       title="修改歌单"
@@ -136,16 +152,47 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       onOk={handleOk}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
-      width={450}
+      width={500}
+      footer={[
+        <div className="flex w-full justify-between">
+          <Popconfirm
+            title="删除歌单"
+            description="你是否确定要删除这个歌单？"
+            onConfirm={confirmDelete}
+          >
+            <Button type="primary">删除歌单</Button>
+          </Popconfirm>
+          <div className="flex gap-2">
+            <Button key="cancel" onClick={handleCancel}>
+              取消
+            </Button>
+            <Button
+              key="ok"
+              type="primary"
+              loading={confirmLoading}
+              onClick={handleOk}
+            >
+              确认
+            </Button>
+          </div>
+        </div>,
+      ]}
     >
-      <Form form={form} name="songList" initialValues={playList}>
+      <Form
+        form={form}
+        name="songList"
+        initialValues={playList}
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 20 }}
+      >
         <Form.Item
+          label="歌单标题"
           name={'name'}
           rules={[{ required: true, message: '歌单标题不能为空' }]}
         >
           <Input placeholder="输入歌单标题"></Input>
         </Form.Item>
-        <Form.Item>
+        <Form.Item label="歌单封面">
           <Upload {...uploadProps} fileList={fileList} accept="image/*">
             {fileList.length < 1 && (
               <a>
@@ -166,14 +213,14 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
             src={previewImage}
           />
         )}
-        <Form.Item name={'desc'}>
+        <Form.Item name={'desc'} label="简介">
           <Input.TextArea
             rows={3}
             placeholder="简介 (最多输入40个字)"
             maxLength={40}
           />
         </Form.Item>
-        <Form.Item name={'tags'}>
+        <Form.Item name={'tags'} label="标签">
           <Select
             mode="multiple"
             allowClear
@@ -184,10 +231,8 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
             maxCount={3}
           />
         </Form.Item>
-        <Form.Item name={'private'} valuePropName="checked">
-          <Checkbox checked={isPrivate} onChange={handleChange}>
-            是否为私人歌单
-          </Checkbox>
+        <Form.Item name={'private'} valuePropName="checked" label="私人歌单：">
+          <Checkbox checked={isPrivate} onChange={handleChange}></Checkbox>
         </Form.Item>
       </Form>
     </Modal>

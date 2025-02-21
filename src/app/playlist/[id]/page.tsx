@@ -11,6 +11,7 @@ import Edit from './Edit'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import type { TableRowSelection } from 'antd/es/table/interface'
+import { set } from 'nprogress'
 
 export type Playlist = {
   author: string
@@ -40,6 +41,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     collectPlayList,
     setIsLove,
     isLove,
+    myPlayList,
   } = useStore()
 
   const [playList, setPlayList] = useState<Playlist>({
@@ -126,9 +128,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const handleCollect = async (id: string) => {
     const res = await fetch('/api/playlist/collect/add', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId: user.id,
         playlistId: +id,
@@ -150,9 +150,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const handleLove = (id: number) => {
     fetch('/api/love', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         song_id: id,
         user_id: user.id,
@@ -261,6 +259,22 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       render: (text: number) => formatTime(text),
     },
   ]
+  // 删除歌单里的歌曲
+  const handleDeleteSong = async (selectedRowKeys: any[]) => {
+    const res = await fetch('/api/playlist_content/delete', {
+      method: 'DELETE',
+      body: JSON.stringify({
+        song_id_list: selectedRowKeys,
+        playlist_id: +id,
+      }),
+    })
+
+    if (res.ok) {
+      fetchAllData()
+      setSelectedRowKeys([])
+    }
+  }
+
   return (
     <div className="mt-8">
       {loading ? (
@@ -359,16 +373,14 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   type="primary"
                   danger
                   disabled={selectedRowKeys.length === 0}
-                  onClick={() => {
-                    console.log('删除选中项:', selectedRowKeys)
-                  }}
+                  onClick={() => handleDeleteSong(selectedRowKeys)}
                   style={
                     user.id === playList.user_id
                       ? { display: 'block' }
                       : { display: 'none' }
                   }
                 >
-                  批量删除
+                  删除
                   {selectedRowKeys.length > 0 && (
                     <span>({selectedRowKeys.length})</span>
                   )}
@@ -376,13 +388,14 @@ const PlayList = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
           </div>
+          {console.log(myPlayList)}
           <Table
             rowKey={(record) => record.id}
             dataSource={curSingleList}
             columns={columns}
             className="mt-12 w-4/5"
             pagination={false}
-            {...(collectPlayList.every((item) => item.id !== +id)
+            {...(myPlayList.some((item) => item.id == +id)
               ? { rowSelection }
               : {})}
             onRow={(record) => ({
