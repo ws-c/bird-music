@@ -11,7 +11,6 @@ import Edit from './Edit'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import type { TableRowSelection } from 'antd/es/table/interface'
-import { set } from 'nprogress'
 
 export type Playlist = {
   author: string
@@ -190,7 +189,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '#',
       dataIndex: 'index',
       key: 'index',
-      width: '2%',
+      width: '1%',
       render: (_: any, __: any, index: number) =>
         (index + 1).toString().padStart(2, '0'),
     },
@@ -204,7 +203,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '艺人',
       dataIndex: 'song_artists',
       key: 'name',
-      width: '20%',
+      width: '25%',
       render: (text: SongList[]) =>
         text.map((item: SongList, index) => {
           return (
@@ -224,7 +223,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '专辑',
       dataIndex: 'album_title',
       key: 'name',
-      width: '20%',
+      width: '25%',
       render: (_: SongList[], record: SongList) => (
         <Link
           href={`/album/${record.albums_id}`}
@@ -238,7 +237,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '喜欢',
       dataIndex: 'isLove',
       key: 'love',
-      width: '10%',
+      width: '8%',
       render: (_: any, record: SongList) => (
         <Icons
           type={record.isLove ? 'icon-heart-fill' : 'icon-heart'}
@@ -255,7 +254,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '时长',
       dataIndex: 'duration',
       key: 'duration',
-      width: '10%',
+      width: '8%',
       render: (text: number) => formatTime(text),
     },
   ]
@@ -329,9 +328,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                       {playList.tags.map((item, index) => (
                         <React.Fragment key={item}>
                           {index !== 0 && ' / '}
-                          <a href="#" className="text-blue-500">
-                            {item}
-                          </a>
+                          <span className="text-blue-500">{item}</span>
                         </React.Fragment>
                       ))}
                     </span>
@@ -393,7 +390,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
             rowKey={(record) => record.id}
             dataSource={curSingleList}
             columns={columns}
-            className="mt-12 w-4/5"
+            className="mt-12 w-[75%]"
             pagination={false}
             {...(myPlayList.some((item) => item.id == +id)
               ? { rowSelection }

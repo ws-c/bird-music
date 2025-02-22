@@ -204,6 +204,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
         </Form.Item>
         {previewImage && (
           <Image
+            wrapperStyle={{ display: 'none' }}
             preview={{
               visible: previewOpen,
               onVisibleChange: setPreviewOpen,

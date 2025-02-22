@@ -6,49 +6,8 @@ import useStore from '@/store/useStore'
 import { useRouter } from 'next/navigation'
 import { SongList } from '@/types'
 import Link from 'next/link'
-const columns = [
-  {
-    title: '#',
-    dataIndex: 'index',
-    key: 'index',
-    width: '1%',
-    render: (_: any, __: any, index: number) =>
-      (index + 1).toString().padStart(2, '0'),
-  },
-  {
-    title: '歌名',
-    dataIndex: 'song_title',
-    key: 'song_title',
-    width: '20%',
-  },
-  {
-    title: '艺人',
-    dataIndex: 'song_artists',
-    key: 'name',
-    width: '15%',
-    render: (text: SongList[]) =>
-      text.map((item: SongList, index) => {
-        return (
-          <>
-            <Link
-              href={`/artist/${item.artist_id}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {item.artists.name}
-            </Link>
-            {index < text.length - 1 && <span className="mx-1">/</span>}
-          </>
-        )
-      }),
-  },
-  {
-    title: '时长',
-    dataIndex: 'duration',
-    key: 'duration',
-    width: '10%',
-    render: (text: number) => formatTime(text),
-  },
-]
+import Icons from '@/components/Icons'
+
 export type Album = {
   album_title: string
   artist_id: number
@@ -99,6 +58,9 @@ export default function Home({ params }: { params: { id: string } }) {
     setIsPlaying,
     setSingleList,
     setColorTheme,
+    setIsLove,
+    isLove,
+    user,
   } = useStore()
   const { id } = params
   const [album, setAlbum] = useState<Album>({
@@ -120,7 +82,7 @@ export default function Home({ params }: { params: { id: string } }) {
         const response = await fetch(`/api/album?id=${id}`)
         const data = await response.json()
         setAlbum(data)
-        setCurSingleList(data.songs)
+        getLove(data.songs)
         setColorTheme(data.cover)
       } catch (error) {
         console.error('Error fetching album:', error)
@@ -129,7 +91,7 @@ export default function Home({ params }: { params: { id: string } }) {
       }
     }
     fetchAlbum()
-  }, [id])
+  }, [id, isLove])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -146,6 +108,120 @@ export default function Home({ params }: { params: { id: string } }) {
       setOnClicked(currentId)
     }
   }, [currentId])
+  // 喜欢歌曲
+  const handleLove = (id: number) => {
+    fetch('/api/love', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        song_id: id,
+        user_id: user.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code == 200) {
+          setCurSingleList(
+            curSingleList.map((item) => {
+              if (item.id === id) {
+                if (id === currentId) {
+                  setIsLove(!isLove)
+                }
+                return { ...item, isLove: res.value }
+              } else {
+                return item
+              }
+            })
+          )
+        }
+      })
+  }
+  // 批量获取喜欢状态
+  const getLove = async (contentData: SongList[]) => {
+    const response = await fetch('/api/love/batch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        song_ids: contentData.map((item) => item.id),
+      }),
+    })
+    const res = await response.json()
+    if (res.code === 200) {
+      const updatedList = contentData.map((item, index) => ({
+        ...item,
+        isLove: res.values[index],
+      }))
+      setCurSingleList(updatedList)
+    }
+    return contentData.map((item, index) => ({
+      ...item,
+      isLove: false,
+    })) // 如果请求失败，保持原始数据不变
+  }
+
+  const columns = [
+    {
+      title: '#',
+      dataIndex: 'index',
+      key: 'index',
+      width: '1%',
+      render: (_: any, __: any, index: number) =>
+        (index + 1).toString().padStart(2, '0'),
+    },
+    {
+      title: '歌名',
+      dataIndex: 'song_title',
+      key: 'song_title',
+      width: '15%',
+    },
+    {
+      title: '艺人',
+      dataIndex: 'song_artists',
+      key: 'name',
+      width: '15%',
+      render: (text: SongList[]) =>
+        text.map((item: SongList, index) => {
+          return (
+            <>
+              <Link
+                href={`/artist/${item.artist_id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {item.artists.name}
+              </Link>
+              {index < text.length - 1 && <span className="mx-1">/</span>}
+            </>
+          )
+        }),
+    },
+    {
+      title: '喜欢',
+      dataIndex: 'isLove',
+      key: 'love',
+      width: '5%',
+      render: (_: any, record: SongList) => (
+        <Icons
+          type={record.isLove ? 'icon-heart-fill' : 'icon-heart'}
+          size={20}
+          className={`ml-1 ${record.isLove ? '' : 'hover:text-primary'}`}
+          onClick={(e?: React.MouseEvent<HTMLElement>) => {
+            handleLove(record.id)
+            e?.stopPropagation()
+          }}
+        />
+      ),
+    },
+    {
+      title: '时长',
+      dataIndex: 'duration',
+      key: 'duration',
+      width: '5%',
+      render: (text: number) => formatTime(text),
+    },
+  ]
   return (
     <div className="mt-8">
       {loading ? (
@@ -210,7 +286,7 @@ export default function Home({ params }: { params: { id: string } }) {
             rowKey={(record) => record.id}
             dataSource={curSingleList}
             columns={columns}
-            className="mt-12 w-[80%]"
+            className="mt-12 w-[75%]"
             pagination={false}
             onRow={(record) => ({
               onClick: () => {
