@@ -15,7 +15,7 @@ export default function Home() {
         <h2 className="pb-2 pt-4 text-xl font-bold">热门歌单</h2>
         <Playlist></Playlist>
 
-        <h2 className="pb-2 pt-4 text-xl font-bold">最新单曲</h2>
+        <h2 className="pb-4 pt-4 text-xl font-bold">最新单曲</h2>
         <SingleList></SingleList>
       </div>
     </Layout>

@@ -191,7 +191,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
           <div className="flex w-[768px] items-end gap-8">
             <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
               <img
-                src={curSingleList[0].cover}
+                src={curSingleList[0]?.cover ?? 'https://temp.im/300x300'}
                 alt=""
                 className="cover-animation h-56 transform rounded-lg object-cover"
               />

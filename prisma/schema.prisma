@@ -29,6 +29,7 @@ model songs {
   duration         Int?
   file_path        String             @db.Text
   albums_id        Int
+  lyric            String?            @db.VarChar(255)
   playlist_songs   playlist_songs[]
   song_artists     song_artists[]
   albums           albums             @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")

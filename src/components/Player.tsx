@@ -21,6 +21,7 @@ import {
   IoVolumeMedium,
   IoVolumeOff,
 } from 'react-icons/io5'
+import Lyric from './Lyric'
 const Player = () => {
   const router = useRouter()
   const {
@@ -487,11 +488,13 @@ const Player = () => {
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-4 pb-20">
-              <div className="text-2xl font-medium text-white">
-                纯音乐，请欣赏
+            {currentSong.lyric ? (
+              <Lyric lyricUrl={currentSong.lyric} currentTime={currentTime} />
+            ) : (
+              <div className="flex h-[900px] w-[720px] overflow-y-auto pb-20 pt-80">
+                <div className="text-xl text-white">纯音乐，请欣赏</div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
@@ -530,7 +533,7 @@ const Player = () => {
               {currentSong.song_artists?.map((artist, index, self) => (
                 <span key={index}>
                   <span
-                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-xs hover:underline"
+                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-xs hover:text-primary hover:underline"
                     onClick={() => {
                       if (artist?.artist_id) {
                         router.push(`/artist/${artist.artist_id}`)

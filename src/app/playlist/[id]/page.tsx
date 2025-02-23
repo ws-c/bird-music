@@ -2,7 +2,15 @@
 import { useEffect, useState } from 'react'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
-import { Spin, Button, Table, Avatar, notification } from 'antd'
+import {
+  Spin,
+  Button,
+  Table,
+  Avatar,
+  notification,
+  message,
+  Popconfirm,
+} from 'antd'
 import dayjs from 'dayjs'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
@@ -11,6 +19,7 @@ import Edit from './Edit'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import type { TableRowSelection } from 'antd/es/table/interface'
+import { useRouter } from 'next/navigation'
 
 export type Playlist = {
   author: string
@@ -27,6 +36,7 @@ export type Playlist = {
 }
 
 const PlayList = ({ params }: { params: { id: string } }) => {
+  const nav = useRouter()
   const { id } = params
   const {
     user,
@@ -41,6 +51,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     setIsLove,
     isLove,
     myPlayList,
+    setCollectPlayList,
   } = useStore()
 
   const [playList, setPlayList] = useState<Playlist>({
@@ -125,6 +136,12 @@ const PlayList = ({ params }: { params: { id: string } }) => {
 
   // 收藏歌单
   const handleCollect = async (id: string) => {
+    // 收藏的歌单
+    const getCollectPlayList = async () => {
+      const res = await fetch(`/api/playlist/collect/get?id=${user.id}`)
+      const data = await res.json()
+      setCollectPlayList(data)
+    }
     const res = await fetch('/api/playlist/collect/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -138,6 +155,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         notification.success({
           message: res.message,
         })
+        getCollectPlayList()
       } else {
         notification.error({
           message: res.error,
@@ -262,6 +280,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const handleDeleteSong = async (selectedRowKeys: any[]) => {
     const res = await fetch('/api/playlist_content/delete', {
       method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         song_id_list: selectedRowKeys,
         playlist_id: +id,
@@ -273,7 +292,24 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       setSelectedRowKeys([])
     }
   }
+  // 取消收藏
+  const delCollect = async (id: number) => {
+    const res = await fetch('/api/playlist/collect/del', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: user.id,
+        playlist_id: +id,
+      }),
+    })
 
+    if (res.ok) {
+      message.success('取消收藏成功')
+      nav.push('/')
+    } else {
+      message.error('取消收藏失败')
+    }
+  }
   return (
     <div className="mt-8">
       {loading ? (
@@ -366,6 +402,24 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 >
                   收藏歌单
                 </Button>
+                <Popconfirm
+                  title="取消收藏"
+                  description="你确定要取消收藏该歌单吗？"
+                  onConfirm={() => delCollect(+id)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button
+                    style={
+                      user.id !== playList.user_id &&
+                      collectPlayList.some((item) => item.id == +id)
+                        ? { display: 'block' }
+                        : { display: 'none' }
+                    }
+                  >
+                    取消收藏
+                  </Button>
+                </Popconfirm>
                 <Button
                   type="primary"
                   danger
