@@ -491,7 +491,7 @@ const Player = () => {
             {currentSong.lyric ? (
               <Lyric lyricUrl={currentSong.lyric} currentTime={currentTime} />
             ) : (
-              <div className="flex h-[900px] w-[720px] overflow-y-auto pb-20 pt-80">
+              <div className="flex h-4/5 w-[720px] overflow-y-auto pt-72">
                 <div className="text-xl text-white">纯音乐，请欣赏</div>
               </div>
             )}

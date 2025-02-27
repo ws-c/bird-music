@@ -63,7 +63,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       } else {
         message.error(res.msg)
       }
-    } catch (errorInfo) {
+    } catch (e) {
       message.error('请检查填写内容是否完整')
     } finally {
       setConfirmLoading(false)
@@ -98,7 +98,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
 
   const uploadProps: UploadProps = {
     action: '/api/common/upload_playlist',
-    listType: 'picture-card' as 'picture-card',
+    listType: 'picture-card' as const,
     maxCount: 1,
     beforeUpload: (file: { type: string; size: number }) => {
       const isImage = file.type.startsWith('image/')
@@ -154,8 +154,9 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       onCancel={handleCancel}
       width={500}
       footer={[
-        <div className="flex w-full justify-between">
+        <div key="footer" className="flex w-full justify-between">
           <Popconfirm
+            key="popconfirm"
             title="删除歌单"
             description="你是否确定要删除这个歌单？"
             onConfirm={confirmDelete}
@@ -190,7 +191,10 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
           name={'name'}
           rules={[{ required: true, message: '歌单标题不能为空' }]}
         >
-          <Input placeholder="输入歌单标题"></Input>
+          <Input
+            placeholder="输入歌单标题 (最多输入20个字)"
+            maxLength={20}
+          ></Input>
         </Form.Item>
         <Form.Item label="歌单封面">
           <Upload {...uploadProps} fileList={fileList} accept="image/*">
@@ -217,8 +221,8 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
         <Form.Item name={'desc'} label="简介">
           <Input.TextArea
             rows={3}
-            placeholder="简介 (最多输入40个字)"
-            maxLength={40}
+            placeholder="简介 (最多输入60个字)"
+            maxLength={60}
           />
         </Form.Item>
         <Form.Item name={'tags'} label="标签">

@@ -75,26 +75,17 @@ const Lyric: React.FC<LyricProps> = ({ lyricUrl, currentTime }) => {
     const currentLine = lineRefs.current[activeIndex]
     if (!currentLine || activeIndex === prevActiveIndex.current) return
 
-    // 计算容器可用高度（减去 padding）
-    const container = containerRef.current
-    const computedStyle = getComputedStyle(container)
-    const paddingTop = parseFloat(computedStyle.paddingTop)
-    const paddingBottom = parseFloat(computedStyle.paddingBottom)
-    const containerHeight = container.clientHeight - paddingTop - paddingBottom
-
     // 计算需要的偏移量
+    const container = containerRef.current.clientHeight
     const lineTop = currentLine.offsetTop
     const lineHeight = currentLine.offsetHeight
-    const newOffset = (containerHeight - lineHeight) / 2 - lineTop
+    const newOffset = (container - lineHeight) / 2 - lineTop
 
     setOffset(newOffset)
     prevActiveIndex.current = activeIndex
   }, [activeIndex, lyrics])
   return (
-    <div
-      ref={containerRef}
-      className="flex h-[900px] w-[720px] overflow-y-hidden pb-20"
-    >
+    <div ref={containerRef} className="flex h-4/5 w-[720px] overflow-y-hidden">
       <div
         className="flex flex-col items-start transition-transform duration-500"
         style={{ transform: `translateY(${offset}px)` }}
@@ -104,7 +95,9 @@ const Lyric: React.FC<LyricProps> = ({ lyricUrl, currentTime }) => {
 
           return (
             <div
-              ref={(el) => (lineRefs.current[index] = el)}
+              ref={(el) => {
+                lineRefs.current[index] = el
+              }}
               key={index}
               className={`lyric-line whitespace-pre-line px-4 py-2 text-left text-2xl text-white transition-all duration-500 ${
                 !isActive && 'text-lg opacity-50'

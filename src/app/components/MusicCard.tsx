@@ -58,7 +58,7 @@ const MusicCard = () => {
             onClick={() => router.push(`/album/${item.id}`)}
           >
             <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <FaPlayCircle className="absolute bottom-20 right-4 translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
+              <FaPlayCircle className="absolute top-[120px] right-4 translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
             </div>
             <img
               src={item.cover}

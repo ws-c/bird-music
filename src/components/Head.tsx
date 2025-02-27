@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { AutoComplete, Button, Dropdown, Flex, Input } from 'antd'
+import { AutoComplete, Button, Dropdown, Input } from 'antd'
 import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store/useStore'
 import HeadSetting from './HeadSetting'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { ThemeToggle } from '@/components/layouts/theme-toggle'
+// import { ThemeToggle } from '@/components/layouts/theme-toggle'
 
 type Option = {
   value: string
@@ -99,7 +99,7 @@ export default function Header() {
           />
         </AutoComplete>
       </div>
-      <div className="relative top-[2px] flex items-center gap-2">
+      <div className="relative top-0.5 flex items-center gap-2">
         {/* <ThemeToggle /> */}
         <Dropdown
           menu={{ items }}
@@ -107,10 +107,13 @@ export default function Header() {
           arrow
           trigger={['click']}
         >
-          <Avatar>
-            <AvatarImage src={user.cover} />
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={user.cover}
+              className="h-full w-full object-cover"
+            />
             <AvatarFallback>
-              <UserOutlined />
+              <UserOutlined className="h-8 w-8" />
             </AvatarFallback>
           </Avatar>
         </Dropdown>

@@ -92,7 +92,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         isLove: res.values[index],
       }))
     }
-    return contentData.map((item, index) => ({
+    return contentData.map((item) => ({
       ...item,
       isLove: false,
     })) // 如果请求失败，保持原始数据不变
@@ -439,7 +439,6 @@ const PlayList = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
           </div>
-          {console.log(myPlayList)}
           <Table
             rowKey={(record) => record.id}
             dataSource={curSingleList}
