@@ -2,7 +2,7 @@ import tailwindcssMotion from 'tailwindcss-motion'
 import tailwindcssAnimate from 'tailwindcss-animate'
 
 /** @type {import('tailwindcss').Config} */
-export default {
+const config = {
   darkMode: ['class'],
   content: [
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -55,6 +55,14 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
+        gradientBG: {
+          '0%, 100%': { 'background-position': '0% 50%' },
+          '50%': { 'background-position': '100% 50%' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
         'accordion-down': {
           from: {
             height: '0',
@@ -71,19 +79,19 @@ export default {
             height: '0',
           },
         },
-        'move6': {
-          '0%': { height: '0.2em' },
-          '25%': { height: '0.7em' },
-          '50%': { height: '1.5em' },
-          '100%': { height: '0.2em' },
-        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'move6': 'move6 1.1s infinite',
+        gradientBG: 'gradientBG 30s ease-in-out infinite',
+        fadeIn: 'fadeIn 1s ease-out',
+      },
+      backgroundImage: {
+        'gradient-125': 'linear-gradient(125deg, var(--tw-gradient-stops))',
       },
     },
   },
   plugins: [tailwindcssMotion, tailwindcssAnimate],
 }
+
+export default config
