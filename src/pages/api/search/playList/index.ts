@@ -9,6 +9,9 @@ export default async function handler(
       const playlist = await prisma.playlist.findMany({
         where: {
           name: req.query.keyword,
+          isPrivate: {
+            not: '1',
+          },
         },
         select: {
           id: true,

@@ -43,7 +43,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     router.push('/')
   }
 
-  const [playList, setPlayList] = useState<Playlist>({
+  const [playList] = useState<Playlist>({
     author: user.username,
     createTime: '',
     desc: '',
@@ -66,11 +66,12 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     try {
       const res = await fetch(`/api/love/getList?id=${id}`)
       const Data = await res.json()
-      const updatedList = Data.map((item: any, index: any) => ({
+      const updatedList = Data.map((item: any) => ({
         ...item,
         isLove: true,
       }))
-      setColorTheme(updatedList[0].cover)
+      console.log(updatedList)
+      setColorTheme(updatedList[0]?.cover ?? '')
       setCurSingleList(updatedList)
     } catch (error) {
       console.error('Failed to fetch data:', error)

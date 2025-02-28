@@ -1,5 +1,5 @@
 'use client'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Flex, Spin } from 'antd'
 import Layout from '@/components/layout'
 import SingleList from './components/SingleList'

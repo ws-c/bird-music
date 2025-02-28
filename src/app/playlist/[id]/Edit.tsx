@@ -38,6 +38,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       const values = await form.validateFields() // 确保字段验证通过
       const data = {
         ...values,
+        isPrivate: values.isPrivate ? '1' : '0',
         img: fileList[0]?.url || fileList[0]?.response?.data.url || '',
         author: name,
         id: playList.id,
@@ -72,15 +73,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
 
   const handleCancel = () => {
     setOpen(false)
-  }
-
-  const [isPrivate, setIsPrivate] = useState(false)
-  const handleChange = () => {
-    setIsPrivate(!isPrivate)
-  }
-
-  const handleChange2 = (value: string[]) => {
-    console.log(`selected ${value}`)
+    form.resetFields()
   }
 
   const [fileList, setFileList] = useState<any[]>(
@@ -175,7 +168,10 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       <Form
         form={form}
         name="songList"
-        initialValues={playList}
+        initialValues={{
+          ...playList,
+          isPrivate: playList.isPrivate === '1',
+        }}
         labelCol={{ span: 4 }}
         wrapperCol={{ span: 20 }}
       >
@@ -224,13 +220,16 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
             allowClear
             style={{ width: '100%' }}
             placeholder="选择标签"
-            onChange={handleChange2}
             options={typeOptions}
             maxCount={3}
           />
         </Form.Item>
-        <Form.Item name={'private'} valuePropName="checked" label="私人歌单：">
-          <Checkbox checked={isPrivate} onChange={handleChange}></Checkbox>
+        <Form.Item
+          name={'isPrivate'}
+          valuePropName="checked"
+          label="私人歌单："
+        >
+          <Checkbox></Checkbox>
         </Form.Item>
       </Form>
     </Modal>

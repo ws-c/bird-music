@@ -35,6 +35,7 @@ const Player = () => {
     user,
     isLove,
     setIsLove,
+    triggerRefresh,
   } = useStore()
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
@@ -337,6 +338,7 @@ const Player = () => {
       .then((res) => {
         if (res.code == 200) {
           setIsLove(res.value)
+          triggerRefresh()
         }
       })
   }

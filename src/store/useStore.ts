@@ -6,7 +6,7 @@ type PlayList = {
   name: string
   img: string
   author: string
-  isPrivate: boolean
+  isPrivate: string
 }
 
 interface User {

@@ -29,7 +29,7 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
 
   const uploadProps: UploadProps = {
     action: '/api/common/upload_playlist',
-    listType: 'picture-card' as 'picture-card',
+    listType: 'picture-card' as const,
     maxCount: 1,
     beforeUpload: (file: { type: string; size: number }) => {
       const isImage = file.type.startsWith('image/')
@@ -144,6 +144,7 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
         </Form.Item>
         {previewImage && (
           <Image
+            wrapperStyle={{ display: 'none' }}
             width={200}
             preview={{
               visible: previewOpen,

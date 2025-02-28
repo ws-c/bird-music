@@ -1,20 +1,14 @@
 import prisma from '@/lib/prisma'
-// 获取用户自己创建的歌单
+// 获取用户自己的所有歌单
 export default async function handler(
   req: { method: string; query: { id: any } },
   res: any
 ) {
   if (req.method === 'GET') {
-    // 获取用户的所有歌单
     try {
       const playlist = await prisma.playlist.findMany({
         where: {
           user_id: +req.query.id,
-        },
-        select: {
-          id: true,
-          name: true,
-          img: true,
         },
       })
       res.status(200).json(playlist)

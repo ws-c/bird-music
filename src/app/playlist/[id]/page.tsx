@@ -325,11 +325,26 @@ const PlayList = ({ params }: { params: { id: string } }) => {
             playList={playList}
           />
           <div className="flex w-[768px] items-end gap-8">
-            <div className="h-56 overflow-hidden rounded-lg shadow-lg">
+            <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)] shadow-lg">
               <img
                 src={playList.img}
                 alt=""
                 className="cover-animation h-56 w-56 rounded-lg object-cover"
+                style={
+                  playList.isPrivate === '1'
+                    ? { filter: 'brightness(0.9)' }
+                    : {}
+                }
+              />
+              <Icons
+                type="icon-lock-fill"
+                size={60}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-80"
+                style={
+                  playList.isPrivate === '1'
+                    ? { cursor: 'default' }
+                    : { display: 'none' }
+                }
               />
             </div>
             <div className="relative flex flex-col">

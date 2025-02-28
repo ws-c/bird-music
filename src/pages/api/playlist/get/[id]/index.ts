@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma'
 
-// 获取用户自己创建的歌单
+// 获取用户自己创建的单个歌单
 export default async function handler(
   req: { method: string; query: { id: any } },
   res: any
