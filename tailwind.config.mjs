@@ -3,7 +3,8 @@ import tailwindcssAnimate from 'tailwindcss-animate'
 
 /** @type {import('tailwindcss').Config} */
 const config = {
-  darkMode: ['class'],
+  // darkMode: ['class'],  禁用系统的夜间模式
+  darkMode: false,
   content: [
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',

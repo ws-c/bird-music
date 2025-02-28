@@ -11,7 +11,7 @@ export async function middleware(req: {
   const token = req.cookies.get('token')?.value
 
   // 受保护的路由列表
-  const protectedPaths = ['/album', '/search', '/playlist', '/artist', '/radio']
+  const protectedPaths = ['/album', '/search', '/playlist', '/artist', '/explore']
 
   // 如果是受保护路由且无 Token → 重定向到登录页
   if (
