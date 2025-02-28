@@ -9,64 +9,7 @@ import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
-const columns = [
-  {
-    title: '#',
-    dataIndex: 'index',
-    key: 'index',
-    width: '1%',
-    render: (_: any, __: any, index: number) =>
-      (index + 1).toString().padStart(2, '0'),
-  },
-  {
-    title: '歌名',
-    dataIndex: 'song_title',
-    key: 'song_title',
-    width: '20%',
-  },
-  {
-    title: '艺人',
-    dataIndex: 'song_artists',
-    key: 'name',
-    width: '15%',
-    render: (text: SongList[]) =>
-      text.map((item: SongList, index) => {
-        return (
-          <>
-            <Link
-              href={`/artist/${item.artist_id}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {item.artists.name}
-            </Link>
-            {index < text.length - 1 && <span className="mx-1">/</span>}
-          </>
-        )
-      }),
-  },
-  {
-    title: '专辑',
-    dataIndex: 'album_title',
-    key: 'name',
-    width: '15%',
-    render: (_: SongList[], record: SongList) => (
-      <Link
-        href={`/album/${record.albums_id}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {record.album_title}
-      </Link>
-    ),
-  },
 
-  {
-    title: '时长',
-    dataIndex: 'duration',
-    key: 'duration',
-    width: '5%',
-    render: (text: number) => formatTime(text),
-  },
-]
 export type Playlist = {
   author: string
   createTime: string
@@ -90,6 +33,8 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     setSingleList,
     refreshCount,
     setColorTheme,
+    isLove,
+    setIsLove,
   } = useStore()
   const router = useRouter()
 
@@ -98,7 +43,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     router.push('/')
   }
 
-  const [playList, setPlayList] = useState<Playlist>({
+  const [playList] = useState<Playlist>({
     author: user.username,
     createTime: '',
     desc: '',
@@ -121,8 +66,13 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     try {
       const res = await fetch(`/api/love/getList?id=${id}`)
       const Data = await res.json()
-      setColorTheme(Data[0].cover)
-      setCurSingleList(Data)
+      const updatedList = Data.map((item: any) => ({
+        ...item,
+        isLove: true,
+      }))
+      console.log(updatedList)
+      setColorTheme(updatedList[0]?.cover ?? '')
+      setCurSingleList(updatedList)
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -134,7 +84,105 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       setOnClicked(currentId)
     }
   }, [currentId])
+  // 喜欢歌曲
+  const handleLove = (id: number) => {
+    fetch('/api/love', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        song_id: id,
+        user_id: user.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code == 200) {
+          setCurSingleList(
+            curSingleList.filter((item) => {
+              if (item.id === id && id === currentId) {
+                setIsLove(!isLove)
+              }
+              return item.id !== id
+            })
+          )
+        }
+      })
+  }
 
+  const columns = [
+    {
+      title: '#',
+      dataIndex: 'index',
+      key: 'index',
+      width: '1%',
+      render: (_: any, __: any, index: number) =>
+        (index + 1).toString().padStart(2, '0'),
+    },
+    {
+      title: '歌名',
+      dataIndex: 'song_title',
+      key: 'song_title',
+      width: '30%',
+    },
+    {
+      title: '艺人',
+      dataIndex: 'song_artists',
+      key: 'name',
+      width: '25%',
+      render: (text: SongList[]) =>
+        text.map((item: SongList, index) => {
+          return (
+            <>
+              <Link
+                href={`/artist/${item.artist_id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {item.artists.name}
+              </Link>
+              {index < text.length - 1 && <span className="mx-1">/</span>}
+            </>
+          )
+        }),
+    },
+    {
+      title: '专辑',
+      dataIndex: 'album_title',
+      key: 'name',
+      width: '25%',
+      render: (_: SongList[], record: SongList) => (
+        <Link
+          href={`/album/${record.albums_id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {record.album_title}
+        </Link>
+      ),
+    },
+    {
+      title: '喜欢',
+      dataIndex: 'isLove',
+      key: 'love',
+      width: '8%',
+      render: (_: any, record: SongList) => (
+        <Icons
+          type={record.isLove ? 'icon-heart-fill' : 'icon-heart'}
+          size={20}
+          className={`ml-1 ${record.isLove ? '' : 'hover:text-primary'}`}
+          onClick={(e?: React.MouseEvent<HTMLElement>) => {
+            handleLove(record.id)
+            e?.stopPropagation()
+          }}
+        />
+      ),
+    },
+    {
+      title: '时长',
+      dataIndex: 'duration',
+      key: 'duration',
+      width: '8%',
+      render: (text: number) => formatTime(text),
+    },
+  ]
   return (
     <div className="mt-8">
       {loading ? (
@@ -144,7 +192,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
           <div className="flex w-[768px] items-end gap-8">
             <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
               <img
-                src={curSingleList[0].cover}
+                src={curSingleList[0]?.cover ?? 'https://temp.im/300x300'}
                 alt=""
                 className="cover-animation h-56 transform rounded-lg object-cover"
               />
@@ -192,7 +240,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
             rowKey={(record) => record.id}
             dataSource={curSingleList}
             columns={columns}
-            className="mt-12 w-4/5"
+            className="mt-12 w-[75%]"
             pagination={false}
             onRow={(record) => ({
               onClick: () => {

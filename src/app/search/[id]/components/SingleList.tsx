@@ -4,11 +4,13 @@ import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import type { SingleList_ } from '../page'
 import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
 
 type SingleListProps = {
   curSingleList: SingleList_[]
 }
 const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
+  const nav = useRouter()
   const {
     isPlaying,
     setIsPlaying,
@@ -73,7 +75,28 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
                   {item.song_title}
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {item.name}
+                  {item.song_artists?.map(
+                    (
+                      artist: { artist_id: any; artists: { name: any } },
+                      index: React.Key | null | undefined,
+                      self: string | any[]
+                    ) => (
+                      <span key={index}>
+                        <span
+                          className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-xs hover:text-primary hover:underline"
+                          onClick={(e) => {
+                            if (artist?.artist_id) {
+                              nav.push(`/artist/${artist.artist_id}`)
+                            }
+                            e.stopPropagation()
+                          }}
+                        >
+                          {artist.artists?.name || 'Unknown Artist'}
+                        </span>
+                        <span>{index !== self.length - 1 && ' / '}</span>
+                      </span>
+                    )
+                  )}
                 </span>
               </div>
             </div>

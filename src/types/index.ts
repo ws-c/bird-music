@@ -4,6 +4,7 @@ export type SongList = {
   cover: string
   duration: number
   file_path: string
+  lyric: string
   id: number
   song_artists: SongArtist[]
   song_title: string

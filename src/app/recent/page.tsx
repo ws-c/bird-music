@@ -9,64 +9,8 @@ import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
-const columns = [
-  {
-    title: '#',
-    dataIndex: 'index',
-    key: 'index',
-    width: '1%',
-    render: (_: any, __: any, index: number) =>
-      (index + 1).toString().padStart(2, '0'),
-  },
-  {
-    title: '歌名',
-    dataIndex: 'song_title',
-    key: 'song_title',
-    width: '20%',
-  },
-  {
-    title: '艺人',
-    dataIndex: 'song_artists',
-    key: 'name',
-    width: '15%',
-    render: (text: SongList[]) =>
-      text.map((item: SongList, index) => {
-        return (
-          <>
-            <Link
-              href={`/artist/${item.artist_id}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {item.artists.name}
-            </Link>
-            {index < text.length - 1 && <span className="mx-1">/</span>}
-          </>
-        )
-      }),
-  },
-  {
-    title: '专辑',
-    dataIndex: 'album_title',
-    key: 'name',
-    width: '15%',
-    render: (_: SongList[], record: SongList) => (
-      <Link
-        href={`/album/${record.albums_id}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {record.album_title}
-      </Link>
-    ),
-  },
+import { get } from 'lodash'
 
-  {
-    title: '时长',
-    dataIndex: 'duration',
-    key: 'duration',
-    width: '5%',
-    render: (text: number) => formatTime(text),
-  },
-]
 export type Playlist = {
   author: string
   createTime: string
@@ -86,9 +30,11 @@ export default function Home() {
     currentId,
     setIsPlaying,
     setSingleList,
-    refreshCount,
     setColorTheme,
     preSingleList,
+    setPreSingleList,
+    setIsLove,
+    isLove,
   } = useStore()
 
   const [playList, setPlayList] = useState<Playlist>({
@@ -111,8 +57,135 @@ export default function Home() {
     }
     setColorTheme(preSingleList[0].cover)
     setLoading(false)
-  }, [currentId])
-
+    getLove(preSingleList)
+  }, [currentId, isLove])
+  // 喜欢歌曲
+  const handleLove = (id: number) => {
+    fetch('/api/love', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        song_id: id,
+        user_id: user.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.code == 200) {
+          setPreSingleList(
+            preSingleList.map((item) => {
+              if (item.id === id) {
+                if (id === currentId) {
+                  setIsLove(!isLove)
+                }
+                return { ...item, isLove: res.value }
+              } else {
+                return item
+              }
+            })
+          )
+        }
+      })
+  }
+  // 批量获取喜欢状态
+  const getLove = async (contentData: SongList[]) => {
+    const response = await fetch('/api/love/batch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        song_ids: contentData.map((item) => item.id),
+      }),
+    })
+    const res = await response.json()
+    if (res.code === 200) {
+      const updatedList = contentData.map((item, index) => ({
+        ...item,
+        isLove: res.values[index],
+      }))
+      setPreSingleList(updatedList)
+    }
+    return contentData.map((item, index) => ({
+      ...item,
+      isLove: false,
+    })) // 如果请求失败，保持原始数据不变
+  }
+  const columns = [
+    {
+      title: '#',
+      dataIndex: 'index',
+      key: 'index',
+      width: '1%',
+      render: (_: any, __: any, index: number) =>
+        (index + 1).toString().padStart(2, '0'),
+    },
+    {
+      title: '歌名',
+      dataIndex: 'song_title',
+      key: 'song_title',
+      width: '30%',
+    },
+    {
+      title: '艺人',
+      dataIndex: 'song_artists',
+      key: 'name',
+      width: '25%',
+      render: (text: SongList[]) =>
+        text.map((item: SongList, index) => {
+          return (
+            <>
+              <Link
+                href={`/artist/${item.artist_id}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {item.artists.name}
+              </Link>
+              {index < text.length - 1 && <span className="mx-1">/</span>}
+            </>
+          )
+        }),
+    },
+    {
+      title: '专辑',
+      dataIndex: 'album_title',
+      key: 'name',
+      width: '25%',
+      render: (_: SongList[], record: SongList) => (
+        <Link
+          href={`/album/${record.albums_id}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {record.album_title}
+        </Link>
+      ),
+    },
+    {
+      title: '喜欢',
+      dataIndex: 'isLove',
+      key: 'love',
+      width: '8%',
+      render: (_: any, record: SongList) => (
+        <Icons
+          type={record.isLove ? 'icon-heart-fill' : 'icon-heart'}
+          size={20}
+          className={`ml-1 ${record.isLove ? '' : 'hover:text-primary'}`}
+          onClick={(e?: React.MouseEvent<HTMLElement>) => {
+            handleLove(record.id)
+            e?.stopPropagation()
+          }}
+        />
+      ),
+    },
+    {
+      title: '时长',
+      dataIndex: 'duration',
+      key: 'duration',
+      width: '8%',
+      render: (text: number) => formatTime(text),
+    },
+  ]
   return (
     <Layout curActive="recent">
       {loading ? (
@@ -164,7 +237,7 @@ export default function Home() {
             rowKey={(record) => record.id}
             dataSource={preSingleList}
             columns={columns}
-            className="mt-12 w-4/5"
+            className="mt-12 w-[75%]"
             pagination={false}
             onRow={(record) => ({
               onClick: () => {

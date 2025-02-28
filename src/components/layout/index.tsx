@@ -49,19 +49,35 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }}
           gap={8}
         >
-          <img
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '4px',
-            }}
-            src={
-              item.img
-                ? item.img
-                : 'https://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg'
-            }
-            alt="Image"
-          />
+          <div className="relative">
+            <img
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '4px',
+                ...(item.isPrivate === '1'
+                  ? { filter: 'brightness(0.9)' }
+                  : {}),
+              }}
+              src={
+                item.img
+                  ? item.img
+                  : 'https://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg'
+              }
+              alt="Image"
+            />
+            <Icons
+              type="icon-lock-fill"
+              size={20}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+              style={
+                item.isPrivate === '1'
+                  ? { cursor: 'default' }
+                  : { display: 'none' }
+              }
+            />
+          </div>
+
           <div
             style={{
               height: '32px',

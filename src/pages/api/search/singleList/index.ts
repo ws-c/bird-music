@@ -57,6 +57,7 @@ export default async function handler(
           },
           song_artists: {
             select: {
+              artist_id: true, // 获取艺术家ID
               artists: {
                 select: {
                   name: true, // 获取艺术家名字

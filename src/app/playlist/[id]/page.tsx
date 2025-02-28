@@ -2,7 +2,15 @@
 import { useEffect, useState } from 'react'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
-import { Spin, Button, Table, Avatar, notification } from 'antd'
+import {
+  Spin,
+  Button,
+  Table,
+  Avatar,
+  notification,
+  message,
+  Popconfirm,
+} from 'antd'
 import dayjs from 'dayjs'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
@@ -11,6 +19,8 @@ import Edit from './Edit'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import type { TableRowSelection } from 'antd/es/table/interface'
+import { useRouter } from 'next/navigation'
+import { typeOptionsMap } from '@/lib/const'
 
 export type Playlist = {
   author: string
@@ -27,6 +37,7 @@ export type Playlist = {
 }
 
 const PlayList = ({ params }: { params: { id: string } }) => {
+  const nav = useRouter()
   const { id } = params
   const {
     user,
@@ -40,6 +51,8 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     collectPlayList,
     setIsLove,
     isLove,
+    myPlayList,
+    setCollectPlayList,
   } = useStore()
 
   const [playList, setPlayList] = useState<Playlist>({
@@ -80,7 +93,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         isLove: res.values[index],
       }))
     }
-    return contentData.map((item, index) => ({
+    return contentData.map((item) => ({
       ...item,
       isLove: false,
     })) // 如果请求失败，保持原始数据不变
@@ -124,11 +137,15 @@ const PlayList = ({ params }: { params: { id: string } }) => {
 
   // 收藏歌单
   const handleCollect = async (id: string) => {
+    // 收藏的歌单
+    const getCollectPlayList = async () => {
+      const res = await fetch(`/api/playlist/collect/get?id=${user.id}`)
+      const data = await res.json()
+      setCollectPlayList(data)
+    }
     const res = await fetch('/api/playlist/collect/add', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId: user.id,
         playlistId: +id,
@@ -139,6 +156,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         notification.success({
           message: res.message,
         })
+        getCollectPlayList()
       } else {
         notification.error({
           message: res.error,
@@ -150,9 +168,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const handleLove = (id: number) => {
     fetch('/api/love', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         song_id: id,
         user_id: user.id,
@@ -192,7 +208,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '#',
       dataIndex: 'index',
       key: 'index',
-      width: '2%',
+      width: '1%',
       render: (_: any, __: any, index: number) =>
         (index + 1).toString().padStart(2, '0'),
     },
@@ -206,7 +222,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '艺人',
       dataIndex: 'song_artists',
       key: 'name',
-      width: '20%',
+      width: '25%',
       render: (text: SongList[]) =>
         text.map((item: SongList, index) => {
           return (
@@ -226,7 +242,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '专辑',
       dataIndex: 'album_title',
       key: 'name',
-      width: '20%',
+      width: '25%',
       render: (_: SongList[], record: SongList) => (
         <Link
           href={`/album/${record.albums_id}`}
@@ -240,7 +256,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '喜欢',
       dataIndex: 'isLove',
       key: 'love',
-      width: '10%',
+      width: '8%',
       render: (_: any, record: SongList) => (
         <Icons
           type={record.isLove ? 'icon-heart-fill' : 'icon-heart'}
@@ -257,10 +273,44 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       title: '时长',
       dataIndex: 'duration',
       key: 'duration',
-      width: '10%',
+      width: '8%',
       render: (text: number) => formatTime(text),
     },
   ]
+  // 删除歌单里的歌曲
+  const handleDeleteSong = async (selectedRowKeys: any[]) => {
+    const res = await fetch('/api/playlist_content/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        song_id_list: selectedRowKeys,
+        playlist_id: +id,
+      }),
+    })
+
+    if (res.ok) {
+      fetchAllData()
+      setSelectedRowKeys([])
+    }
+  }
+  // 取消收藏
+  const delCollect = async (id: number) => {
+    const res = await fetch('/api/playlist/collect/del', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: user.id,
+        playlist_id: +id,
+      }),
+    })
+
+    if (res.ok) {
+      message.success('取消收藏成功')
+      nav.push('/')
+    } else {
+      message.error('取消收藏失败')
+    }
+  }
   return (
     <div className="mt-8">
       {loading ? (
@@ -275,11 +325,26 @@ const PlayList = ({ params }: { params: { id: string } }) => {
             playList={playList}
           />
           <div className="flex w-[768px] items-end gap-8">
-            <div className="h-56 overflow-hidden rounded-lg shadow-lg">
+            <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)] shadow-lg">
               <img
                 src={playList.img}
                 alt=""
                 className="cover-animation h-56 w-56 rounded-lg object-cover"
+                style={
+                  playList.isPrivate === '1'
+                    ? { filter: 'brightness(0.9)' }
+                    : {}
+                }
+              />
+              <Icons
+                type="icon-lock-fill"
+                size={60}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-80"
+                style={
+                  playList.isPrivate === '1'
+                    ? { cursor: 'default' }
+                    : { display: 'none' }
+                }
               />
             </div>
             <div className="relative flex flex-col">
@@ -315,9 +380,9 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                       {playList.tags.map((item, index) => (
                         <React.Fragment key={item}>
                           {index !== 0 && ' / '}
-                          <a href="#" className="text-blue-500">
-                            {item}
-                          </a>
+                          <span className="text-blue-500">
+                            {typeOptionsMap.get(item)}
+                          </span>
                         </React.Fragment>
                       ))}
                     </span>
@@ -355,20 +420,36 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 >
                   收藏歌单
                 </Button>
+                <Popconfirm
+                  title="取消收藏"
+                  description="你确定要取消收藏该歌单吗？"
+                  onConfirm={() => delCollect(+id)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button
+                    style={
+                      user.id !== playList.user_id &&
+                      collectPlayList.some((item) => item.id == +id)
+                        ? { display: 'block' }
+                        : { display: 'none' }
+                    }
+                  >
+                    取消收藏
+                  </Button>
+                </Popconfirm>
                 <Button
                   type="primary"
                   danger
                   disabled={selectedRowKeys.length === 0}
-                  onClick={() => {
-                    console.log('删除选中项:', selectedRowKeys)
-                  }}
+                  onClick={() => handleDeleteSong(selectedRowKeys)}
                   style={
                     user.id === playList.user_id
                       ? { display: 'block' }
                       : { display: 'none' }
                   }
                 >
-                  批量删除
+                  删除
                   {selectedRowKeys.length > 0 && (
                     <span>({selectedRowKeys.length})</span>
                   )}
@@ -380,9 +461,9 @@ const PlayList = ({ params }: { params: { id: string } }) => {
             rowKey={(record) => record.id}
             dataSource={curSingleList}
             columns={columns}
-            className="mt-12 w-4/5"
+            className="mt-12 w-[75%]"
             pagination={false}
-            {...(collectPlayList.every((item) => item.id !== +id)
+            {...(myPlayList.some((item) => item.id == +id)
               ? { rowSelection }
               : {})}
             onRow={(record) => ({

@@ -21,6 +21,7 @@ import {
   IoVolumeMedium,
   IoVolumeOff,
 } from 'react-icons/io5'
+import Lyric from './Lyric'
 const Player = () => {
   const router = useRouter()
   const {
@@ -34,6 +35,7 @@ const Player = () => {
     user,
     isLove,
     setIsLove,
+    triggerRefresh,
   } = useStore()
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
@@ -336,6 +338,7 @@ const Player = () => {
       .then((res) => {
         if (res.code == 200) {
           setIsLove(res.value)
+          triggerRefresh()
         }
       })
   }
@@ -487,11 +490,13 @@ const Player = () => {
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-4 pb-20">
-              <div className="text-2xl font-medium text-white">
-                纯音乐，请欣赏
+            {currentSong.lyric ? (
+              <Lyric lyricUrl={currentSong.lyric} currentTime={currentTime} />
+            ) : (
+              <div className="flex h-4/5 w-[720px] overflow-y-auto pt-72">
+                <div className="text-xl text-white">纯音乐，请欣赏</div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
@@ -530,7 +535,7 @@ const Player = () => {
               {currentSong.song_artists?.map((artist, index, self) => (
                 <span key={index}>
                   <span
-                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-xs hover:underline"
+                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-xs hover:text-primary hover:underline"
                     onClick={() => {
                       if (artist?.artist_id) {
                         router.push(`/artist/${artist.artist_id}`)

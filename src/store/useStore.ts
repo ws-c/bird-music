@@ -6,7 +6,7 @@ type PlayList = {
   name: string
   img: string
   author: string
-  isPrivate: boolean
+  isPrivate: string
 }
 
 interface User {
@@ -17,17 +17,18 @@ interface User {
 
 // 定义 Store 的状态和方法类型
 interface StoreState {
-  singleList: SongList[]
-  preSingleList: SongList[]
-  currentId: number
-  showPlayer: boolean
-  user: User
-  isPlaying: boolean
-  isLove: boolean
-  inputValue: string
-  myPlayList: PlayList[]
-  collectPlayList: PlayList[]
-  colorTheme: string
+  singleList: SongList[] // 播放列表
+  preSingleList: SongList[] // 历史播放列表
+  currentId: number // 当前播放歌曲的 id
+  showPlayer: boolean // 播放器是否显示
+  user: User // 用户信息
+  isPlaying: boolean // 是否播放
+  isLove: boolean // 是否喜欢
+  inputValue: string // 搜索框的值
+  myPlayList: PlayList[] // 自己创建的歌单
+  collectPlayList: PlayList[] // 收藏歌单
+  colorTheme: string // 颜色主题
+  refreshCount: number // 用于触发刷新的计数器
   setMyPlayList: (list: PlayList[]) => void
   setCollectPlayList: (list: PlayList[]) => void
   setInputValue: (value: string) => void
@@ -37,7 +38,6 @@ interface StoreState {
   setCurrentId: (id: number) => void
   setShowPlayer: (show: boolean) => void
   setUser: (newUser: User) => void
-  refreshCount: number
   triggerRefresh: () => void
   setColorTheme: (theme: string) => void
   setIsLove: (love: boolean) => void

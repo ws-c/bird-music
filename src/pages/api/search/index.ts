@@ -49,6 +49,9 @@ export default async function handler(
           name: {
             startsWith: query, // 模糊匹配，匹配以 query 开头的标题
           },
+          isPrivate: {
+            not: '1',
+          },
         },
         select: {
           name: true,

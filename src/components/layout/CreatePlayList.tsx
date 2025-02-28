@@ -1,7 +1,6 @@
 'use client'
 import {
   Form,
-  SelectProps,
   UploadProps,
   message,
   Upload,
@@ -15,7 +14,7 @@ import {
 import { FC, useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { UploadChangeParam } from 'antd/es/upload'
-
+import { typeOptions } from '@/lib/const'
 type props = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -32,6 +31,7 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
       const values = await form.validateFields() // 确保字段验证通过
       const data = {
         ...values,
+        isPrivate: values.isPrivate ? '1' : '0',
         img: fileList[0]?.response?.data.url || '',
         author: name,
       }
@@ -67,29 +67,13 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
     setOpen(false)
   }
 
-  const [isPrivate, setIsPrivate] = useState(false)
-  const handleChange = () => {
-    setIsPrivate(!isPrivate)
-  }
-  const options: SelectProps['options'] = [
-    { label: '电子', value: '电子' },
-    { label: '民谣', value: '民谣' },
-    { label: '摇滚', value: '摇滚' },
-    { label: '流行', value: '流行' },
-    { label: '古典', value: '古典' },
-    { label: '说唱', value: '说唱' },
-  ]
-  const handleChange2 = (value: string[]) => {
-    console.log(`selected ${value}`)
-  }
-
   const [fileList, setFileList] = useState<any[]>([])
   const [previewImage, setPreviewImage] = useState<string>('')
   const [previewOpen, setPreviewOpen] = useState<boolean>(false)
 
   const uploadProps: UploadProps = {
     action: '/api/common/upload_playlist',
-    listType: 'picture-card' as 'picture-card',
+    listType: 'picture-card' as const,
     maxCount: 1,
     beforeUpload: (file: { type: string; size: number }) => {
       const isImage = file.type.startsWith('image/')
@@ -174,15 +158,12 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
             allowClear
             style={{ width: '100%' }}
             placeholder="选择标签"
-            onChange={handleChange2}
-            options={options}
+            options={typeOptions}
             maxCount={3}
           />
         </Form.Item>
-        <Form.Item name={'private'} valuePropName="checked">
-          <Checkbox checked={isPrivate} onChange={handleChange}>
-            是否为私人歌单
-          </Checkbox>
+        <Form.Item name={'isPrivate'} valuePropName="checked">
+          <Checkbox>是否为私人歌单</Checkbox>
         </Form.Item>
       </Form>
     </Modal>
