@@ -143,7 +143,7 @@ export default function ExplorePage() {
       <div className="flex-1">
         {/* 分类导航 */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="space-x-4 bg-gray-50 p-2">
+          <TabsList className="space-x-3 bg-gray-50">
             <TabsTrigger
               value="genre"
               className="px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm"
@@ -183,8 +183,8 @@ export default function ExplorePage() {
                         className="h-full w-full rounded-md object-cover transition-all duration-300 group-hover:scale-110"
                       />
 
-                      <div className="duration-500 absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-all group-hover:opacity-100">
-                        <Play className="duration-500 h-12 w-12 translate-y-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform group-hover:translate-y-0" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-all duration-500 group-hover:opacity-100">
+                        <Play className="h-12 w-12 translate-y-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform duration-500 group-hover:translate-y-0" />
                       </div>
                     </div>
                   </CardContent>
