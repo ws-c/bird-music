@@ -10,11 +10,13 @@ export default function Auth() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [activeTabKey, setActiveTabKey] = useState('1')
+  const [returnUrl, setReturnUrl] = useState('/')
 
-  const queryString = window.location.search
-  const queryParams = new URLSearchParams(queryString)
-  const returnUrl = queryParams.get('returnUrl') || '/' // 默认为首页
   useEffect(() => {
+    const queryString = window.location.search
+    const queryParams = new URLSearchParams(queryString)
+    setReturnUrl(queryParams.get('returnUrl') || '/')
+
     setShowPlayer(false)
   }, [setShowPlayer])
 
@@ -167,7 +169,7 @@ export default function Auth() {
   ]
 
   return (
-    <div className="animate-gradientBG bg-gradient-125 h-screen from-[#e79dad] via-[#ffe3ee] to-[#67baa7] bg-[length:300%]">
+    <div className="h-screen animate-gradientBG bg-gradient-125 from-[#e79dad] via-[#ffe3ee] to-[#67baa7] bg-[length:300%]">
       <Flex className="absolute left-4 top-2 h-16 items-baseline">
         <Icons
           type="icon-Twitter_icon4948c882-copy"
@@ -178,7 +180,7 @@ export default function Auth() {
       </Flex>
 
       <div className="flex h-screen items-center justify-center">
-        <div className="animate-fadeIn w-full max-w-[420px] rounded-xl bg-white p-4 shadow-lg">
+        <div className="w-full max-w-[420px] animate-fadeIn rounded-xl bg-white p-4 shadow-lg">
           <Tabs
             activeKey={activeTabKey}
             onChange={setActiveTabKey}
