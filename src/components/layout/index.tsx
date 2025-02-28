@@ -334,7 +334,6 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       <CreatePlaylist
         open={open}
         setOpen={setOpen}
-        name={user.username}
         getMyPlayList={getMyPlayList}
       ></CreatePlaylist>
     </div>
