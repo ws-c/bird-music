@@ -4,21 +4,14 @@ import prisma from '@/lib/prisma'
 export default async function handler(
   req: {
     method: string
-    body: {
-      name: any
-      author: any
-      desc: any
-      tags: any
-      isPrivate: any
-      img: any
-    }
+    body: any
   },
   res: any
 ) {
   if (req.method === 'POST') {
     try {
       // 解析请求体
-      const { name, author, desc, tags, isPrivate, img } = req.body
+      const { name, author, desc, tags, isPrivate, img, user_id } = req.body
 
       // 查询当前用户已创建的歌单数量
       const playlistCount = await prisma.playlist.count({
@@ -40,6 +33,7 @@ export default async function handler(
           tags,
           isPrivate,
           img,
+          user_id,
         },
       })
 
