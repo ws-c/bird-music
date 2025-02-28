@@ -1,7 +1,6 @@
 'use client'
 import {
   Form,
-  SelectProps,
   UploadProps,
   message,
   Upload,
@@ -19,6 +18,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { UploadChangeParam } from 'antd/es/upload'
 import type { Playlist } from './page'
 import { useRouter } from 'next/navigation'
+import { typeOptions } from '@/lib/const'
 
 type props = {
   open: boolean
@@ -78,14 +78,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
   const handleChange = () => {
     setIsPrivate(!isPrivate)
   }
-  const options: SelectProps['options'] = [
-    { label: '电子', value: '电子' },
-    { label: '民谣', value: '民谣' },
-    { label: '摇滚', value: '摇滚' },
-    { label: '流行', value: '流行' },
-    { label: '古典', value: '古典' },
-    { label: '说唱', value: '说唱' },
-  ]
+
   const handleChange2 = (value: string[]) => {
     console.log(`selected ${value}`)
   }
@@ -232,7 +225,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
             style={{ width: '100%' }}
             placeholder="选择标签"
             onChange={handleChange2}
-            options={options}
+            options={typeOptions}
             maxCount={3}
           />
         </Form.Item>

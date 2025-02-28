@@ -1,7 +1,6 @@
 'use client'
 import {
   Form,
-  SelectProps,
   UploadProps,
   message,
   Upload,
@@ -15,7 +14,7 @@ import {
 import { FC, useState } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { UploadChangeParam } from 'antd/es/upload'
-
+import { typeOptions } from '@/lib/const'
 type props = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -71,14 +70,7 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
   const handleChange = () => {
     setIsPrivate(!isPrivate)
   }
-  const options: SelectProps['options'] = [
-    { label: '电子', value: '电子' },
-    { label: '民谣', value: '民谣' },
-    { label: '摇滚', value: '摇滚' },
-    { label: '流行', value: '流行' },
-    { label: '古典', value: '古典' },
-    { label: '说唱', value: '说唱' },
-  ]
+
   const handleChange2 = (value: string[]) => {
     console.log(`selected ${value}`)
   }
@@ -89,7 +81,7 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
 
   const uploadProps: UploadProps = {
     action: '/api/common/upload_playlist',
-    listType: 'picture-card' as 'picture-card',
+    listType: 'picture-card' as const,
     maxCount: 1,
     beforeUpload: (file: { type: string; size: number }) => {
       const isImage = file.type.startsWith('image/')
@@ -175,7 +167,7 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, name, getMyPlayList }) => {
             style={{ width: '100%' }}
             placeholder="选择标签"
             onChange={handleChange2}
-            options={options}
+            options={typeOptions}
             maxCount={3}
           />
         </Form.Item>

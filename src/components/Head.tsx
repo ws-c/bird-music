@@ -32,17 +32,26 @@ export default function Header() {
     route.push('/auth')
   }
 
-  const items = [
-    {
-      key: '1',
-      label: <span>设置</span>,
-      onClick: () => setOpen(true),
-    },
-    {
-      key: '2',
-      label: <span onClick={logout}>退出</span>,
-    },
-  ]
+  const items =
+    user.username === '未登录'
+      ? [
+          {
+            key: '1',
+            label: <span>登录</span>,
+            onClick: () => route.push('/auth'),
+          },
+        ]
+      : [
+          {
+            key: '1',
+            label: <span>设置</span>,
+            onClick: () => setOpen(true),
+          },
+          {
+            key: '2',
+            label: <span onClick={logout}>退出</span>,
+          },
+        ]
 
   const handleSearch = async (value: any) => {
     if (!value) {
@@ -70,7 +79,6 @@ export default function Header() {
       route.push(`/search/${inputValue}`)
     }
   }
-
   return (
     <div className="flex justify-between">
       <div className="flex items-center gap-[8px]">
@@ -113,7 +121,7 @@ export default function Header() {
               className="h-full w-full object-cover"
             />
             <AvatarFallback>
-              <UserOutlined className="h-8 w-8" />
+              <UserOutlined />
             </AvatarFallback>
           </Avatar>
         </Dropdown>

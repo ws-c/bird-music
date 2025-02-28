@@ -20,6 +20,7 @@ import { SongList } from '@/types'
 import Link from 'next/link'
 import type { TableRowSelection } from 'antd/es/table/interface'
 import { useRouter } from 'next/navigation'
+import { typeOptionsMap } from '@/lib/const'
 
 export type Playlist = {
   author: string
@@ -364,7 +365,9 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                       {playList.tags.map((item, index) => (
                         <React.Fragment key={item}>
                           {index !== 0 && ' / '}
-                          <span className="text-blue-500">{item}</span>
+                          <span className="text-blue-500">
+                            {typeOptionsMap.get(item)}
+                          </span>
                         </React.Fragment>
                       ))}
                     </span>
