@@ -246,7 +246,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   let siderStyle = {}
   if (theme === 'dark') {
     style =
-      client && window.location.pathname === '/'
+      client && (window.location.pathname === '/' || 'explore')
         ? { paddingLeft: '240px', minHeight: '100vh', background: '#121212' }
         : {
             paddingLeft: '240px',
@@ -254,7 +254,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
             background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #121212 50%)`,
           }
     siderStyle =
-      client && window.location.pathname === '/'
+      client && (window.location.pathname === '/' || 'explore')
         ? {
             background: '#1f1f1f',
             minHeight: '100vh',
