@@ -91,7 +91,7 @@ export default function Header() {
         ></Button>
         <AutoComplete
           allowClear
-          style={{ width: '300px' }}
+          style={{ width: '360px' }}
           options={options}
           onSearch={handleSearch}
           onSelect={handleSelect}
@@ -100,7 +100,7 @@ export default function Header() {
         >
           <Input
             variant="filled"
-            placeholder="搜索"
+            placeholder="搜索歌曲、专辑、艺人、歌单"
             prefix={<SearchOutlined />}
             style={{ height: '36px' }}
             onKeyDown={handleKeyDown}

@@ -155,13 +155,13 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
       ),
     },
     {
-      label: '电台',
-      key: 'radio',
+      label: '探索',
+      key: 'explore',
       icon: (
         <Icons
-          type="icon-diantaimian"
+          type="icon-zhinanzhenfill"
           size={20}
-          color={curActive === 'radio' ? '#f30074' : ''}
+          color={curActive === 'explore' ? '#f30074' : ''}
         ></Icons>
       ),
     },
