@@ -21,6 +21,7 @@ export default async function handler(
               duration: true,
               file_path: true,
               albums_id: true,
+              lyric: true,
               song_artists: {
                 select: {
                   artist_id: true,
