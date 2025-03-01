@@ -438,22 +438,29 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                     取消收藏
                   </Button>
                 </Popconfirm>
-                <Button
-                  type="primary"
-                  danger
-                  disabled={selectedRowKeys.length === 0}
-                  onClick={() => handleDeleteSong(selectedRowKeys)}
-                  style={
-                    user.id === playList.user_id
-                      ? { display: 'block' }
-                      : { display: 'none' }
-                  }
+                <Popconfirm
+                  title="删除歌曲"
+                  description="你确定要取消删除这些歌曲吗？"
+                  onConfirm={() => handleDeleteSong(selectedRowKeys)}
+                  okText="Yes"
+                  cancelText="No"
                 >
-                  删除
-                  {selectedRowKeys.length > 0 && (
-                    <span>({selectedRowKeys.length})</span>
-                  )}
-                </Button>
+                  <Button
+                    type="primary"
+                    danger
+                    disabled={selectedRowKeys.length === 0}
+                    style={
+                      user.id === playList.user_id
+                        ? { display: 'block' }
+                        : { display: 'none' }
+                    }
+                  >
+                    删除
+                    {selectedRowKeys.length > 0 && (
+                      <span>({selectedRowKeys.length})</span>
+                    )}
+                  </Button>
+                </Popconfirm>
               </div>
             </div>
           </div>
