@@ -3,141 +3,37 @@ import React, { useState } from 'react'
 import Layout from '@/components/layout'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
-import { Play } from 'lucide-react'
-
+import { Pause, Play } from 'lucide-react'
+import useStore from '@/store/useStore'
+import { categories } from '@/lib/const'
 export default function ExplorePage() {
+  const {
+    isPlaying,
+    currentCategoryId,
+    setIsPlaying,
+    setSingleList,
+    setCurrentId,
+    setShowPlayer,
+    setCurrentCategoryId,
+  } = useStore()
   const [activeTab, setActiveTab] = useState('genre')
-
-  // 分类数据
-  const categories = {
-    genre: [
-      {
-        value: 1,
-        label: '电子',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/1.webp',
-      },
-      {
-        value: 2,
-        label: '民谣',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/2.webp',
-      },
-      {
-        value: 3,
-        label: '说唱',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/3.webp',
-      },
-      {
-        value: 4,
-        label: '爵士',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/4.webp',
-      },
-      {
-        value: 5,
-        label: '古典',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/5.webp',
-      },
-      {
-        value: 6,
-        label: '流行',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/6.webp',
-      },
-      {
-        value: 7,
-        label: '古风',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/7.webp',
-      },
-      {
-        value: 8,
-        label: '摇滚',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/8.webp',
-      },
-      {
-        value: 9,
-        label: '纯音乐',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/9.webp',
-      },
-    ],
-    language: [
-      {
-        value: 10,
-        label: '华语',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/10.webp',
-      },
-      {
-        value: 11,
-        label: '英语',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/11.webp',
-      },
-      {
-        value: 12,
-        label: '日语',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/12.webp',
-      },
-      {
-        value: 13,
-        label: '韩语',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/13.webp',
-      },
-      {
-        value: 14,
-        label: '粤语',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/14.webp',
-      },
-    ],
-    theme: [
-      {
-        value: 15,
-        label: '影视原声',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/15.webp',
-      },
-      {
-        value: 16,
-        label: '日漫新番',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/16.webp',
-      },
-      {
-        value: 17,
-        label: '热门翻唱',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/17.webp',
-      },
-      {
-        value: 18,
-        label: '游戏',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/18.webp',
-      },
-      {
-        value: 19,
-        label: 'DJ舞曲',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/19.webp',
-      },
-      {
-        value: 20,
-        label: '情歌',
-        imageUrl:
-          'https://bird-music1.oss-cn-guangzhou.aliyuncs.com/categories/20.webp',
-      },
-    ],
+  const handlePlay = async (id: number) => {
+    // 如果点击的是当前分类，切换播放状态
+    if (currentCategoryId === id) {
+      setIsPlaying(!isPlaying)
+    } else {
+      // 加载新分类数据
+      const res = await fetch(`/api/explore?id=${id}`)
+      if (!res.ok) return
+      const data = await res.json()
+      if (data.length <= 0) return
+      setSingleList(data)
+      setCurrentCategoryId(id)
+      setCurrentId(data[0].id)
+      setShowPlayer(true)
+      setIsPlaying(true)
+    }
   }
-
   return (
     <Layout curActive="explore">
       <div className="flex-1">
@@ -169,34 +65,46 @@ export default function ExplorePage() {
         {/* 分类内容 */}
         <div className="relative right-2 mt-4 flex flex-wrap justify-start">
           {categories[activeTab as keyof typeof categories].map(
-            (item, index) => (
-              <div
-                key={index}
-                className="group flex flex-none flex-col items-center p-2"
-              >
-                <Card className="h-52 w-52 cursor-pointer transition-shadow hover:shadow-sm">
-                  <CardContent className="relative h-full p-0">
-                    <div className="relative h-full w-full overflow-hidden">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.label}
-                        className="h-full w-full rounded-md object-cover transition-all duration-300 group-hover:scale-110"
-                      />
+            (item, index) => {
+              const isCurrentCategory = currentCategoryId === item.value // 判断当前分类
+              const showPause = isCurrentCategory && isPlaying // 显示暂停图标条件
+              return (
+                <div
+                  key={index}
+                  className="group flex flex-none flex-col items-center p-2"
+                >
+                  <Card className="h-52 w-52 cursor-pointer transition-shadow hover:shadow-sm">
+                    <CardContent className="relative h-full p-0">
+                      <div
+                        className="relative h-full w-full overflow-hidden"
+                        onClick={() => handlePlay(item.value)}
+                      >
+                        <img
+                          src={item.imageUrl}
+                          alt={item.label}
+                          className="h-full w-full rounded-md object-cover transition-all duration-300 group-hover:scale-110"
+                        />
 
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-all duration-500 group-hover:opacity-100">
-                        <Play className="h-12 w-12 translate-y-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform duration-500 group-hover:translate-y-0" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-all duration-500 group-hover:opacity-100">
+                          {/* 根据播放状态切换图标 */}
+                          {showPause ? (
+                            <Pause className="h-12 w-12 translate-y-2 fill-white text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform duration-500 group-hover:translate-y-0" />
+                          ) : (
+                            <Play className="h-12 w-12 translate-y-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform duration-500 group-hover:translate-y-0" />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
 
-                <div className="mt-2 w-full px-1">
-                  <span className="line-clamp-1 block text-left text-sm font-medium text-gray-700">
-                    {item.label}
-                  </span>
+                  <div className="mt-2 w-full px-1">
+                    <span className="line-clamp-1 block text-left text-sm font-medium text-gray-700">
+                      {item.label}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )
+              )
+            }
           )}
         </div>
       </div>

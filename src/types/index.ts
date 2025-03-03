@@ -10,6 +10,7 @@ export type SongList = {
   song_title: string
   name?: string
   isLove?: boolean
+  tags?: number[]
   [property: string]: any
 }
 

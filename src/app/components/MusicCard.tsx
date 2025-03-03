@@ -3,35 +3,12 @@ import { useRouter } from 'next/navigation'
 import NProgress from 'nprogress'
 import { FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
-
-export interface ApifoxModel {
-  album_title: string
-  artist_id: number
-  artists: Artists
-  cover: string
-  desc: null | string
-  id: number
-  release_date: string
-  songs: Song[]
-}
-
-export interface Artists {
-  id: number
-  name: string
-}
-
-export interface Song {
-  albums_id: number
-  duration: number
-  file_path: string
-  id: number
-  song_title: string
-}
+import { SongList } from '@/types'
 
 const MusicCard = () => {
   const router = useRouter()
-  const [albums, setAlbums] = useState<ApifoxModel[]>([])
-
+  const [albums, setAlbums] = useState<SongList[]>([])
+  NProgress.configure({ showSpinner: false })
   useEffect(() => {
     const fetchAlbums = async () => {
       NProgress.start()
@@ -58,7 +35,7 @@ const MusicCard = () => {
             onClick={() => router.push(`/album/${item.id}`)}
           >
             <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <FaPlayCircle className="absolute top-[120px] right-4 translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
+              <FaPlayCircle className="absolute right-4 top-[120px] translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
             </div>
             <img
               src={item.cover}

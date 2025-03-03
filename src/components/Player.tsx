@@ -39,7 +39,7 @@ const Player = () => {
   } = useStore()
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
-  )
+  ) // 获取当前歌曲数组的索引
   const [currentTime, setCurrentTime] = useState(0)
   const [sliderValue, setSliderValue] = useState([0])
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -49,7 +49,7 @@ const Player = () => {
     if (audioRef.current && isPlaying) {
       audioRef.current.play()
     }
-  }, [currentSongIndex, isPlaying])
+  }, [currentSongIndex, isPlaying, currentId])
   // 当 currentId 或 singleList 变化时，更新 currentSongIndex
   useEffect(() => {
     const index = singleList.findIndex((song) => song.id === currentId) || 0
@@ -61,6 +61,12 @@ const Player = () => {
     )
     setPreSingleList(uniquePreSingleList)
   }, [singleList, currentId])
+  // 更新 currentId
+  useEffect(() => {
+    if (currentSongIndex !== null && singleList[currentSongIndex]) {
+      setCurrentId(singleList[currentSongIndex].id)
+    }
+  }, [currentSongIndex])
   // 根据 isPlaying 状态播放或暂停
   useEffect(() => {
     if (audioRef.current) {
@@ -70,10 +76,7 @@ const Player = () => {
         audioRef.current.pause()
       }
     }
-  }, [isPlaying])
-
-  // 定时更新当前时间和滑块值
-  useEffect(() => {
+    // 定时更新当前时间和滑块值
     const updateTime = () => {
       if (audioRef.current) {
         setCurrentTime(audioRef.current.currentTime)
@@ -138,13 +141,6 @@ const Player = () => {
     }
     setIsPlaying(true)
   }
-
-  // 更新 currentId
-  useEffect(() => {
-    if (currentSongIndex !== null && singleList[currentSongIndex]) {
-      setCurrentId(singleList[currentSongIndex].id)
-    }
-  }, [currentSongIndex])
 
   // 切换播放状态
   const togglePlayPause = () => {
@@ -232,6 +228,7 @@ const Player = () => {
   // 当前点击的歌曲
   const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
+    getLove()
     setOnClicked(currentId)
   }, [currentId])
 
@@ -360,9 +357,6 @@ const Player = () => {
         }
       })
   }
-  useEffect(() => {
-    getLove()
-  }, [currentId])
   return (
     <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
       {/* 全屏模式 */}
