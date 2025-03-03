@@ -244,17 +244,21 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   })
   let style = {}
   let siderStyle = {}
+  const isBasePath =
+    client &&
+    (window.location.pathname === '/' ||
+      window.location.pathname === '/explore' ||
+      window.location.pathname.startsWith('/search/'))
   if (theme === 'dark') {
-    style =
-      client && (window.location.pathname === '/' || 'explore')
-        ? { paddingLeft: '240px', minHeight: '100vh', background: '#121212' }
-        : {
-            paddingLeft: '240px',
-            minHeight: '100vh',
-            background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #121212 50%)`,
-          }
+    style = isBasePath
+      ? { paddingLeft: '240px', minHeight: '100vh', background: '#121212' }
+      : {
+          paddingLeft: '240px',
+          minHeight: '100vh',
+          background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #121212 50%)`,
+        }
     siderStyle =
-      client && (window.location.pathname === '/' || 'explore')
+      client && isBasePath
         ? {
             background: '#1f1f1f',
             minHeight: '100vh',
@@ -270,9 +274,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }
   } else {
     style =
-      client &&
-      (window.location.pathname === '/' ||
-        window.location.pathname.startsWith('/search/'))
+      client && isBasePath
         ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
         : {
             paddingLeft: '240px',
@@ -280,9 +282,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
             background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
           }
     siderStyle =
-      client &&
-      (window.location.pathname === '/' ||
-        window.location.pathname.startsWith('/search/'))
+      client && isBasePath
         ? {
             background: '#f0f3f6',
             minHeight: '100vh',

@@ -70,7 +70,6 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         ...item,
         isLove: true,
       }))
-      console.log(updatedList)
       setColorTheme(updatedList[0]?.cover ?? '')
       setCurSingleList(updatedList)
     } catch (error) {
@@ -132,7 +131,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       render: (text: SongList[]) =>
         text.map((item: SongList, index) => {
           return (
-            <>
+            <React.Fragment key={item.artist_id || index}>
               <Link
                 href={`/artist/${item.artist_id}`}
                 onClick={(e) => e.stopPropagation()}
@@ -140,7 +139,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 {item.artists.name}
               </Link>
               {index < text.length - 1 && <span className="mx-1">/</span>}
-            </>
+            </React.Fragment>
           )
         }),
     },
@@ -207,7 +206,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
               <h2 className="m-0 text-2xl font-semibold tracking-wide">
                 我喜欢的音乐
               </h2>
-              <p className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
+              <div className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
                 <div className="flex items-center gap-3">
                   <Avatar
                     src={playList.cover}
@@ -216,7 +215,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   />
                   <span>{playList.author}</span>
                 </div>
-              </p>
+              </div>
 
               <div className="flex gap-2">
                 <Button

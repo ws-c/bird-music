@@ -29,6 +29,7 @@ interface StoreState {
   collectPlayList: PlayList[] // 收藏歌单
   colorTheme: string // 颜色主题
   refreshCount: number // 用于触发刷新的计数器
+  currentCategoryId: number // 当前分类id
   setMyPlayList: (list: PlayList[]) => void
   setCollectPlayList: (list: PlayList[]) => void
   setInputValue: (value: string) => void
@@ -41,6 +42,7 @@ interface StoreState {
   triggerRefresh: () => void
   setColorTheme: (theme: string) => void
   setIsLove: (love: boolean) => void
+  setCurrentCategoryId: (id: number) => void
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -75,6 +77,7 @@ const useStore = create<StoreState>((set) => ({
   refreshCount: 0,
   colorTheme: '',
   isLove: false,
+  currentCategoryId: 0,
   // 更新我创建的歌单
   setMyPlayList: (list: PlayList[]) => {
     set({ myPlayList: list })
@@ -123,6 +126,10 @@ const useStore = create<StoreState>((set) => ({
     if (typeof window !== 'undefined') {
       localStorage.setItem('user', JSON.stringify(newUser))
     }
+  },
+  // 更新当前 ID 并存储到 localStorage
+  setCurrentCategoryId: (id: number) => {
+    set({ currentCategoryId: id })
   },
   // 刷新
   triggerRefresh: () =>
