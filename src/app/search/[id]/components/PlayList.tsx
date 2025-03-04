@@ -1,10 +1,9 @@
 'use client'
 import React, { FC } from 'react'
 import { FaPlayCircle } from 'react-icons/fa'
-import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import type { PlayList_ } from '../page'
-
+import Image from 'next/image'
 type PlayListProps = {
   playList: PlayList_[]
 }
@@ -21,9 +20,11 @@ const PlayList: FC<PlayListProps> = ({ playList }) => {
           onClick={() => route.push(`/playlist/${item.id}`)}
         >
           <div className="relative">
-            <img
+            <Image
               src={item.img}
               alt={item.name}
+              width={168}
+              height={168}
               className="h-auto w-full rounded-lg"
             />
             <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">

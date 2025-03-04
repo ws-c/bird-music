@@ -7,6 +7,7 @@ import { Pause, Play } from 'lucide-react'
 import useStore from '@/store/useStore'
 import { categories } from '@/lib/const'
 import { Fetch } from '@/lib/request'
+import Image from 'next/image'
 export default function ExplorePage() {
   const {
     isPlaying,
@@ -78,9 +79,11 @@ export default function ExplorePage() {
                         className="relative h-full w-full overflow-hidden"
                         onClick={() => handlePlay(item.value)}
                       >
-                        <img
+                        <Image
                           src={item.imageUrl}
                           alt={item.label}
+                          width={206}
+                          height={206}
                           className="h-full w-full rounded-md object-cover transition-all duration-300 group-hover:scale-110"
                         />
 

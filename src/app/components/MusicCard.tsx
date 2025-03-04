@@ -5,7 +5,7 @@ import { FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SongList } from '@/types'
 import { Fetch } from '@/lib/request'
-
+import Image from 'next/image'
 const MusicCard = () => {
   const router = useRouter()
   const [albums, setAlbums] = useState<SongList[]>([])
@@ -30,10 +30,12 @@ const MusicCard = () => {
             <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               <FaPlayCircle className="absolute right-4 top-[120px] translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
             </div>
-            <img
+            <Image
               src={item.cover}
               alt={item.album_title}
-              className="h-auto w-full rounded-lg object-cover"
+              width={160}
+              height={160}
+              className="rounded-lg object-cover"
             />
             <div className="py-2">
               <h3 className="font-semibold text-gray-800">

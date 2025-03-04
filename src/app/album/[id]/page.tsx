@@ -8,7 +8,7 @@ import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
 import { Fetch } from '@/lib/request'
-
+import Image from 'next/image'
 export type Album = {
   album_title: string
   artist_id: number
@@ -210,10 +210,12 @@ export default function Home({ params }: { params: { id: string } }) {
         <>
           <div className="flex w-[700px] items-end gap-8">
             <div className="h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
-              <img
+              <Image
                 src={album.cover}
-                alt=""
-                className="cover-animation h-56 rounded-lg object-cover"
+                width={224}
+                height={224}
+                alt="专辑"
+                className="cover-animation rounded-lg object-cover"
               />
             </div>
             <div className="relative flex h-56 flex-col">
