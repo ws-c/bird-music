@@ -6,7 +6,7 @@ import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRouter } from 'next/navigation'
 import { Fetch } from '@/lib/request'
-
+import Image from 'next/image'
 const SingleList = () => {
   const nav = useRouter()
   const {
@@ -84,10 +84,12 @@ const SingleList = () => {
                   )}
 
                   <div className="flex items-center gap-4">
-                    <img
+                    <Image
                       src={item.cover}
-                      alt=""
-                      className="h-10 w-10 rounded-lg group-hover:brightness-75"
+                      alt="歌曲"
+                      height={40}
+                      width={40}
+                      className="rounded-lg group-hover:brightness-75"
                     />
                     <div className="flex flex-col gap-1">
                       <span className="text-gray-900 dark:text-gray-100">

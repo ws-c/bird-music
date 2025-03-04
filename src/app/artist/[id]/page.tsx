@@ -8,7 +8,7 @@ import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
 import { Fetch } from '@/lib/request'
-
+import Image from 'next/image'
 export type Artist = {
   biography: string
   id: number
@@ -225,9 +225,11 @@ export default function Home({ params }: { params: { id: string } }) {
         <>
           <div className="flex w-[700px] items-end gap-8">
             <div className="h-56 w-56 overflow-hidden rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
-              <img
+              <Image
                 src={artist.image_url}
-                alt=""
+                alt="艺人"
+                width={224}
+                height={224}
                 className="cover-animation h-56 object-cover"
               />
             </div>

@@ -135,6 +135,7 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
           <Image
             wrapperStyle={{ display: 'none' }}
             width={200}
+            alt='头像'
             preview={{
               visible: previewOpen,
               onVisibleChange: setPreviewOpen,

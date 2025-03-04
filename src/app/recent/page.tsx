@@ -10,7 +10,7 @@ import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
 import { Fetch } from '@/lib/request'
-
+import Image from 'next/image'
 export type Playlist = {
   author: string
   createTime: string
@@ -180,9 +180,11 @@ export default function Home() {
         <div className="mt-8">
           <div className="flex w-[768px] items-end gap-8">
             <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
-              <img
+              <Image
                 src={preSingleList[0]?.cover ?? 'https://temp.im/300x300'}
-                alt=""
+                alt="图片"
+                height={224}
+                width={224}
                 className="cover-animation h-56 transform rounded-lg object-cover"
               />
             </div>
