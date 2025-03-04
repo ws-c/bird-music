@@ -49,7 +49,6 @@ export default async function upload(
   } catch (error) {
     console.error('Upload error:', error)
     res.status(500).json({
-      code: 1,
       msg: 'Server error while processing file upload',
     })
   }

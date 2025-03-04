@@ -20,7 +20,7 @@ export default async function handler(
 
       if (existingUser) {
         // 如果用户名已存在，返回错误消息
-        return res.status(400).json({ message: 'Username already exists' })
+        return res.status(400).json({ message: '用户名已存在' })
       }
 
       // 如果用户名不存在，继续注册
@@ -33,9 +33,9 @@ export default async function handler(
         },
       })
 
-      res.status(201).json({ message: 'User registered successfully', user })
+      res.status(201).json({ message: '注册成功', user })
     } catch (error) {
-      res.status(500).json({ message: 'User registration failed', error })
+      res.status(500).json({ message: '注册失败', error })
     }
   } else {
     res.status(405).json({ message: 'Method not allowed' })

@@ -29,7 +29,7 @@ export default async function handler(
 
       res.status(200).json(userPlaylists)
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch user playlists' })
+      console.error(error)
     }
   } else {
     res.setHeader('Allow', ['GET'])

@@ -9,7 +9,7 @@ import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
-import { get } from 'lodash'
+import { Fetch } from '@/lib/request'
 
 export type Playlist = {
   author: string
@@ -37,7 +37,7 @@ export default function Home() {
     isLove,
   } = useStore()
 
-  const [playList, setPlayList] = useState<Playlist>({
+  const [playList] = useState<Playlist>({
     author: user.username,
     createTime: '',
     desc: '',
@@ -55,62 +55,48 @@ export default function Home() {
     if (currentId) {
       setOnClicked(currentId)
     }
-    setColorTheme(preSingleList[0].cover)
+    setColorTheme(preSingleList[0]?.cover ?? '')
     setLoading(false)
     getLove(preSingleList)
   }, [currentId, isLove])
   // 喜欢歌曲
-  const handleLove = (id: number) => {
-    fetch('/api/love', {
+  const handleLove = async (id: number) => {
+    const res = await Fetch('/api/love', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id: id,
         user_id: user.id,
-      }),
+      },
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setPreSingleList(
-            preSingleList.map((item) => {
-              if (item.id === id) {
-                if (id === currentId) {
-                  setIsLove(!isLove)
-                }
-                return { ...item, isLove: res.value }
-              } else {
-                return item
-              }
-            })
-          )
+
+    setPreSingleList(
+      preSingleList.map((item) => {
+        if (item.id === id) {
+          if (id === currentId) {
+            setIsLove(!isLove)
+          }
+          return { ...item, isLove: res.value }
+        } else {
+          return item
         }
       })
+    )
   }
   // 批量获取喜欢状态
   const getLove = async (contentData: SongList[]) => {
-    const response = await fetch('/api/love/batch', {
+    const res = await Fetch('/api/love/batch', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
-      }),
+      },
     })
-    const res = await response.json()
-    if (res.code === 200) {
-      const updatedList = contentData.map((item, index) => ({
-        ...item,
-        isLove: res.values[index],
-      }))
-      setPreSingleList(updatedList)
-    }
-    return contentData.map((item, index) => ({
+
+    const updatedList = contentData.map((item, index) => ({
       ...item,
-      isLove: false,
-    })) // 如果请求失败，保持原始数据不变
+      isLove: res.values[index],
+    }))
+    setPreSingleList(updatedList)
   }
   const columns = [
     {
@@ -195,7 +181,7 @@ export default function Home() {
           <div className="flex w-[768px] items-end gap-8">
             <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
               <img
-                src={preSingleList[0].cover}
+                src={preSingleList[0]?.cover ?? 'https://temp.im/300x300'}
                 alt=""
                 className="cover-animation h-56 transform rounded-lg object-cover"
               />

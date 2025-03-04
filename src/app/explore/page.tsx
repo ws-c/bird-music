@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Pause, Play } from 'lucide-react'
 import useStore from '@/store/useStore'
 import { categories } from '@/lib/const'
+import { Fetch } from '@/lib/request'
 export default function ExplorePage() {
   const {
     isPlaying,
@@ -23,9 +24,7 @@ export default function ExplorePage() {
       setIsPlaying(!isPlaying)
     } else {
       // 加载新分类数据
-      const res = await fetch(`/api/explore?id=${id}`)
-      if (!res.ok) return
-      const data = await res.json()
+      const data = await Fetch(`/api/explore?id=${id}`)
       if (data.length <= 0) return
       setSingleList(data)
       setCurrentCategoryId(id)
@@ -39,7 +38,7 @@ export default function ExplorePage() {
       <div className="flex-1">
         {/* 分类导航 */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="space-x-3 bg-gray-50">
+          <TabsList className="space-x-3 bg-[#efefef]">
             <TabsTrigger
               value="genre"
               className="px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm"
@@ -66,8 +65,8 @@ export default function ExplorePage() {
         <div className="relative right-2 mt-4 flex flex-wrap justify-start">
           {categories[activeTab as keyof typeof categories].map(
             (item, index) => {
-              const isCurrentCategory = currentCategoryId === item.value // 判断当前分类
-              const showPause = isCurrentCategory && isPlaying // 显示暂停图标条件
+              const isCurrentCategory = currentCategoryId === item.value
+              const showPause = isCurrentCategory && isPlaying
               return (
                 <div
                   key={index}
@@ -85,10 +84,16 @@ export default function ExplorePage() {
                           className="h-full w-full rounded-md object-cover transition-all duration-300 group-hover:scale-110"
                         />
 
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-all duration-500 group-hover:opacity-100">
-                          {/* 根据播放状态切换图标 */}
+                        {/* 动态控制 opacity 和过渡效果 */}
+                        <div
+                          className={`absolute inset-0 flex items-center justify-center bg-black/10 transition-all duration-500 ${
+                            showPause
+                              ? 'opacity-100'
+                              : 'opacity-0 group-hover:opacity-100'
+                          }`}
+                        >
                           {showPause ? (
-                            <Pause className="h-12 w-12 translate-y-2 fill-white text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform duration-500 group-hover:translate-y-0" />
+                            <Pause className="h-12 w-12 fill-white text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]" />
                           ) : (
                             <Play className="h-12 w-12 translate-y-2 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform duration-500 group-hover:translate-y-0" />
                           )}

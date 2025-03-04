@@ -20,7 +20,7 @@ export default async function handler(req: { method: string }, res: any) {
       })
       res.status(200).json(albums)
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch albums' })
+      res.status(500).json({ error })
     }
   } else {
     res.setHeader('Allow', ['GET'])

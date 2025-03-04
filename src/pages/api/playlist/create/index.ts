@@ -40,8 +40,7 @@ export default async function handler(
       // 返回成功响应
       res.status(200).json({ msg: '创建成功', code: 200 })
     } catch (error) {
-      console.error('创建播放列表失败:', error)
-      res.status(500).json({ error: '创建歌单失败，请稍后重试' })
+      res.status(500).json({ error: '创建歌单失败，请稍后重试' }, error)
     }
   } else {
     res.setHeader('Allow', ['POST'])

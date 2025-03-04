@@ -22,6 +22,7 @@ import {
   IoVolumeOff,
 } from 'react-icons/io5'
 import Lyric from './Lyric'
+import { Fetch } from '@/lib/request'
 const Player = () => {
   const router = useRouter()
   const {
@@ -320,42 +321,28 @@ const Player = () => {
   }
 
   // 喜欢歌曲
-  const handleLove = () => {
-    fetch('/api/love', {
+  const handleLove = async () => {
+    const res = await Fetch('/api/love', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         song_id: currentId,
         user_id: user.id,
-      }),
+      },
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setIsLove(res.value)
-          triggerRefresh()
-        }
-      })
+
+    setIsLove(res.value)
+    triggerRefresh()
   }
-  const getLove = () => {
-    fetch('/api/love/get', {
+  const getLove = async () => {
+    const res = await Fetch('/api/love/get', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         song_id: currentId,
         user_id: user.id,
-      }),
+      },
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setIsLove(res.value)
-        }
-      })
+    
+    setIsLove(res.value)
   }
   return (
     <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">

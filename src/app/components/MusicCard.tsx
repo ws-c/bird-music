@@ -1,26 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import NProgress from 'nprogress'
+
 import { FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SongList } from '@/types'
+import { Fetch } from '@/lib/request'
 
 const MusicCard = () => {
   const router = useRouter()
   const [albums, setAlbums] = useState<SongList[]>([])
-  NProgress.configure({ showSpinner: false })
+
   useEffect(() => {
     const fetchAlbums = async () => {
-      NProgress.start()
-      try {
-        const response = await fetch('/api/home/album')
-        const data = await response.json()
-        setAlbums(data)
-      } catch (error) {
-        console.error('Error fetching albums:', error)
-      } finally {
-        NProgress.done()
-      }
+      const data = await Fetch('/api/home/album')
+      setAlbums(data)
     }
     fetchAlbums()
   }, [])

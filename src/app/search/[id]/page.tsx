@@ -6,6 +6,7 @@ import SingleList from './components/SingleList'
 import ArtistList from './components/ArtistList'
 import AlbumList from './components/AlbumList'
 import PlayList from './components/PlayList'
+import { Fetch } from '@/lib/request'
 
 export type SingleList_ = {
   album_title: string
@@ -57,33 +58,19 @@ export default function Home({
   useEffect(() => {
     // 使用 Promise.all 使请求并行
     const fetchData = async () => {
-      try {
-        const [singleRes, artistRes, albumRes, playListRes] = await Promise.all(
-          [
-            fetch(`/api/search/singleList?keyword=${params.id}`).then((res) =>
-              res.json()
-            ),
-            fetch(`/api/search/artistList?keyword=${params.id}`).then((res) =>
-              res.json()
-            ),
-            fetch(`/api/search/albumList?keyword=${params.id}`).then((res) =>
-              res.json()
-            ),
-            fetch(`/api/search/playList?keyword=${params.id}`).then((res) =>
-              res.json()
-            ),
-          ]
-        )
+      const [singleRes, artistRes, albumRes, playListRes] = await Promise.all([
+        Fetch(`/api/search/singleList?keyword=${params.id}`),
+        Fetch(`/api/search/artistList?keyword=${params.id}`),
+        Fetch(`/api/search/albumList?keyword=${params.id}`),
+        Fetch(`/api/search/playList?keyword=${params.id}`),
+      ])
 
-        setSingleList(singleRes)
-        setArtistList(artistRes)
-        setAlbumList(albumRes)
-        setPlayList(playListRes)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-      }
+      setSingleList(singleRes)
+      setArtistList(artistRes)
+      setAlbumList(albumRes)
+      setPlayList(playListRes)
+
+      setLoading(false)
     }
     fetchData()
   }, [params.id])

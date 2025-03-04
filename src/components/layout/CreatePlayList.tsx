@@ -16,6 +16,7 @@ import { UploadOutlined } from '@ant-design/icons'
 import { UploadChangeParam } from 'antd/es/upload'
 import { typeOptions } from '@/lib/const'
 import useStore from '@/store/useStore'
+import { Fetch } from '@/lib/request'
 type props = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -27,41 +28,31 @@ const CreatePlaylist: FC<props> = ({ open, setOpen, getMyPlayList }) => {
   const [confirmLoading, setConfirmLoading] = useState(false)
 
   const handleOk = async () => {
-    try {
-      const values = await form.validateFields() // 确保字段验证通过
-      const data = {
-        ...values,
-        isPrivate: values.isPrivate ? '1' : '0',
-        img: fileList[0]?.response?.data.url || '',
-        author: user.username,
-        user_id: user.id,
-      }
-      console.log('表单数据：', data)
-      setConfirmLoading(true)
-
-      // 发送请求
-      const response = await fetch('/api/playlist/create', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      const res = await response.json()
-      console.log('响应数据：', res)
-      if (res.code === 200) {
-        getMyPlayList()
-        message.success(res.msg)
-        setOpen(false)
-      } else {
-        message.error(res.msg)
-      }
-    } catch (errorInfo) {
-      message.error('请检查填写内容是否完整')
-    } finally {
-      setConfirmLoading(false)
+    const values = await form.validateFields() // 确保字段验证通过
+    const data = {
+      ...values,
+      isPrivate: values.isPrivate ? '1' : '0',
+      img: fileList[0]?.response?.data.url || '',
+      author: user.username,
+      user_id: user.id,
     }
+    console.log('表单数据：', data)
+    setConfirmLoading(true)
+
+    // 发送请求
+    const res = await Fetch('/api/playlist/create', {
+      method: 'POST',
+      body: data,
+    })
+
+    console.log('响应数据：', res)
+    if (res.code === 200) {
+      getMyPlayList()
+      message.success(res.msg)
+      setOpen(false)
+    }
+
+    setConfirmLoading(false)
   }
 
   const handleCancel = () => {

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Fetch } from '@/lib/request'
 
 type Playlist = {
   author: string
@@ -22,13 +23,8 @@ const Playlist = () => {
 
   useEffect(() => {
     const fetchPlaylists = async () => {
-      try {
-        const response = await fetch('/api/home/playlist')
-        const data = await response.json()
-        setPlaylists(data)
-      } catch (error) {
-        console.error('Error fetching playlists:', error)
-      }
+      const data = await Fetch('/api/home/playlist')
+      setPlaylists(data)
     }
     fetchPlaylists()
   }, [])
