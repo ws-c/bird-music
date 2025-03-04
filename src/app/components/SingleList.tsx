@@ -5,6 +5,7 @@ import { SongList } from '@/types'
 import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRouter } from 'next/navigation'
+import { Fetch } from '@/lib/request'
 
 const SingleList = () => {
   const nav = useRouter()
@@ -22,13 +23,8 @@ const SingleList = () => {
 
   useEffect(() => {
     const fetchPlaylist = async () => {
-      try {
-        const response = await fetch('/api/home/singleList')
-        const data = await response.json()
-        setCurSingleList(data)
-      } catch (error) {
-        console.error('Error fetching SingleList:', error)
-      }
+      const data = await Fetch('/api/home/singleList')
+      setCurSingleList(data)
     }
 
     fetchPlaylist()

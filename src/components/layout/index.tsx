@@ -11,6 +11,7 @@ import useStore from '@/store/useStore'
 import useColorThief from 'use-color-thief'
 import { useTheme } from 'next-themes'
 import { ItemType } from 'antd/es/menu/interface'
+import { Fetch } from '@/lib/request'
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -34,9 +35,8 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   }, [])
   // 创建的歌单
   const getMyPlayList = async () => {
-    const res = await fetch(`/api/playlist/get?id=${user.id}`)
-    const data = await res.json()
-    setMyPlayList(data)
+    const res = await Fetch(`/api/playlist/get?id=${user.id}`)
+    setMyPlayList(res)
   }
   const myPlayList_ = myPlayList.map((item) => {
     return {
@@ -97,8 +97,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   })
   // 收藏的歌单
   const getCollectPlayList = async () => {
-    const res = await fetch(`/api/playlist/collect/get?id=${user.id}`)
-    const data = await res.json()
+    const data = await Fetch(`/api/playlist/collect/get?id=${user.id}`)
     setCollectPlayList(data)
   }
   const collectPlayList_ = collectPlayList.map((item) => {

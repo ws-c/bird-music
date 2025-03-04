@@ -19,6 +19,7 @@ import { UploadChangeParam } from 'antd/es/upload'
 import type { Playlist } from './page'
 import { useRouter } from 'next/navigation'
 import { typeOptions } from '@/lib/const'
+import { Fetch } from '@/lib/request'
 
 type props = {
   open: boolean
@@ -34,41 +35,28 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
   const [confirmLoading, setConfirmLoading] = useState(false)
 
   const handleOk = async () => {
-    try {
-      const values = await form.validateFields() // 确保字段验证通过
-      const data = {
-        ...values,
-        isPrivate: values.isPrivate ? '1' : '0',
-        img: fileList[0]?.url || fileList[0]?.response?.data.url || '',
-        author: name,
-        id: playList.id,
-      }
-      console.log('表单数据：', data)
-      setConfirmLoading(true)
-
-      // 发送请求
-      const response = await fetch('/api/playlist/update', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      const res = await response.json()
-      console.log('响应数据：', res)
-      if (res.code === 200) {
-        fetchAllData()
-        message.success(res.msg)
-        setOpen(false)
-      } else {
-        message.error(res.msg)
-      }
-    } catch (e) {
-      message.error('请检查填写内容是否完整')
-    } finally {
-      setConfirmLoading(false)
+    const values = await form.validateFields() // 确保字段验证通过
+    const data = {
+      ...values,
+      isPrivate: values.isPrivate ? '1' : '0',
+      img: fileList[0]?.url || fileList[0]?.response?.data.url || '',
+      author: name,
+      id: playList.id,
     }
+    console.log('表单数据：', data)
+    setConfirmLoading(true)
+
+    // 发送请求
+    const res = await Fetch('/api/playlist/update', {
+      method: 'POST',
+      body: data,
+    })
+
+    console.log('响应数据：', res)
+    fetchAllData()
+    message.success(res.msg)
+    setOpen(false)
+    setConfirmLoading(false)
   }
 
   const handleCancel = () => {
@@ -120,16 +108,12 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
     },
   }
   const confirmDelete = async () => {
-    const res = await fetch('/api/playlist/delete', {
+    await Fetch('/api/playlist/delete', {
       method: 'DELETE',
-      body: JSON.stringify({ id: +playList.id }),
-      headers: { 'Content-Type': 'application/json' },
+      body: { id: +playList.id },
     })
-    if (res.ok) {
-      nav.push('/')
-    } else {
-      message.error('删除失败')
-    }
+
+    nav.push('/')
   }
   return (
     <Modal

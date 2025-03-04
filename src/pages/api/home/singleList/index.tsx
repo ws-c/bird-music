@@ -36,7 +36,7 @@ export default async function handler(req: { method: string }, res: any) {
       const newSongs = songs.map((song) => flattenObject(song))
       res.status(200).json(newSongs)
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch songs' })
+      res.status(500).json({ error })
     }
   } else {
     res.setHeader('Allow', ['GET'])

@@ -9,6 +9,7 @@ import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
+import { Fetch } from '@/lib/request'
 
 export type Playlist = {
   author: string
@@ -63,20 +64,14 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   }, [refreshCount])
   const fetchAllData = async () => {
     setLoading(true)
-    try {
-      const res = await fetch(`/api/love/getList?id=${id}`)
-      const Data = await res.json()
-      const updatedList = Data.map((item: any) => ({
-        ...item,
-        isLove: true,
-      }))
-      setColorTheme(updatedList[0]?.cover ?? '')
-      setCurSingleList(updatedList)
-    } catch (error) {
-      console.error('Failed to fetch data:', error)
-    } finally {
-      setLoading(false)
-    }
+    const data = await Fetch(`/api/love/getList?id=${id}`)
+    const updatedList = data.map((item: any) => ({
+      ...item,
+      isLove: true,
+    }))
+    setColorTheme(updatedList[0]?.cover ?? 'https://temp.im/300x300')
+    setCurSingleList(updatedList)
+    setLoading(false)
   }
   useEffect(() => {
     if (currentId) {
@@ -85,27 +80,22 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   }, [currentId])
   // 喜欢歌曲
   const handleLove = (id: number) => {
-    fetch('/api/love', {
+    Fetch('/api/love', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id: id,
         user_id: user.id,
-      }),
+      },
+    }).then(() => {
+      setCurSingleList(
+        curSingleList.filter((item) => {
+          if (item.id === id && id === currentId) {
+            setIsLove(!isLove)
+          }
+          return item.id !== id
+        })
+      )
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setCurSingleList(
-            curSingleList.filter((item) => {
-              if (item.id === id && id === currentId) {
-                setIsLove(!isLove)
-              }
-              return item.id !== id
-            })
-          )
-        }
-      })
   }
 
   const columns = [

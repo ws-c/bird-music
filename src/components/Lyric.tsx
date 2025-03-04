@@ -1,3 +1,4 @@
+import { Fetch } from '@/lib/request'
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
 
 interface LyricProps {
@@ -21,14 +22,9 @@ const Lyric: React.FC<LyricProps> = ({ lyricUrl, currentTime }) => {
 
   useEffect(() => {
     const fetchLyrics = async () => {
-      try {
-        const response = await fetch(lyricUrl)
-        const text = await response.text()
-        const parsedLyrics = parseLRC(text)
-        setLyrics(parsedLyrics)
-      } catch (err) {
-        console.error('Failed to fetch lyrics:', err)
-      }
+      const text = await Fetch(lyricUrl, { responseType: 'text' })
+      const parsedLyrics = parseLRC(text)
+      setLyrics(parsedLyrics)
     }
 
     fetchLyrics()

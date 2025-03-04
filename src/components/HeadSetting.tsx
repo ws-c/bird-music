@@ -12,6 +12,7 @@ import {
 import { UploadOutlined } from '@ant-design/icons'
 import useStore from '@/store/useStore'
 import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload'
+import { Fetch } from '@/lib/request'
 
 interface UserSettingsProps {
   open: boolean
@@ -66,32 +67,20 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
   }
 
   const submit = async () => {
-    try {
-      const values = await form.validateFields()
-      const data = {
-        ...values,
-        oldName: user.username,
-        cover: fileList[0]?.url || fileList[0]?.response?.data.url || '',
-      }
-      const response = await fetch('/api/user/update', {
-        method: 'PUT',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const res = await response.json()
-      if (res.code === 200) {
-        message.success(res.msg)
-        setUser(res.data)
-        setOpen(false)
-      } else {
-        message.error(res.error)
-      }
-    } catch (errorInfo) {
-      console.log('验证失败：', errorInfo)
-      message.error('请检查填写内容是否完整')
+    const values = await form.validateFields()
+    const data = {
+      ...values,
+      oldName: user.username,
+      cover: fileList[0]?.url || fileList[0]?.response?.data.url || '',
     }
+    const res = await Fetch('/api/user/update', {
+      method: 'PUT',
+      body: data,
+    })
+
+    message.success(res.msg)
+    setUser(res.data)
+    setOpen(false)
   }
   useEffect(() => {
     form.resetFields()

@@ -26,6 +26,3 @@
   opacity: 1;
   transform: rotate(3deg) translate(0px, -4px);
 }
-#nprogress .nprogress-spinner {
-  display: none;
-}

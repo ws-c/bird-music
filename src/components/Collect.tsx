@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Flex, Modal, notification } from 'antd'
 import useStore from '@/store/useStore'
+import { Fetch } from '@/lib/request'
 
 type prop = {
   open: boolean
@@ -13,33 +14,23 @@ const Collect: React.FC<prop> = ({ open, setOpen }) => {
     setOpen(false)
   }
   const [clicked, setClicked] = useState<number | null>(null)
-  const handleOk = () => {
+  const handleOk = async () => {
     setConfirmLoading(true)
-    fetch('/api/collect', {
+    const res = await Fetch('/api/collect', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         songId: currentId,
         playListId: clicked,
-      }),
+      },
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          notification.success({
-            message: res.msg,
-          })
-        } else {
-          notification.error({
-            message: res.msg,
-          })
-        }
-      })
-      .finally(() => {
-        setOpen(false)
-        setConfirmLoading(false)
-        triggerRefresh()
-      })
+
+    notification.success({
+      message: res.msg,
+    })
+
+    setOpen(false)
+    setConfirmLoading(false)
+    triggerRefresh()
   }
 
   return (

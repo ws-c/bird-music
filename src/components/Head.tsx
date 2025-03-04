@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import useStore from '@/store/useStore'
 import HeadSetting from './HeadSetting'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Fetch } from '@/lib/request'
 // import { ThemeToggle } from '@/components/layouts/theme-toggle'
 
 type Option = {
@@ -27,8 +28,8 @@ export default function Header() {
   const route = useRouter()
 
   const logout = async () => {
+    await Fetch('/api/logout')
     localStorage.clear()
-    await fetch('/api/logout', { method: 'POST' })
     route.push('/auth')
   }
 
@@ -58,9 +59,8 @@ export default function Header() {
       setOptions([])
       return
     }
-    const data = await fetch(`/api/search?q=${value}`)
-    const newOptions = await data.json()
-    setOptions(newOptions)
+    const data = await Fetch(`/api/search?q=${value}`)
+    setOptions(data)
   }
 
   const handleSelect = (value: string, option: Option) => {

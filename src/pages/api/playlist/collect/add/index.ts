@@ -36,7 +36,6 @@ export default async function handler(
       return res.status(200).json({ code: 200, message: '收藏歌单成功' })
     } catch (error) {
       console.error(error)
-      res.status(500).json({ error: 'Failed to add playlist to collection.' })
     }
   } else {
     res.setHeader('Allow', ['POST'])

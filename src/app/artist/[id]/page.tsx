@@ -7,6 +7,7 @@ import flattenObject from '@/helpers/flattenObject'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
+import { Fetch } from '@/lib/request'
 
 export type Artist = {
   biography: string
@@ -76,21 +77,14 @@ export default function Home({ params }: { params: { id: string } }) {
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   useEffect(() => {
     const fetchAlbum = async () => {
-      try {
-        const response = await fetch(`/api/artist?id=${id}`)
-        const data = await response.json()
-        setArtist(data)
-        const newData = data.song_artists.map((song: any) => ({
-          ...flattenObject(song.songs),
-        }))
-        getLove(newData)
-
-        setColorTheme(data.image_url)
-      } catch (error) {
-        console.error('Error fetching artist:', error)
-      } finally {
-        setLoading(false)
-      }
+      const data = await Fetch(`/api/artist?id=${id}`)
+      setArtist(data)
+      const newData = data.song_artists.map((song: any) => ({
+        ...flattenObject(song.songs),
+      }))
+      getLove(newData)
+      setColorTheme(data.image_url)
+      setLoading(false)
     }
     fetchAlbum()
   }, [id, isLove])
@@ -111,57 +105,43 @@ export default function Home({ params }: { params: { id: string } }) {
     }
   }, [currentId])
   // 喜欢歌曲
-  const handleLove = (id: number) => {
-    fetch('/api/love', {
+  const handleLove = async (id: number) => {
+    const res = await Fetch('/api/love', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id: id,
         user_id: user.id,
-      }),
+      },
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setCurSingleList(
-            curSingleList.map((item) => {
-              if (item.id === id) {
-                if (id === currentId) {
-                  setIsLove(!isLove)
-                }
-                return { ...item, isLove: res.value }
-              } else {
-                return item
-              }
-            })
-          )
+
+    setCurSingleList(
+      curSingleList.map((item) => {
+        if (item.id === id) {
+          if (id === currentId) {
+            setIsLove(!isLove)
+          }
+          return { ...item, isLove: res.value }
+        } else {
+          return item
         }
       })
+    )
   }
   // 批量获取喜欢状态
   const getLove = async (contentData: SongList[]) => {
-    const response = await fetch('/api/love/batch', {
+    const res = await Fetch('/api/love/batch', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
-      }),
+      },
     })
-    const res = await response.json()
-    if (res.code === 200) {
-      const updatedList = contentData.map((item, index) => ({
-        ...item,
-        isLove: res.values[index],
-      }))
-      setCurSingleList(updatedList)
-    }
-    return contentData.map((item, index) => ({
+
+    const updatedList = contentData.map((item, index) => ({
       ...item,
-      isLove: false,
-    })) // 如果请求失败，保持原始数据不变
+      isLove: res.values[index],
+    }))
+    setCurSingleList(updatedList)
   }
   const columns = [
     {

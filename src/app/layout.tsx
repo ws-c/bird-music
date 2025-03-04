@@ -21,6 +21,7 @@ export default function RootLayout({
   useEffect(() => {
     setIsClient(true)
   }, [])
+  
 
   return (
     <html lang="zh-CN" suppressHydrationWarning>
