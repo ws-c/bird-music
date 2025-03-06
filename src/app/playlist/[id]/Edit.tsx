@@ -20,7 +20,8 @@ import type { Playlist } from './page'
 import { useRouter } from 'next/navigation'
 import { typeOptions } from '@/lib/const'
 import { Fetch } from '@/lib/request'
-
+import ImgCrop from 'antd-img-crop'
+import { toWebP } from '@/helpers/toWebp'
 type props = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -43,7 +44,6 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       author: name,
       id: playList.id,
     }
-    console.log('表单数据：', data)
     setConfirmLoading(true)
 
     // 发送请求
@@ -52,7 +52,6 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
       body: data,
     })
 
-    console.log('响应数据：', res)
     fetchAllData()
     message.success(res.msg)
     setOpen(false)
@@ -74,18 +73,20 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
     action: '/api/common/upload_playlist',
     listType: 'picture-card' as const,
     maxCount: 1,
-    beforeUpload: (file: { type: string; size: number }) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
+    beforeUpload: async (file) => {
+      if (!file.type.startsWith('image/')) {
         message.error('只能上传图片')
         return Upload.LIST_IGNORE
       }
-      const isWithinSizeLimit = file.size / 1024 <= 300 // 限制文件大小为 300KB
-      if (!isWithinSizeLimit) {
-        message.error('图片大小不能超过300KB')
+      // 转换为 WebP
+      const webpFile = await toWebP(file)
+      // 检查转换后的文件大小
+      if (webpFile.size / 1024 > 150) {
+        message.error('图片大小不能超过150KB')
         return Upload.LIST_IGNORE
       }
-      return true // 文件符合要求
+
+      return webpFile
     },
     onChange: (info: UploadChangeParam) => {
       setFileList(info.fileList) // 更新文件列表
@@ -170,18 +171,20 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
           ></Input>
         </Form.Item>
         <Form.Item label="歌单封面">
-          <Upload {...uploadProps} fileList={fileList} accept="image/*">
-            {fileList.length < 1 && (
-              <a>
-                <UploadOutlined />
-                上传图片
-              </a>
-            )}
-          </Upload>
+          <ImgCrop>
+            <Upload {...uploadProps} fileList={fileList} accept="image/*">
+              {fileList.length < 1 && (
+                <a>
+                  <UploadOutlined />
+                  上传图片
+                </a>
+              )}
+            </Upload>
+          </ImgCrop>
         </Form.Item>
         {previewImage && (
           <Image
-            alt='歌单图片'
+            alt="歌单图片"
             wrapperStyle={{ display: 'none' }}
             preview={{
               visible: previewOpen,

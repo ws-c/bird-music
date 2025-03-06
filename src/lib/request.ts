@@ -4,8 +4,9 @@ type FetchConfig = {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   headers?: HeadersInit
   body?: unknown
-  silent?: boolean // 是否静默模式（不显示错误提示）
   responseType?: 'json' | 'text'
+  silent?: boolean // 是否静默模式（不显示错误提示）
+  loading?: boolean // 是否显示进度条
 }
 
 // 全局计数器跟踪活跃请求数
@@ -19,11 +20,12 @@ export const Fetch = async <T = any>(
     headers = {},
     silent = false,
     responseType = 'json',
+    loading = true,
   }: FetchConfig = {}
 ): Promise<T> => {
   try {
     activeRequests++
-    if (activeRequests === 1) {
+    if (activeRequests === 1 && loading) {
       NProgress.start()
     }
     const response = await fetch(url, {
@@ -40,7 +42,7 @@ export const Fetch = async <T = any>(
       responseType === 'text' ? await response.text() : await response.json()
 
     if (!response.ok) {
-      const errorMsg = data?.error || data?.msg || data?.message || '请求失败'
+      const errorMsg = data?.msg || data?.message || data?.error || '请求失败'
       if (!silent) message.error(errorMsg)
       throw new Error(errorMsg)
     }
@@ -49,14 +51,14 @@ export const Fetch = async <T = any>(
   } catch (error: any) {
     if (!silent) {
       const errorMsg =
-        error?.error || error?.msg || error?.message || '网络连接异常'
+        error?.msg || error?.message || error?.error || '网络连接异常'
       message.error(errorMsg)
     }
     throw error
   } finally {
     // 结束进度条：仅当最后一个请求完成时触发
     activeRequests--
-    if (activeRequests === 0) {
+    if (activeRequests === 0 && loading) {
       NProgress.done()
     }
   }
