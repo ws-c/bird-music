@@ -13,6 +13,8 @@ import { UploadOutlined } from '@ant-design/icons'
 import useStore from '@/store/useStore'
 import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload'
 import { Fetch } from '@/lib/request'
+import ImgCrop from 'antd-img-crop'
+import { toWebP } from '@/helpers/toWebp'
 
 interface UserSettingsProps {
   open: boolean
@@ -29,21 +31,23 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
   const [form] = Form.useForm()
 
   const uploadProps: UploadProps = {
-    action: '/api/common/upload_playlist',
+    action: '/api/common/upload_avatar',
     listType: 'picture-card' as const,
     maxCount: 1,
-    beforeUpload: (file: { type: string; size: number }) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
+    beforeUpload: async (file) => {
+      if (!file.type.startsWith('image/')) {
         message.error('只能上传图片')
         return Upload.LIST_IGNORE
       }
-      const isWithinSizeLimit = file.size / 1024 <= 300
-      if (!isWithinSizeLimit) {
-        message.error('图片大小不能超过300KB')
+      // 转换为 WebP
+      const webpFile = await toWebP(file)
+      // 检查转换后的文件大小
+      if (webpFile.size / 1024 > 150) {
+        message.error('图片大小不能超过150KB')
         return Upload.LIST_IGNORE
       }
-      return true
+
+      return webpFile
     },
     onChange: (info: UploadChangeParam) => {
       setFileList(info.fileList)
@@ -122,20 +126,22 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
         </Form.Item>
 
         <Form.Item label="头像">
-          <Upload {...uploadProps} fileList={fileList} accept="image/*">
-            {fileList.length < 1 && (
-              <a>
-                <UploadOutlined />
-                上传头像
-              </a>
-            )}
-          </Upload>
+          <ImgCrop>
+            <Upload {...uploadProps} fileList={fileList} accept="image/*">
+              {fileList.length < 1 && (
+                <a>
+                  <UploadOutlined />
+                  上传头像
+                </a>
+              )}
+            </Upload>
+          </ImgCrop>
         </Form.Item>
         {previewImage && (
           <Image
             wrapperStyle={{ display: 'none' }}
             width={200}
-            alt='头像'
+            alt="头像"
             preview={{
               visible: previewOpen,
               onVisibleChange: setPreviewOpen,

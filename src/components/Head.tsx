@@ -59,7 +59,7 @@ export default function Header() {
       setOptions([])
       return
     }
-    const data = await Fetch(`/api/search?q=${value}`)
+    const data = await Fetch(`/api/search?q=${value}`, { loading: false })
     setOptions(data)
   }
 
