@@ -28,7 +28,8 @@ export default async function handler(
         data: {
           name,
           author,
-          createTime: new Date(),
+          create_time: new Date(),
+          update_time: new Date(),
           desc,
           tags,
           isPrivate,

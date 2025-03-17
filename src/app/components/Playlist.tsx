@@ -8,7 +8,7 @@ import { Fetch } from '@/lib/request'
 import Image from 'next/image'
 type Playlist = {
   author: string
-  createTime: string
+  create_time: string
   desc: string
   id: number
   img: string

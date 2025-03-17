@@ -25,7 +25,7 @@ import { Fetch } from '@/lib/request'
 import Image from 'next/image'
 export type Playlist = {
   author: string
-  createTime: string
+  create_time: string
   desc: string
   id: number
   user_id: number
@@ -58,7 +58,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
 
   const [playList, setPlayList] = useState<Playlist>({
     author: '',
-    createTime: '',
+    create_time: '',
     desc: '',
     id: 0,
     img: '',
@@ -355,7 +355,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   )}
                   <span>
                     创建于
-                    {dayjs(playList.createTime).format('YYYY-MM-DD')}
+                    {dayjs(playList.create_time).format('YYYY-MM-DD')}
                   </span>
                 </div>
               </div>

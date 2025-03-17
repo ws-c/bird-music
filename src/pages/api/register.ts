@@ -30,6 +30,8 @@ export default async function handler(
         data: {
           username: username,
           password: hashedPassword,
+          create_time: new Date(),
+          update_time: new Date(),
         },
       })
 

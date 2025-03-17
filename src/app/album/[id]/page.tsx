@@ -69,7 +69,7 @@ export default function Home({ params }: { params: { id: string } }) {
     artist_id: 0,
     artists: { id: 0, name: '' },
     cover: '',
-    createTime: null,
+    create_time: null,
     desc: '',
     id: 0,
     release_date: '',
