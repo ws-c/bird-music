@@ -4,33 +4,38 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://wangshuai:Ws-118816742@rm-bp1l6kd4w71f63iz90o.mysql.rds.aliyuncs.com:3306/music"
+  url      = env("DATABASE_URL")
 }
 
 model playlist {
   id               Int                @id @default(autoincrement())
   name             String             @db.VarChar(255)
   author           String             @db.VarChar(255)
-  createTime       DateTime?          @db.Date
+  create_time      DateTime           @db.Date
   desc             String?            @db.VarChar(255)
   tags             Json?
   isPrivate        String?            @db.VarChar(255)
   img              String?            @db.VarChar(255)
   user_id          Int
+  update_time      DateTime           @db.DateTime(0)
+  users            users              @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk")
   playlist_collect playlist_collect[]
   playlist_songs   playlist_songs[]
 
   @@index([author], map: "name")
+  @@index([user_id], map: "fk")
 }
 
 model songs {
   id               Int                @id @default(autoincrement())
   song_title       String             @db.VarChar(255)
-  duration         Int?
+  duration         Int
   file_path        String             @db.Text
   albums_id        Int
   lyric            String?            @db.VarChar(255)
   tags             Json?
+  create_time      DateTime           @db.DateTime(0)
+  update_time      DateTime           @db.DateTime(0)
   playlist_songs   playlist_songs[]
   song_artists     song_artists[]
   albums           albums             @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
@@ -40,13 +45,15 @@ model songs {
 }
 
 model albums {
-  id           Int       @id @default(autoincrement())
-  album_title  String    @db.VarChar(255)
-  desc         String?   @db.VarChar(2000)
-  artist_id    Int?
-  release_date DateTime? @db.Date
-  cover        String?   @db.Text
-  artists      artists?  @relation(fields: [artist_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "albums_ibfk_1")
+  id           Int      @id @default(autoincrement())
+  album_title  String   @db.VarChar(255)
+  desc         String?  @db.VarChar(2000)
+  artist_id    Int
+  release_date DateTime @db.Date
+  cover        String   @db.Text
+  create_time  DateTime @db.DateTime(0)
+  update_time  DateTime @db.DateTime(0)
+  artists      artists  @relation(fields: [artist_id], references: [id], onUpdate: Restrict, map: "albums_ibfk_1")
   songs        songs[]
 
   @@index([artist_id], map: "artist_id")
@@ -56,7 +63,9 @@ model artists {
   id           Int            @id @default(autoincrement())
   name         String         @db.VarChar(255)
   biography    String?        @db.Text
-  image_url    String?        @db.VarChar(255)
+  image_url    String         @db.VarChar(255)
+  create_time  DateTime       @db.DateTime(0)
+  update_time  DateTime       @db.DateTime(0)
   albums       albums[]
   song_artists song_artists[]
 }
@@ -65,8 +74,10 @@ model users {
   id               Int                @id @default(autoincrement())
   username         String             @unique(map: "unique_username") @db.VarChar(255)
   password         String             @db.VarChar(255)
-  createdAt        DateTime?          @db.Date
+  create_time      DateTime           @db.DateTime(0)
   cover            String?            @db.VarChar(255)
+  update_time      DateTime           @db.Date
+  playlist         playlist[]
   playlist_collect playlist_collect[]
   user_likes_songs user_likes_songs[]
 }
@@ -95,9 +106,9 @@ model song_artists {
 model user_likes_songs {
   user_id  Int
   song_id  Int
-  liked_at DateTime? @default(now()) @db.DateTime(0)
-  users    users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "user_likes_songs_ibfk_1")
-  songs    songs     @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "user_likes_songs_ibfk_2")
+  liked_at DateTime @default(now()) @db.DateTime(0)
+  users    users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "user_likes_songs_ibfk_1")
+  songs    songs    @relation(fields: [song_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "user_likes_songs_ibfk_2")
 
   @@id([user_id, song_id])
   @@index([song_id], map: "idx_user_likes_songs_song_id")
@@ -114,4 +125,59 @@ model playlist_collect {
   @@id([user_id, playlist_id])
   @@index([playlist_id], map: "idx_user_collections_playlist_id")
   @@index([user_id], map: "idx_user_collections_user_id")
+}
+
+model account {
+  id                       String   @id
+  userId                   String   @unique(map: "Account_userId_key")
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?  @db.Text
+  access_token             String?  @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?  @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime
+  user                     user     @relation(fields: [userId], references: [id], map: "Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_idx")
+}
+
+model session {
+  id           String   @id
+  sessionToken String   @unique(map: "Session_sessionToken_key")
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  user         user     @relation(fields: [userId], references: [id], map: "Session_userId_fkey")
+
+  @@index([userId], map: "Session_userId_idx")
+}
+
+model user {
+  id            String    @id
+  name          String?
+  username      String?   @unique(map: "User_username_key")
+  email         String?   @unique(map: "User_email_key")
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  account       account?
+  session       session[]
+}
+
+model verificationtoken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
 }

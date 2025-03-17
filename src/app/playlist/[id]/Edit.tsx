@@ -166,7 +166,7 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
           rules={[{ required: true, message: '歌单标题不能为空' }]}
         >
           <Input
-            placeholder="输入歌单标题 (最多输入20个字)"
+            placeholder="输入歌单标题 (最多输入30个字)"
             maxLength={20}
           ></Input>
         </Form.Item>

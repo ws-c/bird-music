@@ -1,8 +1,15 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { AutoComplete, Button, Dropdown, Input } from 'antd'
-import { LeftOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons'
+import { AutoComplete, Button, Dropdown, Input, MenuProps } from 'antd'
+import {
+  LeftOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  SearchOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store/useStore'
 import HeadSetting from './HeadSetting'
@@ -33,24 +40,38 @@ export default function Header() {
     route.push('/auth')
   }
 
-  const items =
+  const items: MenuProps['items'] =
     user.username === '未登录'
       ? [
           {
             key: '1',
-            label: <span>登录</span>,
+            label: <span>登录账号</span>,
             onClick: () => route.push('/auth'),
+            icon: <LoginOutlined />,
           },
         ]
       : [
           {
             key: '1',
-            label: <span>设置</span>,
-            onClick: () => setOpen(true),
+            label: <span>{user.username}</span>,
+            disabled: true,
+            icon: <UserOutlined />,
           },
           {
             key: '2',
-            label: <span onClick={logout}>退出</span>,
+            label: <hr />,
+            type: 'group',
+          },
+          {
+            key: '3',
+            label: <span>设置</span>,
+            onClick: () => setOpen(true),
+            icon: <SettingOutlined />,
+          },
+          {
+            key: '4',
+            label: <span onClick={logout}>退出账号</span>,
+            icon: <LogoutOutlined />,
           },
         ]
 
@@ -107,7 +128,7 @@ export default function Header() {
           />
         </AutoComplete>
       </div>
-      <div className="relative top-0.5 flex items-center gap-2">
+      <div className="relative top-0.5 flex items-center gap-2 pr-24">
         {/* <ThemeToggle /> */}
         <Dropdown
           menu={{ items }}
@@ -125,7 +146,6 @@ export default function Header() {
             </AvatarFallback>
           </Avatar>
         </Dropdown>
-        <span className="dark:text-black">{isClient && user.username}</span>
       </div>
       <HeadSetting open={open} setOpen={setOpen} />
     </div>

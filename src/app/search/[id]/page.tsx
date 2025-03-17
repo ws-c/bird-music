@@ -83,25 +83,25 @@ export default function Home({
           <Flex gap={8} vertical>
             {artistList.length > 0 && (
               <>
-                <h2 className="pb-2 pt-4 text-xl font-bold">艺人</h2>
+                <h2 className="pb-2 pt-4 text-2xl font-bold">艺人</h2>
                 <ArtistList artists={artistList}></ArtistList>
               </>
             )}
             {albumList.length > 0 && (
               <>
-                <h2 className="pb-2 pt-4 text-xl font-bold">专辑</h2>
+                <h2 className="pb-2 pt-4 text-2xl font-bold">专辑</h2>
                 <AlbumList albumList={albumList}></AlbumList>
               </>
             )}
             {playList.length > 0 && (
               <>
-                <h2 className="pb-2 pt-4 text-xl font-bold">歌单</h2>
+                <h2 className="pb-2 pt-4 text-2xl font-bold">歌单</h2>
                 <PlayList playList={playList}></PlayList>
               </>
             )}
             {singleList.length > 0 && (
               <>
-                <h2 className="pb-2 pt-4 text-xl font-bold">单曲</h2>
+                <h2 className="pb-2 pt-4 text-2xl font-bold">单曲</h2>
                 <SingleList curSingleList={singleList}></SingleList>
               </>
             )}

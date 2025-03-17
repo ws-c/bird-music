@@ -13,7 +13,7 @@ import { Fetch } from '@/lib/request'
 import Image from 'next/image'
 export type Playlist = {
   author: string
-  createTime: string
+  create_time: string
   desc: string
   id: number
   isPrivate: string
@@ -39,7 +39,7 @@ export default function Home() {
 
   const [playList] = useState<Playlist>({
     author: user.username,
-    createTime: '',
+    create_time: '',
     desc: '',
     id: user.id,
     img: user.cover,

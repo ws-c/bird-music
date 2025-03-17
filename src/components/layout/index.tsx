@@ -12,6 +12,7 @@ import useColorThief from 'use-color-thief'
 import { useTheme } from 'next-themes'
 import { ItemType } from 'antd/es/menu/interface'
 import { Fetch } from '@/lib/request'
+import Image from 'next/image'
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -50,10 +51,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           gap={8}
         >
           <div className="relative">
-            <img
+            <Image
+              width={32}
+              height={32}
               style={{
-                width: '32px',
-                height: '32px',
                 borderRadius: '4px',
                 ...(item.isPrivate === '1'
                   ? { filter: 'brightness(0.9)' }
@@ -111,10 +112,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }}
           gap={8}
         >
-          <img
+          <Image
+            width={32}
+            height={32}
             style={{
-              width: '32px',
-              height: '32px',
               borderRadius: '4px',
             }}
             src={
@@ -323,10 +324,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
         />
       </Sider>
       <div style={{ ...style }}>
-        <div className="sticky top-0 z-50 h-[70px] p-[10px_60px_0_20px]">
+        <div className="sticky top-0 z-50 h-[70px] p-[10px_0_0_40px]">
           <Head />
         </div>
-        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
+        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto pl-20 pb-[120px]">
           {children}
         </main>
       </div>

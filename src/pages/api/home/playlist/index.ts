@@ -11,7 +11,7 @@ export default async function handler(req: { method: string }, res: any) {
         },
         take: 8,
         orderBy: {
-          createTime: 'desc',
+          create_time: 'desc',
         },
       })
       res.status(200).json(playlist)
