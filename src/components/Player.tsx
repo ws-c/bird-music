@@ -23,6 +23,7 @@ import {
 } from 'react-icons/io5'
 import Lyric from './Lyric'
 import { Fetch } from '@/lib/request'
+import Image from 'next/image'
 const Player = () => {
   const router = useRouter()
   const {
@@ -87,7 +88,20 @@ const Player = () => {
       }
     }
     const interval = setInterval(updateTime, 1000) // 每秒更新一次
-    return () => clearInterval(interval)
+    // 监听空格键
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        event.preventDefault() // 阻止默认的空格滚动行为
+        togglePlayPause() // 切换播放状态
+      }
+    }
+    document.addEventListener('keydown', handleKeyPress)
+
+    // 清除事件监听
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('keydown', handleKeyPress)
+    }
   }, [isPlaying])
 
   // 歌曲历史列表，用于随机播放时的返回功能
@@ -341,7 +355,7 @@ const Player = () => {
         user_id: user.id,
       },
     })
-    
+
     setIsLove(res.value)
   }
   return (
@@ -362,9 +376,12 @@ const Player = () => {
           >
             <div className="flex w-[450px] flex-col gap-4 pt-20">
               <div className="flex justify-center">
-                <img
+                <Image
                   src={currentSong.cover}
-                  className={`w-[400px] transform transition-transform duration-300 ${isPlaying ? '' : 'scale-90'} shadow-inset rounded-lg object-cover`}
+                  alt="歌曲封面"
+                  width={400}
+                  height={400}
+                  className={`transform transition-transform duration-300 ${isPlaying ? '' : 'scale-90'} shadow-inset rounded-lg object-cover`}
                 />
               </div>
               <div>
@@ -491,7 +508,9 @@ const Player = () => {
               onClose()
             }}
           >
-            <img
+            <Image
+              width={56}
+              height={56}
               className="h-full w-full rounded-lg shadow-inner"
               src={currentSong.cover}
               alt={currentSong.song_title}
