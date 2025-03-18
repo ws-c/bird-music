@@ -19,9 +19,10 @@ import { toWebP } from '@/helpers/toWebp'
 interface UserSettingsProps {
   open: boolean
   setOpen: (open: boolean) => void
+  type: string
 }
 
-const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
+const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen, type }) => {
   const { user, setUser } = useStore()
   const [fileList, setFileList] = useState<any[]>(
     user.cover ? [{ url: user.cover }] : []
@@ -29,7 +30,7 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
   const [previewImage, setPreviewImage] = useState<string>('')
   const [previewOpen, setPreviewOpen] = useState<boolean>(false)
   const [form] = Form.useForm()
-
+  const [passwordForm] = Form.useForm()
   const uploadProps: UploadProps = {
     action: '/api/common/upload_avatar',
     listType: 'picture-card' as const,
@@ -70,20 +71,33 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
     },
   }
 
-  const submit = async () => {
-    const values = await form.validateFields()
-    const data = {
-      ...values,
-      oldName: user.username,
-      cover: fileList[0]?.url || fileList[0]?.response?.data.url || '',
+  const submit = async (type: string) => {
+    if (type === '1') {
+      const values = await form.validateFields()
+      const data = {
+        ...values,
+        oldName: user.username,
+        cover: fileList[0]?.url || fileList[0]?.response?.data.url || '',
+      }
+      const res = await Fetch('/api/user/update', {
+        method: 'PUT',
+        body: data,
+      })
+      if (!res.success) return
+      message.success(res.msg)
+      setUser(res.data)
+    } else {
+      const values = await passwordForm.validateFields()
+      const data = {
+        ...values,
+        id: user.id,
+      }
+      const res = await Fetch('/api/user/updatePassword', {
+        method: 'PUT',
+        body: data,
+      })
+      message.success(res.msg)
     }
-    const res = await Fetch('/api/user/update', {
-      method: 'PUT',
-      body: data,
-    })
-
-    message.success(res.msg)
-    setUser(res.data)
     setOpen(false)
   }
   useEffect(() => {
@@ -92,66 +106,96 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen }) => {
   }, [open])
   return (
     <Drawer
-      title="用户设置"
+      title={type === '1' ? '修改资料' : '设置密码'}
       width={450}
       onClose={() => setOpen(false)}
       open={open}
       extra={
         <Space>
           <Button onClick={() => setOpen(false)}>取消</Button>
-          <Button onClick={submit} type="primary">
+          <Button onClick={() => submit(type)} type="primary">
             保存
           </Button>
         </Space>
       }
     >
-      <Form
-        form={form}
-        name="userForm"
-        layout="vertical"
-        initialValues={{
-          username: user.username,
-        }}
-      >
-        <Form.Item
-          label="用户名"
-          name="username"
-          style={{ width: '60%' }}
-          rules={[
-            { required: true, message: '请输入用户名' },
-            { max: 16, message: '用户名长度不能超过16个字符' },
-          ]}
+      {type === '1' && (
+        <Form
+          form={form}
+          name="userForm"
+          layout="vertical"
+          initialValues={{
+            username: user.username,
+          }}
         >
-          <Input />
-        </Form.Item>
+          <Form.Item
+            label="用户名"
+            name="username"
+            style={{ width: '60%' }}
+            rules={[
+              { required: true, message: '请输入用户名' },
+              { max: 16, message: '用户名长度不能超过20个字符' },
+            ]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item label="头像">
-          <ImgCrop>
-            <Upload {...uploadProps} fileList={fileList} accept="image/*">
-              {fileList.length < 1 && (
-                <a>
-                  <UploadOutlined />
-                  上传头像
-                </a>
-              )}
-            </Upload>
-          </ImgCrop>
-        </Form.Item>
-        {previewImage && (
-          <Image
-            wrapperStyle={{ display: 'none' }}
-            width={200}
-            alt="头像"
-            preview={{
-              visible: previewOpen,
-              onVisibleChange: setPreviewOpen,
-              afterOpenChange: (visible: any) =>
-                !visible && setPreviewImage(''),
-            }}
-            src={previewImage}
-          />
-        )}
-      </Form>
+          <Form.Item label="头像">
+            <ImgCrop>
+              <Upload {...uploadProps} fileList={fileList} accept="image/*">
+                {fileList.length < 1 && (
+                  <a>
+                    <UploadOutlined />
+                    上传头像
+                  </a>
+                )}
+              </Upload>
+            </ImgCrop>
+          </Form.Item>
+          {previewImage && (
+            <Image
+              wrapperStyle={{ display: 'none' }}
+              width={200}
+              alt="头像"
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: setPreviewOpen,
+                afterOpenChange: (visible: any) =>
+                  !visible && setPreviewImage(''),
+              }}
+              src={previewImage}
+            />
+          )}
+        </Form>
+      )}
+      {type === '2' && (
+        <Form form={passwordForm} name="userForm" layout="vertical">
+          <Form.Item
+            label="原密码"
+            name="password"
+            style={{ width: '60%' }}
+            rules={[{ required: true, message: '请输入原密码' }]}
+          >
+            <Input type="password" />
+          </Form.Item>
+
+          <Form.Item
+            label="新密码"
+            name="newPassword"
+            style={{ width: '60%' }}
+            rules={[
+              {
+                required: true,
+                message: '请输入新密码, 长度6-20位',
+                min: 6,
+                max: 20,
+              },
+            ]}
+          >
+            <Input type="password" />
+          </Form.Item>
+        </Form>
+      )}
     </Drawer>
   )
 }

@@ -11,7 +11,7 @@ model playlist {
   id               Int                @id @default(autoincrement())
   name             String             @db.VarChar(255)
   author           String             @db.VarChar(255)
-  create_time      DateTime           @db.Date
+  create_time      DateTime           @db.DateTime(0)
   desc             String?            @db.VarChar(255)
   tags             Json?
   isPrivate        String?            @db.VarChar(255)

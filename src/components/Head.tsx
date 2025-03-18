@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { AutoComplete, Button, Dropdown, Input, MenuProps } from 'antd'
 import {
+  EditOutlined,
   LeftOutlined,
   LoginOutlined,
   LogoutOutlined,
@@ -27,7 +28,7 @@ export default function Header() {
   const [isClient, setIsClient] = useState(false)
   const [open, setOpen] = useState(false) // 控制用户设置抽屉
   const [options, setOptions] = useState<Option[]>([])
-
+  const [type, setType] = useState('') // 1 用户信息 2 修改密码
   useEffect(() => {
     setIsClient(true)
   }, [])
@@ -64,12 +65,24 @@ export default function Header() {
           },
           {
             key: '3',
-            label: <span>设置</span>,
-            onClick: () => setOpen(true),
-            icon: <SettingOutlined />,
+            label: <span>修改资料</span>,
+            onClick: () => {
+              setOpen(true)
+              setType('1')
+            },
+            icon: <EditOutlined />,
           },
           {
             key: '4',
+            label: <span>设置密码</span>,
+            onClick: () => {
+              setOpen(true)
+              setType('2')
+            },
+            icon: <SettingOutlined />,
+          },
+          {
+            key: '5',
             label: <span onClick={logout}>退出账号</span>,
             icon: <LogoutOutlined />,
           },
@@ -147,7 +160,7 @@ export default function Header() {
           </Avatar>
         </Dropdown>
       </div>
-      <HeadSetting open={open} setOpen={setOpen} />
+      <HeadSetting open={open} setOpen={setOpen} type={type} />
     </div>
   )
 }
