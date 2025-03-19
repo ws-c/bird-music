@@ -115,10 +115,10 @@ export default function Header() {
   }
   return (
     <div className="flex justify-between">
-      <div className="flex items-center gap-[8px]">
+      <div className="flex items-center gap-2">
         <Button
           type="text"
-          className="relative top-[2px] h-[36px]"
+          className="relative top-[4px] h-10 w-10"
           disabled={isClient && window.location.pathname === '/'}
           icon={<LeftOutlined size={12} />}
           onClick={() => route.back()}
@@ -136,12 +136,12 @@ export default function Header() {
             variant="filled"
             placeholder="搜索歌曲、专辑、艺人、歌单"
             prefix={<SearchOutlined />}
-            style={{ height: '36px' }}
+            style={{ height: '40px' }}
             onKeyDown={handleKeyDown}
           />
         </AutoComplete>
       </div>
-      <div className="relative top-0.5 flex items-center gap-2 pr-24">
+      <div className="relative top-1 flex items-center gap-2 pr-24">
         {/* <ThemeToggle /> */}
         <Dropdown
           menu={{ items }}

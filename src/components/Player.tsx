@@ -42,9 +42,15 @@ const Player = () => {
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
   ) // 获取当前歌曲数组的索引
+
   const [currentTime, setCurrentTime] = useState(0)
   const [sliderValue, setSliderValue] = useState([0])
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  const accumulatedPlayTimeRef = useRef(0) // 累计播放时间(毫秒)
+  const hasCountedRef = useRef(false) // 是否已记录
+  const playbackStartTimeRef = useRef<number | null>(null) // 播放开始时间
+  const playTimerRef = useRef<NodeJS.Timeout | null>(null) // 定时器引用
 
   // 每次 currentSongIndex 变化时，更新播放状态
   useEffect(() => {
@@ -245,6 +251,9 @@ const Player = () => {
   useEffect(() => {
     getLove()
     setOnClicked(currentId)
+    accumulatedPlayTimeRef.current = 0
+    hasCountedRef.current = false
+    playbackStartTimeRef.current = null
   }, [currentId])
 
   // 全屏模式
@@ -358,6 +367,39 @@ const Player = () => {
 
     setIsLove(res.value)
   }
+
+  // 播放量记录方法
+  const recordPlayCount = async () => {
+    await Fetch('/api/play-count', {
+      method: 'POST',
+      body: {
+        id: currentId,
+      },
+    })
+  }
+
+  // 时间检查方法
+  const checkPlayCount = () => {
+    if (accumulatedPlayTimeRef.current >= 30000 && !hasCountedRef.current) {
+      recordPlayCount()
+      hasCountedRef.current = true
+    }
+  }
+  // 新增清理定时器函数
+  const clearPlayTimer = () => {
+    if (playTimerRef.current) {
+      clearInterval(playTimerRef.current)
+      playTimerRef.current = null
+    }
+  }
+
+  // 在useEffect清理函数中添加
+  useEffect(() => {
+    return () => {
+      clearPlayTimer()
+    }
+  }, [])
+
   return (
     <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
       {/* 全屏模式 */}
@@ -639,11 +681,40 @@ const Player = () => {
       <audio
         ref={audioRef}
         src={currentSong.file_path}
-        onEnded={() => handleNext(false)}
-        onLoadedMetadata={() => {
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0 // Reset time when song changes
+        onPlay={() => {
+          playbackStartTimeRef.current = Date.now()
+
+          // 启动定时检查（每秒检查一次）
+          playTimerRef.current = setInterval(() => {
+            if (playbackStartTimeRef.current) {
+              const now = Date.now()
+              const duration = now - playbackStartTimeRef.current
+              accumulatedPlayTimeRef.current += duration
+              playbackStartTimeRef.current = now // 重置开始时间
+              checkPlayCount()
+            }
+          }, 1000)
+        }}
+        onPause={() => {
+          const now = Date.now()
+          if (playbackStartTimeRef.current) {
+            const duration = now - playbackStartTimeRef.current
+            accumulatedPlayTimeRef.current += duration
+            playbackStartTimeRef.current = null
           }
+          checkPlayCount()
+          clearPlayTimer()
+        }}
+        onEnded={() => {
+          handleNext(false)
+          const now = Date.now()
+          if (playbackStartTimeRef.current) {
+            const duration = now - playbackStartTimeRef.current
+            accumulatedPlayTimeRef.current += duration
+            playbackStartTimeRef.current = null
+          }
+          checkPlayCount()
+          clearPlayTimer()
         }}
       />
     </div>

@@ -36,6 +36,7 @@ model songs {
   tags             Json?
   create_time      DateTime           @db.DateTime(0)
   update_time      DateTime           @db.DateTime(0)
+  play_count       Int?
   playlist_songs   playlist_songs[]
   song_artists     song_artists[]
   albums           albums             @relation(fields: [albums_id], references: [id], onUpdate: Restrict, map: "songs_ibfk_1")
