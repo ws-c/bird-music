@@ -192,7 +192,27 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen, type }) => {
               },
             ]}
           >
-            <Input type="password" />
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label="确认新密码"
+            name="confirmPassword"
+            validateTrigger={['onBlur', 'onSubmit']}
+            style={{ width: '60%' }}
+            dependencies={['newPassword']} // 依赖项声明
+            rules={[
+              { required: true, message: '请确认新密码' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('newPassword') === value) {
+                    return Promise.resolve()
+                  }
+                  return Promise.reject(new Error('两次输入的密码不一致'))
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
           </Form.Item>
         </Form>
       )}
