@@ -69,6 +69,7 @@ export default function Auth() {
           layout="vertical"
           form={loginForm}
           autoComplete="new-password"
+          validateTrigger="onSubmit"
         >
           <Form.Item
             label="用户名"
@@ -106,6 +107,7 @@ export default function Auth() {
           layout="vertical"
           form={registerForm}
           autoComplete="new-password"
+          validateTrigger="onSubmit"
         >
           <Form.Item
             label="用户名"
@@ -122,9 +124,26 @@ export default function Auth() {
             name="password"
             rules={[{ required: true, message: '请输入密码' }]}
           >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label="确认密码"
+            name="confirmPassword"
+            dependencies={['password']}
+            rules={[
+              { required: true, message: '请再次输入密码' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve()
+                  }
+                  return Promise.reject(new Error('两次输入的密码不一致'))
+                },
+              }),
+            ]}
+          >
             <Input.Password className="mb-6" />
           </Form.Item>
-
           <Form.Item>
             <Button
               type="primary"

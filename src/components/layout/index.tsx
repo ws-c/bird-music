@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Flex, Menu } from 'antd'
+import { Button, Flex, Menu, Drawer } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useRouter } from 'next/navigation'
 import Icons from '@/components/Icons'
@@ -26,13 +26,26 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     collectPlayList,
     setCollectPlayList,
     colorTheme,
+    showSidebar,
+    setShowSidebar,
   } = useStore()
   const router = useRouter()
   const [client, setClient] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
   useEffect(() => {
     getMyPlayList()
     getCollectPlayList()
     setClient(true)
+
+    // 检查屏幕大小
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
   // 创建的歌单
   const getMyPlayList = async () => {
@@ -299,35 +312,79 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   }
   return (
     <div className="h-screen">
-      <Sider width={240} style={siderStyle}>
-        <Flex className="mb-4 ml-8 h-16 items-baseline">
-          <Icons
-            type="icon-Twitter_icon4948c882-copy"
-            size={24}
-            className="mr-2"
+      {!isMobile ? (
+        <Sider width={240} style={siderStyle}>
+          <Flex className="mb-4 ml-8 h-16 items-baseline">
+            <Icons
+              type="icon-Twitter_icon4948c882-copy"
+              size={24}
+              className="mr-2"
+            />
+            <Title level={3} className="mb-0 pt-[14px]">
+              Bird Music
+            </Title>
+          </Flex>
+          <Menu
+            style={{
+              border: 'none',
+              letterSpacing: '2px',
+              padding: '0 24px',
+            }}
+            mode="inline"
+            selectedKeys={[curActive]}
+            defaultOpenKeys={['create', 'collect']}
+            items={items}
+            onClick={(item) => onClick(item)}
           />
-          <Title level={3} className="mb-0 pt-[14px]">
-            Bird Music
-          </Title>
-        </Flex>
-        <Menu
-          style={{
-            border: 'none',
-            letterSpacing: '2px',
-            padding: '0 24px',
+        </Sider>
+      ) : (
+        <Drawer
+          open={showSidebar}
+          onClose={() => setShowSidebar(false)}
+          placement="left"
+          width={240}
+          styles={{
+            body: { padding: 0 },
+            header: { display: 'none' },
           }}
-          mode="inline"
-          selectedKeys={[curActive]}
-          defaultOpenKeys={['create', 'collect']}
-          items={items}
-          onClick={(item) => onClick(item)}
-        />
-      </Sider>
-      <div style={{ ...style }}>
-        <div className="sticky top-0 z-50 h-[70px] p-[10px_0_0_40px]">
+          rootStyle={{
+            padding: 0,
+          }}
+        >
+          <Sider width={240} style={siderStyle}>
+            <Flex className="mb-4 ml-8 h-16 items-baseline">
+              <Icons
+                type="icon-Twitter_icon4948c882-copy"
+                size={24}
+                className="mr-2"
+              />
+              <Title level={3} className="mb-0 pt-[14px]">
+                Bird Music
+              </Title>
+            </Flex>
+            <Menu
+              style={{
+                border: 'none',
+                letterSpacing: '2px',
+                padding: '0 24px',
+              }}
+              mode="inline"
+              selectedKeys={[curActive]}
+              defaultOpenKeys={['create', 'collect']}
+              items={items}
+              onClick={(item) => {
+                onClick(item)
+                setShowSidebar(false)
+              }}
+            />
+          </Sider>
+        </Drawer>
+      )}
+      <div style={{ ...style, paddingLeft: isMobile ? '0' : '240px' }}>
+        <div className="sticky top-0 z-50 h-[70px] p-[10px_0_0_20px]">
           <Head />
         </div>
-        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto pl-20 pb-[120px]">
+        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto pb-[120px] pl-14">
           {children}
         </main>
       </div>
