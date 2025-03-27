@@ -402,7 +402,7 @@ const Player = () => {
   }, [])
 
   return (
-    <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000] ">
+    <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
       {/* 全屏模式 */}
       {fullScreen && (
         <div className="fixed inset-0 z-[998] bg-black">
@@ -414,10 +414,10 @@ const Player = () => {
             />
           </div>
           <div
-            style={{ ...gradientStyle }}
-            className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-40 md:pl-[15%]"
+            style={{ ...gradientStyle, paddingLeft: '15%' }}
+            className="flex items-center gap-40"
           >
-            <div className="flex w-full flex-col gap-4 pt-20 md:w-[450px]">
+            <div className="flex w-[450px] flex-col gap-4 pt-20">
               <div className="flex justify-center">
                 <Image
                   src={currentSong.cover}
@@ -534,7 +534,7 @@ const Player = () => {
             {currentSong.lyric ? (
               <Lyric lyricUrl={currentSong.lyric} currentTime={currentTime} />
             ) : (
-              <div className="flex h-4/5 w-full overflow-y-auto pt-10 md:w-[720px] md:pt-72">
+              <div className="flex h-4/5 w-[720px] overflow-y-auto pt-72">
                 <div className="text-xl text-white">纯音乐，请欣赏</div>
               </div>
             )}
