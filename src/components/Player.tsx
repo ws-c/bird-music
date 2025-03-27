@@ -24,6 +24,7 @@ import {
 import Lyric from './Lyric'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+
 const Player = () => {
   const router = useRouter()
   const {
@@ -401,7 +402,7 @@ const Player = () => {
   }, [])
 
   return (
-    <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
+    <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000] ">
       {/* 全屏模式 */}
       {fullScreen && (
         <div className="fixed inset-0 z-[998] bg-black">
@@ -413,10 +414,10 @@ const Player = () => {
             />
           </div>
           <div
-            style={{ ...gradientStyle, paddingLeft: '15%' }}
-            className="flex items-center gap-40"
+            style={{ ...gradientStyle }}
+            className="flex flex-col items-center gap-10 md:flex-row md:items-start md:gap-40 md:pl-[15%]"
           >
-            <div className="flex w-[450px] flex-col gap-4 pt-20">
+            <div className="flex w-full flex-col gap-4 pt-20 md:w-[450px]">
               <div className="flex justify-center">
                 <Image
                   src={currentSong.cover}
@@ -533,7 +534,7 @@ const Player = () => {
             {currentSong.lyric ? (
               <Lyric lyricUrl={currentSong.lyric} currentTime={currentTime} />
             ) : (
-              <div className="flex h-4/5 w-[720px] overflow-y-auto pt-72">
+              <div className="flex h-4/5 w-full overflow-y-auto pt-10 md:w-[720px] md:pt-72">
                 <div className="text-xl text-white">纯音乐，请欣赏</div>
               </div>
             )}
@@ -541,8 +542,59 @@ const Player = () => {
         </div>
       )}
       {/* 底部播放器 */}
-      <div className="relative flex items-center justify-between px-4 py-4">
-        <div className="flex items-center justify-center gap-6">
+      <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 md:flex-row md:gap-0">
+        {/* 小屏幕布局 */}
+        <div className="flex w-full flex-col items-center md:hidden">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Image
+                width={40}
+                height={40}
+                className="rounded-lg"
+                src={currentSong.cover}
+                alt={currentSong.song_title}
+                onClick={() => setFullScreen(true)}
+              />
+              <div className="max-w-[150px]">
+                <div className="truncate text-sm font-medium">
+                  {currentSong.song_title}
+                </div>
+                <div className="truncate text-xs text-gray-500">
+                  {currentSong.song_artists?.[0]?.artists?.name}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {isPlaying ? (
+                <IoPauseCircle
+                  onClick={togglePlayPause}
+                  className="text-3xl text-primary"
+                />
+              ) : (
+                <IoCaretForwardCircle
+                  onClick={togglePlayPause}
+                  className="text-3xl text-primary"
+                />
+              )}
+              <CgPlayList
+                size={20}
+                onClick={showDrawer}
+                className="cursor-pointer"
+              />
+            </div>
+          </div>
+          <Slider
+            className="mt-2 w-full"
+            min={0}
+            max={currentSong.duration || 0}
+            value={sliderValue}
+            onValueChange={handleSliderChange}
+            onValueCommit={handleSliderAfterChange}
+          />
+        </div>
+
+        {/* 大屏幕布局 */}
+        <div className="hidden items-center justify-center gap-6 md:flex">
           <div
             className="relative h-14 w-14 cursor-pointer rounded-lg"
             onClick={() => {
@@ -558,10 +610,7 @@ const Player = () => {
               alt={currentSong.song_title}
             />
             <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 transition-opacity duration-300 hover:opacity-100">
-              <CgArrowsExpandRight
-                size={24}
-                style={{ color: '#fff' }}
-              ></CgArrowsExpandRight>
+              <CgArrowsExpandRight size={24} style={{ color: '#fff' }} />
             </div>
           </div>
           <div className="flex-col justify-center gap-2">
@@ -593,7 +642,7 @@ const Player = () => {
             </div>
           </div>
         </div>
-        <div className="absolute left-[50%] flex translate-x-[-50%] transform flex-col sm:w-[150px] md:w-[300px] lg:w-[450px] xl:w-[750px]">
+        <div className="hidden w-full flex-col items-center md:absolute md:left-[50%] md:flex md:w-auto md:translate-x-[-50%] md:transform">
           <div className="flex items-center justify-center gap-6 pt-2">
             <Icons
               type={isLove ? 'icon-heart-fill' : 'icon-heart'}
@@ -624,31 +673,31 @@ const Player = () => {
             />
             {getPlayModeIcon('1')}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex w-full items-center gap-4 md:w-[450px] xl:w-[750px]">
             <span>{formatTime(currentTime)}</span>
             <Slider
               className="w-full"
               min={0}
               max={currentSong.duration || 0}
-              value={sliderValue} // 使用 sliderValue
-              onValueChange={handleSliderChange} // 实时更新值
-              onValueCommit={handleSliderAfterChange} // 放手后更新播放进度
+              value={sliderValue}
+              onValueChange={handleSliderChange}
+              onValueCommit={handleSliderAfterChange}
             />
             <span>{formatTime(currentSong.duration)}</span>
           </div>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex gap-2">
+        <div className="hidden items-center gap-6 md:flex">
+          <div className="hidden gap-2 md:flex">
             {getVolumeIcon('1')}
             <Slider
               className="w-24"
               min={0}
               max={100}
               value={volume}
-              onValueChange={handleVolumeChange} // 处理音量变化
+              onValueChange={handleVolumeChange}
             />
           </div>
-          <div>|</div>
+          <div className="hidden md:block">|</div>
           <CgPlayList
             size={24}
             onClick={showDrawer}

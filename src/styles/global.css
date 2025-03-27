@@ -94,7 +94,7 @@ a:hover {
   border: 0 !important;
 }
 .ant-drawer-body {
-  padding: 24px 8px !important;
+  padding: 0 8px !important;
 }
 .ant-mask {
   background: none !important;

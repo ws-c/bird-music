@@ -30,6 +30,7 @@ interface StoreState {
   colorTheme: string // 颜色主题
   refreshCount: number // 用于触发刷新的计数器
   currentCategoryId: number // 当前分类id
+  showSidebar: boolean // 是否显示侧边栏
   setMyPlayList: (list: PlayList[]) => void
   setCollectPlayList: (list: PlayList[]) => void
   setInputValue: (value: string) => void
@@ -43,6 +44,7 @@ interface StoreState {
   setColorTheme: (theme: string) => void
   setIsLove: (love: boolean) => void
   setCurrentCategoryId: (id: number) => void
+  setShowSidebar: (show: boolean) => void
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -78,6 +80,7 @@ const useStore = create<StoreState>((set) => ({
   colorTheme: '',
   isLove: false,
   currentCategoryId: 0,
+  showSidebar: false,
   // 更新我创建的歌单
   setMyPlayList: (list: PlayList[]) => {
     set({ myPlayList: list })
@@ -136,6 +139,7 @@ const useStore = create<StoreState>((set) => ({
     set((state) => ({ refreshCount: state.refreshCount + 1 })), // 每次调用增加计数
   // 更新主题颜色
   setColorTheme: (theme: string) => set({ colorTheme: theme }),
+  setShowSidebar: (show: boolean) => set({ showSidebar: show }),
 }))
 
 export default useStore

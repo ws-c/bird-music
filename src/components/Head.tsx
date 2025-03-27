@@ -10,6 +10,7 @@ import {
   SearchOutlined,
   SettingOutlined,
   UserOutlined,
+  MenuOutlined,
 } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store/useStore'
@@ -24,7 +25,7 @@ type Option = {
 }
 
 export default function Header() {
-  const { user, inputValue, setInputValue } = useStore()
+  const { user, inputValue, setInputValue, setShowSidebar } = useStore()
   const [isClient, setIsClient] = useState(false)
   const [open, setOpen] = useState(false) // 控制用户设置抽屉
   const [options, setOptions] = useState<Option[]>([])
@@ -123,6 +124,12 @@ export default function Header() {
           icon={<LeftOutlined size={12} />}
           onClick={() => route.back()}
         ></Button>
+        <div
+          className="relative top-[4px] flex h-10 w-10 cursor-pointer items-center justify-center hover:opacity-80 md:hidden"
+          onClick={() => setShowSidebar(true)}
+        >
+          <MenuOutlined size={20} />
+        </div>
         <AutoComplete
           allowClear
           style={{ width: '360px' }}
