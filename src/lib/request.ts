@@ -24,9 +24,9 @@ export const Fetch = async <T = any>(
   }: FetchConfig = {}
 ): Promise<T> => {
   try {
-    activeRequests++
-    if (activeRequests === 1 && loading) {
-      NProgress.start()
+    if (loading) {
+      activeRequests++
+      if (activeRequests === 1) NProgress.start()
     }
     const response = await fetch(url, {
       method,
@@ -57,9 +57,9 @@ export const Fetch = async <T = any>(
     throw error
   } finally {
     // 结束进度条：仅当最后一个请求完成时触发
-    activeRequests--
-    if (activeRequests === 0 && loading) {
-      NProgress.done()
+    if (loading) {
+      activeRequests--
+      if (activeRequests === 0) NProgress.done()
     }
   }
 }

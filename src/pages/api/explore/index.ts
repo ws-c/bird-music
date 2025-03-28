@@ -16,7 +16,7 @@ export default async function handler(
             array_contains: [Number(id)],
           },
         },
-        distinct: ['albums_id'],
+        // distinct: ['albums_id'],
         take: 10,
         include: {
           albums: {

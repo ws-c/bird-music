@@ -364,6 +364,7 @@ const Player = () => {
         song_id: currentId,
         user_id: user.id,
       },
+      loading: false,
     })
 
     setIsLove(res.value)
@@ -376,6 +377,7 @@ const Player = () => {
       body: {
         id: currentId,
       },
+      loading: false,
     })
   }
 
@@ -402,7 +404,7 @@ const Player = () => {
   }, [])
 
   return (
-    <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
+    <div className="fixed bottom-0 z-[1000] w-screen border-t bg-[#fafafa] p-0 dark:bg-[#000]">
       {/* 全屏模式 */}
       {fullScreen && (
         <div className="fixed inset-0 z-[998] bg-black">

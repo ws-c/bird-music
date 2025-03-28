@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import { useRouter } from 'next/navigation'
-import { Spin, Button, Table, Avatar } from 'antd'
+import { Spin, Button, Table, Avatar, message } from 'antd'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
@@ -40,7 +40,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const router = useRouter()
 
   if (user.id !== +id) {
-    alert('你没有权限访问此页面')
+    message.error('你没有权限访问此页面')
     router.push('/')
   }
 
