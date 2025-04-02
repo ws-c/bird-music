@@ -11,6 +11,7 @@ import Link from 'next/link'
 import Icons from '@/components/Icons'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Playlist = {
   author: string
   create_time: string
@@ -32,11 +33,24 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     currentId,
     setIsPlaying,
     setSingleList,
-    refreshCount,
     setColorTheme,
     isLove,
     setIsLove,
-  } = useStore()
+    refreshCount
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      refreshCount: store.refreshCount,
+      setColorTheme: store.setColorTheme,
+      isLove: store.isLove,
+      setIsLove: store.setIsLove,
+    }))
+  )
   const router = useRouter()
 
   if (user.id !== +id) {
@@ -78,6 +92,8 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       setOnClicked(currentId)
     }
   }, [currentId])
+
+
   // 喜欢歌曲
   const handleLove = (id: number) => {
     Fetch('/api/love', {
@@ -86,6 +102,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         song_id: id,
         user_id: user.id,
       },
+      loading: false,
     }).then(() => {
       setCurSingleList(
         curSingleList.filter((item) => {

@@ -11,6 +11,7 @@ import Link from 'next/link'
 import Icons from '@/components/Icons'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Playlist = {
   author: string
   create_time: string
@@ -35,7 +36,21 @@ export default function Home() {
     setPreSingleList,
     setIsLove,
     isLove,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      preSingleList: store.preSingleList,
+      setPreSingleList: store.setPreSingleList,
+      setIsLove: store.setIsLove,
+      isLove: store.isLove,
+      setColorTheme: store.setColorTheme,
+    }))
+  )
 
   const [playList] = useState<Playlist>({
     author: user.username,
@@ -58,7 +73,7 @@ export default function Home() {
     setColorTheme(preSingleList[0]?.cover ?? '')
     setLoading(false)
     getLove(preSingleList)
-  }, [currentId, isLove])
+  }, [isLove])
   // 喜欢歌曲
   const handleLove = async (id: number) => {
     const res = await Fetch('/api/love', {
@@ -67,6 +82,7 @@ export default function Home() {
         song_id: id,
         user_id: user.id,
       },
+      loading: false,
     })
 
     setPreSingleList(
@@ -90,6 +106,7 @@ export default function Home() {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
       },
+      loading: false,
     })
 
     const updatedList = contentData.map((item, index) => ({
@@ -192,7 +209,7 @@ export default function Home() {
               <h2 className="m-0 text-2xl font-semibold tracking-wide">
                 最近播放
               </h2>
-              <p className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
+              <div className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
                 <div className="flex items-center gap-3">
                   <Avatar
                     src={playList.cover}
@@ -201,7 +218,7 @@ export default function Home() {
                   />
                   <span>{playList.author}</span>
                 </div>
-              </p>
+              </div>
 
               <div className="flex gap-2">
                 <Button

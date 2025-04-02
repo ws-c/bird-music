@@ -1,5 +1,6 @@
 import { Fetch } from '@/lib/request'
 import { useState, useEffect, useRef, useLayoutEffect } from 'react'
+import useStore from '@/store/useStore'
 
 interface LyricProps {
   lyricUrl: string
@@ -12,6 +13,8 @@ interface LyricLine {
 }
 
 const Lyric: React.FC<LyricProps> = ({ lyricUrl, currentTime }) => {
+  const currentId = useStore((store) => store.currentId)
+  const prevCurrentId = useRef<number>()
   const [lyrics, setLyrics] = useState<LyricLine[]>([])
   const lineRefs = useRef<(HTMLDivElement | null)[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
@@ -120,7 +123,18 @@ const Lyric: React.FC<LyricProps> = ({ lyricUrl, currentTime }) => {
       if (scrollTimer.current) clearTimeout(scrollTimer.current)
     }
   }, [])
-
+  // 当歌曲ID变化时立即重置滚动位置
+  useEffect(() => {
+    if (
+      prevCurrentId.current !== undefined &&
+      prevCurrentId.current !== currentId
+    ) {
+      containerRef.current?.scrollTo({ top: 0, behavior: 'auto' })
+      prevActiveIndex.current = -1 // 重置历史索引
+      activeIndexRef.current = -1
+    }
+    prevCurrentId.current = currentId
+  }, [currentId])
   useLayoutEffect(() => {
     if (!containerRef.current || activeIndex === -1) return
     const currentLine = lineRefs.current[activeIndex]
@@ -146,7 +160,10 @@ const Lyric: React.FC<LyricProps> = ({ lyricUrl, currentTime }) => {
   }, [activeIndex, lyrics])
 
   return (
-    <div ref={containerRef} className="flex h-4/5 w-[720px] overflow-y-auto">
+    <div
+      ref={containerRef}
+      className="lyric-container flex h-[76%] w-[720px] overflow-y-auto"
+    >
       <div className="flex flex-col items-start">
         {lyrics.map((lyric, index) => {
           const isActive = activeIndex === index

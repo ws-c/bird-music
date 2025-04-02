@@ -9,6 +9,7 @@ import Link from 'next/link'
 import Icons from '@/components/Icons'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Album = {
   album_title: string
   artist_id: number
@@ -62,7 +63,19 @@ export default function Home({ params }: { params: { id: string } }) {
     setIsLove,
     isLove,
     user,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setColorTheme: store.setColorTheme,
+      setIsLove: store.setIsLove,
+      isLove: store.isLove,
+      user: store.user,
+    }))
+  )
   const { id } = params
   const [album, setAlbum] = useState<Album>({
     album_title: '',
@@ -77,16 +90,23 @@ export default function Home({ params }: { params: { id: string } }) {
   })
   const [loading, setLoading] = useState(true)
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
-  useEffect(() => {
-    const fetchAlbum = async () => {
-      const data = await Fetch(`/api/album?id=${id}`)
-      setAlbum(data)
-      getLove(data.songs)
-      setColorTheme(data.cover)
-      setLoading(false)
-    }
-    fetchAlbum()
-  }, [id, isLove])
+
+useEffect(() => {
+  const fetchAlbum = async () => {
+    const data = await Fetch(`/api/album?id=${id}`)
+    setAlbum(data)
+    setColorTheme(data.cover)
+    setLoading(false)
+    getLove(data.songs)
+  }
+  fetchAlbum()
+}, [id]) 
+
+useEffect(() => {
+  if (curSingleList.length > 0) {
+    getLove(curSingleList)
+  }
+}, [isLove]) 
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -111,6 +131,7 @@ export default function Home({ params }: { params: { id: string } }) {
         song_id: id,
         user_id: user.id,
       },
+      loading: false,
     })
     setCurSingleList(
       curSingleList.map((item) => {
@@ -133,6 +154,7 @@ export default function Home({ params }: { params: { id: string } }) {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
       },
+      loading: false,
     })
 
     const updatedList = contentData.map((item, index) => ({

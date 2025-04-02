@@ -16,12 +16,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { showPlayer } = useStore()
+  const showPlayer = useStore((store) => store.showPlayer)
   const [isClient, setIsClient] = useState(false)
   useEffect(() => {
     setIsClient(true)
   }, [])
-  
 
   return (
     <html lang="zh-CN" suppressHydrationWarning>

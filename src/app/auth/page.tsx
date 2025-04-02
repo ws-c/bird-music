@@ -4,9 +4,15 @@ import { Form, Input, Button, notification, Tabs, Flex } from 'antd'
 import useStore from '@/store/useStore'
 import Icons from '@/components/Icons'
 import { Fetch } from '@/lib/request'
+import { useShallow } from 'zustand/react/shallow'
 
 export default function Auth() {
-  const { setShowPlayer, setUser } = useStore()
+  const { setShowPlayer, setUser } = useStore(
+    useShallow((store) => ({
+      setShowPlayer: store.setShowPlayer,
+      setUser: store.setUser,
+    }))
+  )
   const [activeTabKey, setActiveTabKey] = useState('1')
   const [returnUrl, setReturnUrl] = useState('/')
   const [loginForm] = Form.useForm()

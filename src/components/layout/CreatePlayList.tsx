@@ -26,7 +26,7 @@ type props = {
   getMyPlayList: () => void
 }
 const CreatePlaylist: FC<props> = ({ open, setOpen, getMyPlayList }) => {
-  const { user } = useStore()
+  const user = useStore((store) => store.user)
   const [form] = Form.useForm()
   const [confirmLoading, setConfirmLoading] = useState(false)
 

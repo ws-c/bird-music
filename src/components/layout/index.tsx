@@ -13,6 +13,7 @@ import { useTheme } from 'next-themes'
 import { ItemType } from 'antd/es/menu/interface'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -28,7 +29,18 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     colorTheme,
     showSidebar,
     setShowSidebar,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      myPlayList: store.myPlayList,
+      setMyPlayList: store.setMyPlayList,
+      collectPlayList: store.collectPlayList,
+      setCollectPlayList: store.setCollectPlayList,
+      colorTheme: store.colorTheme,
+      showSidebar: store.showSidebar,
+      setShowSidebar: store.setShowSidebar,
+    }))
+  )
   const router = useRouter()
   const [client, setClient] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
