@@ -130,3 +130,6 @@ a:hover {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #555; /* 滑块悬停时的颜色 */
 }
+.lyric-container::-webkit-scrollbar {
+  display: none;
+}

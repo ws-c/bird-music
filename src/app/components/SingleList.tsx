@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useRouter } from 'next/navigation'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 const SingleList = () => {
   const nav = useRouter()
   const {
@@ -16,7 +17,16 @@ const SingleList = () => {
     setCurrentId,
     currentId,
     setShowPlayer,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      isPlaying: store.isPlaying,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setCurrentId: store.setCurrentId,
+      currentId: store.currentId,
+      setShowPlayer: store.setShowPlayer,
+    }))
+  )
 
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   const [onClicked, setOnClicked] = useState(0)

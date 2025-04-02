@@ -23,6 +23,7 @@ import { useRouter } from 'next/navigation'
 import { typeOptionsMap } from '@/lib/const'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Playlist = {
   author: string
   create_time: string
@@ -54,7 +55,23 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     isLove,
     myPlayList,
     setCollectPlayList,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setColorTheme: store.setColorTheme,
+      refreshCount: store.refreshCount,
+      collectPlayList: store.collectPlayList,
+      setIsLove: store.setIsLove,
+      isLove: store.isLove,
+      myPlayList: store.myPlayList,
+      setCollectPlayList: store.setCollectPlayList,
+    }))
+  )
 
   const [playList, setPlayList] = useState<Playlist>({
     author: '',
@@ -83,6 +100,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
       },
+      loading: false,
     })
 
     return contentData.map((item, index) => ({
@@ -150,6 +168,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         song_id: id,
         user_id: user.id,
       },
+      loading: false,
     })
 
     setCurSingleList(

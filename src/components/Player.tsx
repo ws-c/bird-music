@@ -24,6 +24,7 @@ import {
 import Lyric from './Lyric'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 
 const Player = () => {
   const router = useRouter()
@@ -39,7 +40,21 @@ const Player = () => {
     isLove,
     setIsLove,
     triggerRefresh,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      singleList: store.singleList,
+      preSingleList: store.preSingleList,
+      setPreSingleList: store.setPreSingleList,
+      currentId: store.currentId,
+      setCurrentId: store.setCurrentId,
+      isPlaying: store.isPlaying,
+      setIsPlaying: store.setIsPlaying,
+      user: store.user,
+      isLove: store.isLove,
+      setIsLove: store.setIsLove,
+      triggerRefresh: store.triggerRefresh,
+    }))
+  )
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
   ) // 获取当前歌曲数组的索引
@@ -536,8 +551,8 @@ const Player = () => {
             {currentSong.lyric ? (
               <Lyric lyricUrl={currentSong.lyric} currentTime={currentTime} />
             ) : (
-              <div className="flex h-4/5 w-[720px] overflow-y-auto pt-72">
-                <div className="text-xl text-white">纯音乐，请欣赏</div>
+              <div className="flex h-[80%] w-[720px] overflow-y-auto pt-72">
+                <div className="pl-10 text-2xl text-white">纯音乐，请欣赏</div>
               </div>
             )}
           </div>

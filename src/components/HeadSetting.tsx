@@ -15,6 +15,7 @@ import { UploadChangeParam, UploadFile, UploadProps } from 'antd/es/upload'
 import { Fetch } from '@/lib/request'
 import ImgCrop from 'antd-img-crop'
 import { toWebP } from '@/helpers/toWebp'
+import { useShallow } from 'zustand/react/shallow'
 
 interface UserSettingsProps {
   open: boolean
@@ -23,7 +24,12 @@ interface UserSettingsProps {
 }
 
 const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen, type }) => {
-  const { user, setUser } = useStore()
+  const { user, setUser } = useStore(
+    useShallow((store) => ({
+      setUser: store.setUser,
+      user: store.user,
+    }))
+  )
   const [fileList, setFileList] = useState<any[]>(
     user.cover ? [{ url: user.cover }] : []
   )

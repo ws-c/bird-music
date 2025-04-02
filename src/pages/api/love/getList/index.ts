@@ -41,6 +41,9 @@ export default async function handler(
             },
           },
         },
+        orderBy: {
+          liked_at: 'desc',
+        },
       })
 
       if (!playlist) {

@@ -17,6 +17,7 @@ import useStore from '@/store/useStore'
 import HeadSetting from './HeadSetting'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Fetch } from '@/lib/request'
+import { useShallow } from 'zustand/react/shallow'
 // import { ThemeToggle } from '@/components/layouts/theme-toggle'
 
 type Option = {
@@ -25,7 +26,14 @@ type Option = {
 }
 
 export default function Header() {
-  const { user, inputValue, setInputValue, setShowSidebar } = useStore()
+  const { user, inputValue, setInputValue, setShowSidebar } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      inputValue: store.inputValue,
+      setInputValue: store.setInputValue,
+      setShowSidebar: store.setShowSidebar,
+    }))
+  )
   const [isClient, setIsClient] = useState(false)
   const [open, setOpen] = useState(false) // 控制用户设置抽屉
   const [options, setOptions] = useState<Option[]>([])

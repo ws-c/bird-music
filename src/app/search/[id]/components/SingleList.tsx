@@ -6,6 +6,7 @@ import type { SingleList_ } from '../page'
 import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 type SingleListProps = {
   curSingleList: SingleList_[]
 }
@@ -18,7 +19,16 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
     setCurrentId,
     currentId,
     setShowPlayer,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      isPlaying: store.isPlaying,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setCurrentId: store.setCurrentId,
+      currentId: store.currentId,
+      setShowPlayer: store.setShowPlayer,
+    }))
+  )
 
   const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {

@@ -8,6 +8,7 @@ import useStore from '@/store/useStore'
 import { categories } from '@/lib/const'
 import { Fetch } from '@/lib/request'
 import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export default function ExplorePage() {
   const {
     isPlaying,
@@ -17,7 +18,17 @@ export default function ExplorePage() {
     setCurrentId,
     setShowPlayer,
     setCurrentCategoryId,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      isPlaying: store.isPlaying,
+      currentCategoryId: store.currentCategoryId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      setCurrentCategoryId: store.setCurrentCategoryId,
+    }))
+  )
   const [activeTab, setActiveTab] = useState('genre')
   const handlePlay = async (id: number) => {
     // 如果点击的是当前分类，切换播放状态
