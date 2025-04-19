@@ -48,8 +48,7 @@ export default async function handler(
       const newPlaylist = playlist.map((item) => flattenObject(item))
       res.status(200).json(newPlaylist) // 返回匹配结果
     } catch (error) {
-      console.error('Error fetching playlist:', error)
-      res.status(500).json({ error: 'Failed to fetch playlist' })
+      res.status(500).json({ error })
     }
   } else {
     res.setHeader('Allow', ['GET'])

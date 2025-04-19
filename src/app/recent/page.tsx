@@ -9,11 +9,12 @@ import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
-import { get } from 'lodash'
-
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Playlist = {
   author: string
-  createTime: string
+  create_time: string
   desc: string
   id: number
   isPrivate: string
@@ -35,11 +36,25 @@ export default function Home() {
     setPreSingleList,
     setIsLove,
     isLove,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      preSingleList: store.preSingleList,
+      setPreSingleList: store.setPreSingleList,
+      setIsLove: store.setIsLove,
+      isLove: store.isLove,
+      setColorTheme: store.setColorTheme,
+    }))
+  )
 
-  const [playList, setPlayList] = useState<Playlist>({
+  const [playList] = useState<Playlist>({
     author: user.username,
-    createTime: '',
+    create_time: '',
     desc: '',
     id: user.id,
     img: user.cover,
@@ -55,62 +70,50 @@ export default function Home() {
     if (currentId) {
       setOnClicked(currentId)
     }
-    setColorTheme(preSingleList[0].cover)
+    setColorTheme(preSingleList[0]?.cover ?? '')
     setLoading(false)
     getLove(preSingleList)
-  }, [currentId, isLove])
+  }, [isLove])
   // 喜欢歌曲
-  const handleLove = (id: number) => {
-    fetch('/api/love', {
+  const handleLove = async (id: number) => {
+    const res = await Fetch('/api/love', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id: id,
         user_id: user.id,
-      }),
+      },
+      loading: false,
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setPreSingleList(
-            preSingleList.map((item) => {
-              if (item.id === id) {
-                if (id === currentId) {
-                  setIsLove(!isLove)
-                }
-                return { ...item, isLove: res.value }
-              } else {
-                return item
-              }
-            })
-          )
+
+    setPreSingleList(
+      preSingleList.map((item) => {
+        if (item.id === id) {
+          if (id === currentId) {
+            setIsLove(!isLove)
+          }
+          return { ...item, isLove: res.value }
+        } else {
+          return item
         }
       })
+    )
   }
   // 批量获取喜欢状态
   const getLove = async (contentData: SongList[]) => {
-    const response = await fetch('/api/love/batch', {
+    const res = await Fetch('/api/love/batch', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
-      }),
+      },
+      loading: false,
     })
-    const res = await response.json()
-    if (res.code === 200) {
-      const updatedList = contentData.map((item, index) => ({
-        ...item,
-        isLove: res.values[index],
-      }))
-      setPreSingleList(updatedList)
-    }
-    return contentData.map((item, index) => ({
+
+    const updatedList = contentData.map((item, index) => ({
       ...item,
-      isLove: false,
-    })) // 如果请求失败，保持原始数据不变
+      isLove: res.values[index],
+    }))
+    setPreSingleList(updatedList)
   }
   const columns = [
     {
@@ -194,9 +197,11 @@ export default function Home() {
         <div className="mt-8">
           <div className="flex w-[768px] items-end gap-8">
             <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
-              <img
-                src={preSingleList[0].cover}
-                alt=""
+              <Image
+                src={preSingleList[0]?.cover ?? 'https://temp.im/300x300'}
+                alt="图片"
+                height={224}
+                width={224}
                 className="cover-animation h-56 transform rounded-lg object-cover"
               />
             </div>
@@ -204,7 +209,7 @@ export default function Home() {
               <h2 className="m-0 text-2xl font-semibold tracking-wide">
                 最近播放
               </h2>
-              <p className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
+              <div className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
                 <div className="flex items-center gap-3">
                   <Avatar
                     src={playList.cover}
@@ -213,7 +218,7 @@ export default function Home() {
                   />
                   <span>{playList.author}</span>
                 </div>
-              </p>
+              </div>
 
               <div className="flex gap-2">
                 <Button

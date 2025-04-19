@@ -23,6 +23,7 @@
     "@shadcn/ui": "^0.0.4",
     "ali-oss": "^6.21.0",
     "antd": "^5.21.6",
+    "antd-img-crop": "^4.24.0",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

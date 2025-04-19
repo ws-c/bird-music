@@ -26,6 +26,9 @@ export default async function handler(
         select: {
           song_id: true,
         },
+        orderBy:{
+          liked_at: 'desc'
+        }
       })
 
       // 创建已喜欢歌曲ID集合

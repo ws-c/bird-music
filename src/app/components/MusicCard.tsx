@@ -1,49 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import NProgress from 'nprogress'
+
 import { FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
-
-export interface ApifoxModel {
-  album_title: string
-  artist_id: number
-  artists: Artists
-  cover: string
-  desc: null | string
-  id: number
-  release_date: string
-  songs: Song[]
-}
-
-export interface Artists {
-  id: number
-  name: string
-}
-
-export interface Song {
-  albums_id: number
-  duration: number
-  file_path: string
-  id: number
-  song_title: string
-}
-
+import { SongList } from '@/types'
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
 const MusicCard = () => {
   const router = useRouter()
-  const [albums, setAlbums] = useState<ApifoxModel[]>([])
+  const [albums, setAlbums] = useState<SongList[]>([])
 
   useEffect(() => {
     const fetchAlbums = async () => {
-      NProgress.start()
-      try {
-        const response = await fetch('/api/home/album')
-        const data = await response.json()
-        setAlbums(data)
-      } catch (error) {
-        console.error('Error fetching albums:', error)
-      } finally {
-        NProgress.done()
-      }
+      const data = await Fetch('/api/home/album')
+      setAlbums(data)
     }
     fetchAlbums()
   }, [])
@@ -58,12 +28,14 @@ const MusicCard = () => {
             onClick={() => router.push(`/album/${item.id}`)}
           >
             <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <FaPlayCircle className="absolute top-[120px] right-4 translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
+              <FaPlayCircle className="absolute right-4 top-[120px] translate-y-4 transform text-4xl text-gray-100 transition-transform duration-300 hover:scale-110 group-hover:translate-y-0 group-hover:transition-transform group-hover:duration-150" />
             </div>
-            <img
+            <Image
               src={item.cover}
               alt={item.album_title}
-              className="h-auto w-full rounded-lg object-cover"
+              width={160}
+              height={160}
+              className="rounded-lg object-cover"
             />
             <div className="py-2">
               <h3 className="font-semibold text-gray-800">

@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Flex, Menu } from 'antd'
+import { Button, Flex, Menu, Drawer } from 'antd'
 import Sider from 'antd/es/layout/Sider'
 import { useRouter } from 'next/navigation'
 import Icons from '@/components/Icons'
@@ -11,6 +11,9 @@ import useStore from '@/store/useStore'
 import useColorThief from 'use-color-thief'
 import { useTheme } from 'next-themes'
 import { ItemType } from 'antd/es/menu/interface'
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 interface IProps {
   children: React.ReactNode
   curActive: string
@@ -24,19 +27,42 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
     collectPlayList,
     setCollectPlayList,
     colorTheme,
-  } = useStore()
+    showSidebar,
+    setShowSidebar,
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      myPlayList: store.myPlayList,
+      setMyPlayList: store.setMyPlayList,
+      collectPlayList: store.collectPlayList,
+      setCollectPlayList: store.setCollectPlayList,
+      colorTheme: store.colorTheme,
+      showSidebar: store.showSidebar,
+      setShowSidebar: store.setShowSidebar,
+    }))
+  )
   const router = useRouter()
   const [client, setClient] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
   useEffect(() => {
     getMyPlayList()
     getCollectPlayList()
     setClient(true)
+
+    // 检查屏幕大小
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
   // 创建的歌单
   const getMyPlayList = async () => {
-    const res = await fetch(`/api/playlist/get?id=${user.id}`)
-    const data = await res.json()
-    setMyPlayList(data)
+    const res = await Fetch(`/api/playlist/get?id=${user.id}`)
+    setMyPlayList(res)
   }
   const myPlayList_ = myPlayList.map((item) => {
     return {
@@ -50,10 +76,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           gap={8}
         >
           <div className="relative">
-            <img
+            <Image
+              width={32}
+              height={32}
               style={{
-                width: '32px',
-                height: '32px',
                 borderRadius: '4px',
                 ...(item.isPrivate === '1'
                   ? { filter: 'brightness(0.9)' }
@@ -97,8 +123,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   })
   // 收藏的歌单
   const getCollectPlayList = async () => {
-    const res = await fetch(`/api/playlist/collect/get?id=${user.id}`)
-    const data = await res.json()
+    const data = await Fetch(`/api/playlist/collect/get?id=${user.id}`)
     setCollectPlayList(data)
   }
   const collectPlayList_ = collectPlayList.map((item) => {
@@ -112,10 +137,10 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }}
           gap={8}
         >
-          <img
+          <Image
+            width={32}
+            height={32}
             style={{
-              width: '32px',
-              height: '32px',
               borderRadius: '4px',
             }}
             src={
@@ -244,17 +269,21 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   })
   let style = {}
   let siderStyle = {}
+  const isBasePath =
+    client &&
+    (window.location.pathname === '/' ||
+      window.location.pathname === '/explore' ||
+      window.location.pathname.startsWith('/search/'))
   if (theme === 'dark') {
-    style =
-      client && (window.location.pathname === '/' || 'explore')
-        ? { paddingLeft: '240px', minHeight: '100vh', background: '#121212' }
-        : {
-            paddingLeft: '240px',
-            minHeight: '100vh',
-            background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #121212 50%)`,
-          }
+    style = isBasePath
+      ? { paddingLeft: '240px', minHeight: '100vh', background: '#121212' }
+      : {
+          paddingLeft: '240px',
+          minHeight: '100vh',
+          background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #121212 50%)`,
+        }
     siderStyle =
-      client && (window.location.pathname === '/' || 'explore')
+      client && isBasePath
         ? {
             background: '#1f1f1f',
             minHeight: '100vh',
@@ -270,9 +299,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
           }
   } else {
     style =
-      client &&
-      (window.location.pathname === '/' ||
-        window.location.pathname.startsWith('/search/'))
+      client && isBasePath
         ? { paddingLeft: '240px', minHeight: '100vh', background: '#f9f9f9' }
         : {
             paddingLeft: '240px',
@@ -280,9 +307,7 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
             background: `linear-gradient(to bottom, rgba(${color}, 0.3) 0%, #f9f9f9 50%)`,
           }
     siderStyle =
-      client &&
-      (window.location.pathname === '/' ||
-        window.location.pathname.startsWith('/search/'))
+      client && isBasePath
         ? {
             background: '#f0f3f6',
             minHeight: '100vh',
@@ -299,35 +324,79 @@ const CommonLayout: React.FC<IProps> = ({ children, curActive = '/' }) => {
   }
   return (
     <div className="h-screen">
-      <Sider width={240} style={siderStyle}>
-        <Flex className="mb-4 ml-8 h-16 items-baseline">
-          <Icons
-            type="icon-Twitter_icon4948c882-copy"
-            size={24}
-            className="mr-2"
+      {!isMobile ? (
+        <Sider width={240} style={siderStyle}>
+          <Flex className="mb-4 ml-8 h-16 items-baseline">
+            <Icons
+              type="icon-Twitter_icon4948c882-copy"
+              size={24}
+              className="mr-2"
+            />
+            <Title level={3} className="mb-0 pt-[14px]">
+              Bird Music
+            </Title>
+          </Flex>
+          <Menu
+            style={{
+              border: 'none',
+              letterSpacing: '2px',
+              padding: '0 24px',
+            }}
+            mode="inline"
+            selectedKeys={[curActive]}
+            defaultOpenKeys={['create', 'collect']}
+            items={items}
+            onClick={(item) => onClick(item)}
           />
-          <Title level={3} className="mb-0 pt-[14px]">
-            Bird Music
-          </Title>
-        </Flex>
-        <Menu
-          style={{
-            border: 'none',
-            letterSpacing: '2px',
-            padding: '0 24px',
+        </Sider>
+      ) : (
+        <Drawer
+          open={showSidebar}
+          onClose={() => setShowSidebar(false)}
+          placement="left"
+          width={240}
+          styles={{
+            body: { padding: 0 },
+            header: { display: 'none' },
           }}
-          mode="inline"
-          selectedKeys={[curActive]}
-          defaultOpenKeys={['create', 'collect']}
-          items={items}
-          onClick={(item) => onClick(item)}
-        />
-      </Sider>
-      <div style={{ ...style }}>
-        <div className="sticky top-0 z-50 h-[70px] p-[10px_60px_0_20px]">
+          rootStyle={{
+            padding: 0,
+          }}
+        >
+          <Sider width={240} style={siderStyle}>
+            <Flex className="mb-4 ml-8 h-16 items-baseline">
+              <Icons
+                type="icon-Twitter_icon4948c882-copy"
+                size={24}
+                className="mr-2"
+              />
+              <Title level={3} className="mb-0 pt-[14px]">
+                Bird Music
+              </Title>
+            </Flex>
+            <Menu
+              style={{
+                border: 'none',
+                letterSpacing: '2px',
+                padding: '0 24px',
+              }}
+              mode="inline"
+              selectedKeys={[curActive]}
+              defaultOpenKeys={['create', 'collect']}
+              items={items}
+              onClick={(item) => {
+                onClick(item)
+                setShowSidebar(false)
+              }}
+            />
+          </Sider>
+        </Drawer>
+      )}
+      <div style={{ ...style, paddingLeft: isMobile ? '0' : '240px' }}>
+        <div className="sticky top-0 z-50 h-[70px] p-[10px_0_0_20px]">
           <Head />
         </div>
-        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto p-[0_60px] pb-[120px]">
+        <main className="max-h-[calc(100vh-70px)] flex-1 overflow-auto pb-[120px] pl-14">
           {children}
         </main>
       </div>

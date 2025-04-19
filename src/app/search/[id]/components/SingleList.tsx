@@ -5,7 +5,8 @@ import { formatTime } from '@/helpers/formatTime'
 import type { SingleList_ } from '../page'
 import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
-
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 type SingleListProps = {
   curSingleList: SingleList_[]
 }
@@ -18,7 +19,16 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
     setCurrentId,
     currentId,
     setShowPlayer,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      isPlaying: store.isPlaying,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setCurrentId: store.setCurrentId,
+      currentId: store.currentId,
+      setShowPlayer: store.setShowPlayer,
+    }))
+  )
 
   const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
@@ -65,10 +75,12 @@ const SingleList: FC<SingleListProps> = ({ curSingleList }) => {
             )}
 
             <div className="flex items-center gap-4">
-              <img
-                src={item.cover}
-                alt=""
-                className="h-10 w-10 rounded-lg brightness-100 group-hover:brightness-90"
+              <Image
+                src={item.cover!}
+                alt="图片"
+                width={40}
+                height={40}
+                className="rounded-lg brightness-100 group-hover:brightness-90"
               />
               <div className="flex flex-col gap-1">
                 <span className="text-gray-900 dark:text-gray-100">

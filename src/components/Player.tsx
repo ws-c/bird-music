@@ -22,6 +22,10 @@ import {
   IoVolumeOff,
 } from 'react-icons/io5'
 import Lyric from './Lyric'
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
+
 const Player = () => {
   const router = useRouter()
   const {
@@ -36,20 +40,40 @@ const Player = () => {
     isLove,
     setIsLove,
     triggerRefresh,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      singleList: store.singleList,
+      preSingleList: store.preSingleList,
+      setPreSingleList: store.setPreSingleList,
+      currentId: store.currentId,
+      setCurrentId: store.setCurrentId,
+      isPlaying: store.isPlaying,
+      setIsPlaying: store.setIsPlaying,
+      user: store.user,
+      isLove: store.isLove,
+      setIsLove: store.setIsLove,
+      triggerRefresh: store.triggerRefresh,
+    }))
+  )
   const [currentSongIndex, setCurrentSongIndex] = useState(
     singleList.findIndex((song) => song.id === currentId)
-  )
+  ) // 获取当前歌曲数组的索引
+
   const [currentTime, setCurrentTime] = useState(0)
   const [sliderValue, setSliderValue] = useState([0])
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  const accumulatedPlayTimeRef = useRef(0) // 累计播放时间(毫秒)
+  const hasCountedRef = useRef(false) // 是否已记录
+  const playbackStartTimeRef = useRef<number | null>(null) // 播放开始时间
+  const playTimerRef = useRef<NodeJS.Timeout | null>(null) // 定时器引用
 
   // 每次 currentSongIndex 变化时，更新播放状态
   useEffect(() => {
     if (audioRef.current && isPlaying) {
       audioRef.current.play()
     }
-  }, [currentSongIndex, isPlaying])
+  }, [currentSongIndex, isPlaying, currentId])
   // 当 currentId 或 singleList 变化时，更新 currentSongIndex
   useEffect(() => {
     const index = singleList.findIndex((song) => song.id === currentId) || 0
@@ -61,6 +85,12 @@ const Player = () => {
     )
     setPreSingleList(uniquePreSingleList)
   }, [singleList, currentId])
+  // 更新 currentId
+  useEffect(() => {
+    if (currentSongIndex !== null && singleList[currentSongIndex]) {
+      setCurrentId(singleList[currentSongIndex].id)
+    }
+  }, [currentSongIndex])
   // 根据 isPlaying 状态播放或暂停
   useEffect(() => {
     if (audioRef.current) {
@@ -70,10 +100,7 @@ const Player = () => {
         audioRef.current.pause()
       }
     }
-  }, [isPlaying])
-
-  // 定时更新当前时间和滑块值
-  useEffect(() => {
+    // 定时更新当前时间和滑块值
     const updateTime = () => {
       if (audioRef.current) {
         setCurrentTime(audioRef.current.currentTime)
@@ -83,7 +110,20 @@ const Player = () => {
       }
     }
     const interval = setInterval(updateTime, 1000) // 每秒更新一次
-    return () => clearInterval(interval)
+    // 监听空格键
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        event.preventDefault() // 阻止默认的空格滚动行为
+        togglePlayPause() // 切换播放状态
+      }
+    }
+    document.addEventListener('keydown', handleKeyPress)
+
+    // 清除事件监听
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('keydown', handleKeyPress)
+    }
   }, [isPlaying])
 
   // 歌曲历史列表，用于随机播放时的返回功能
@@ -138,13 +178,6 @@ const Player = () => {
     }
     setIsPlaying(true)
   }
-
-  // 更新 currentId
-  useEffect(() => {
-    if (currentSongIndex !== null && singleList[currentSongIndex]) {
-      setCurrentId(singleList[currentSongIndex].id)
-    }
-  }, [currentSongIndex])
 
   // 切换播放状态
   const togglePlayPause = () => {
@@ -232,7 +265,11 @@ const Player = () => {
   // 当前点击的歌曲
   const [onClicked, setOnClicked] = useState(0)
   useEffect(() => {
+    getLove()
     setOnClicked(currentId)
+    accumulatedPlayTimeRef.current = 0
+    hasCountedRef.current = false
+    playbackStartTimeRef.current = null
   }, [currentId])
 
   // 全屏模式
@@ -323,48 +360,66 @@ const Player = () => {
   }
 
   // 喜欢歌曲
-  const handleLove = () => {
-    fetch('/api/love', {
+  const handleLove = async () => {
+    const res = await Fetch('/api/love', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         song_id: currentId,
         user_id: user.id,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setIsLove(res.value)
-          triggerRefresh()
-        }
-      })
-  }
-  const getLove = () => {
-    fetch('/api/love/get', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+    })
+
+    setIsLove(res.value)
+    triggerRefresh()
+  }
+  const getLove = async () => {
+    const res = await Fetch('/api/love/get', {
+      method: 'POST',
+      body: {
         song_id: currentId,
         user_id: user.id,
-      }),
+      },
+      loading: false,
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setIsLove(res.value)
-        }
-      })
+
+    setIsLove(res.value)
   }
+
+  // 播放量记录方法
+  const recordPlayCount = async () => {
+    await Fetch('/api/play-count', {
+      method: 'POST',
+      body: {
+        id: currentId,
+      },
+      loading: false,
+    })
+  }
+
+  // 时间检查方法
+  const checkPlayCount = () => {
+    if (accumulatedPlayTimeRef.current >= 30000 && !hasCountedRef.current) {
+      recordPlayCount()
+      hasCountedRef.current = true
+    }
+  }
+  // 新增清理定时器函数
+  const clearPlayTimer = () => {
+    if (playTimerRef.current) {
+      clearInterval(playTimerRef.current)
+      playTimerRef.current = null
+    }
+  }
+
+  // 在useEffect清理函数中添加
   useEffect(() => {
-    getLove()
-  }, [currentId])
+    return () => {
+      clearPlayTimer()
+    }
+  }, [])
+
   return (
-    <div className="fixed bottom-0 z-[1000] w-full border-t bg-[#fafafa] p-0 dark:bg-[#000]">
+    <div className="fixed bottom-0 z-[1000] w-screen border-t bg-[#fafafa] p-0 dark:bg-[#000]">
       {/* 全屏模式 */}
       {fullScreen && (
         <div className="fixed inset-0 z-[998] bg-black">
@@ -381,9 +436,12 @@ const Player = () => {
           >
             <div className="flex w-[450px] flex-col gap-4 pt-20">
               <div className="flex justify-center">
-                <img
+                <Image
                   src={currentSong.cover}
-                  className={`w-[400px] transform transition-transform duration-300 ${isPlaying ? '' : 'scale-90'} shadow-inset rounded-lg object-cover`}
+                  alt="歌曲封面"
+                  width={400}
+                  height={400}
+                  className={`transform transition-transform duration-300 ${isPlaying ? '' : 'scale-90'} shadow-inset rounded-lg object-cover`}
                 />
               </div>
               <div>
@@ -493,16 +551,67 @@ const Player = () => {
             {currentSong.lyric ? (
               <Lyric lyricUrl={currentSong.lyric} currentTime={currentTime} />
             ) : (
-              <div className="flex h-4/5 w-[720px] overflow-y-auto pt-72">
-                <div className="text-xl text-white">纯音乐，请欣赏</div>
+              <div className="flex h-[80%] w-[720px] overflow-y-auto pt-72">
+                <div className="pl-10 text-2xl text-white">纯音乐，请欣赏</div>
               </div>
             )}
           </div>
         </div>
       )}
       {/* 底部播放器 */}
-      <div className="relative flex items-center justify-between px-4 py-4">
-        <div className="flex items-center justify-center gap-6">
+      <div className="relative flex flex-col items-center justify-between gap-4 px-4 py-4 md:flex-row md:gap-0">
+        {/* 小屏幕布局 */}
+        <div className="flex w-full flex-col items-center md:hidden">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Image
+                width={40}
+                height={40}
+                className="rounded-lg"
+                src={currentSong.cover}
+                alt={currentSong.song_title}
+                onClick={() => setFullScreen(true)}
+              />
+              <div className="max-w-[150px]">
+                <div className="truncate text-sm font-medium">
+                  {currentSong.song_title}
+                </div>
+                <div className="truncate text-xs text-gray-500">
+                  {currentSong.song_artists?.[0]?.artists?.name}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {isPlaying ? (
+                <IoPauseCircle
+                  onClick={togglePlayPause}
+                  className="text-3xl text-primary"
+                />
+              ) : (
+                <IoCaretForwardCircle
+                  onClick={togglePlayPause}
+                  className="text-3xl text-primary"
+                />
+              )}
+              <CgPlayList
+                size={20}
+                onClick={showDrawer}
+                className="cursor-pointer"
+              />
+            </div>
+          </div>
+          <Slider
+            className="mt-2 w-full"
+            min={0}
+            max={currentSong.duration || 0}
+            value={sliderValue}
+            onValueChange={handleSliderChange}
+            onValueCommit={handleSliderAfterChange}
+          />
+        </div>
+
+        {/* 大屏幕布局 */}
+        <div className="hidden items-center justify-center gap-6 md:flex">
           <div
             className="relative h-14 w-14 cursor-pointer rounded-lg"
             onClick={() => {
@@ -510,16 +619,15 @@ const Player = () => {
               onClose()
             }}
           >
-            <img
+            <Image
+              width={56}
+              height={56}
               className="h-full w-full rounded-lg shadow-inner"
               src={currentSong.cover}
               alt={currentSong.song_title}
             />
             <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/30 opacity-0 transition-opacity duration-300 hover:opacity-100">
-              <CgArrowsExpandRight
-                size={24}
-                style={{ color: '#fff' }}
-              ></CgArrowsExpandRight>
+              <CgArrowsExpandRight size={24} style={{ color: '#fff' }} />
             </div>
           </div>
           <div className="flex-col justify-center gap-2">
@@ -551,7 +659,7 @@ const Player = () => {
             </div>
           </div>
         </div>
-        <div className="absolute left-[50%] flex translate-x-[-50%] transform flex-col sm:w-[150px] md:w-[300px] lg:w-[450px] xl:w-[750px]">
+        <div className="hidden w-full flex-col items-center md:absolute md:left-[50%] md:flex md:w-auto md:translate-x-[-50%] md:transform">
           <div className="flex items-center justify-center gap-6 pt-2">
             <Icons
               type={isLove ? 'icon-heart-fill' : 'icon-heart'}
@@ -582,31 +690,31 @@ const Player = () => {
             />
             {getPlayModeIcon('1')}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex w-full items-center gap-4 md:w-[450px] xl:w-[750px]">
             <span>{formatTime(currentTime)}</span>
             <Slider
               className="w-full"
               min={0}
               max={currentSong.duration || 0}
-              value={sliderValue} // 使用 sliderValue
-              onValueChange={handleSliderChange} // 实时更新值
-              onValueCommit={handleSliderAfterChange} // 放手后更新播放进度
+              value={sliderValue}
+              onValueChange={handleSliderChange}
+              onValueCommit={handleSliderAfterChange}
             />
             <span>{formatTime(currentSong.duration)}</span>
           </div>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="flex gap-2">
+        <div className="hidden items-center gap-6 md:flex">
+          <div className="hidden gap-2 md:flex">
             {getVolumeIcon('1')}
             <Slider
               className="w-24"
               min={0}
               max={100}
               value={volume}
-              onValueChange={handleVolumeChange} // 处理音量变化
+              onValueChange={handleVolumeChange}
             />
           </div>
-          <div>|</div>
+          <div className="hidden md:block">|</div>
           <CgPlayList
             size={24}
             onClick={showDrawer}
@@ -639,11 +747,40 @@ const Player = () => {
       <audio
         ref={audioRef}
         src={currentSong.file_path}
-        onEnded={() => handleNext(false)}
-        onLoadedMetadata={() => {
-          if (audioRef.current) {
-            audioRef.current.currentTime = 0 // Reset time when song changes
+        onPlay={() => {
+          playbackStartTimeRef.current = Date.now()
+
+          // 启动定时检查（每秒检查一次）
+          playTimerRef.current = setInterval(() => {
+            if (playbackStartTimeRef.current) {
+              const now = Date.now()
+              const duration = now - playbackStartTimeRef.current
+              accumulatedPlayTimeRef.current += duration
+              playbackStartTimeRef.current = now // 重置开始时间
+              checkPlayCount()
+            }
+          }, 1000)
+        }}
+        onPause={() => {
+          const now = Date.now()
+          if (playbackStartTimeRef.current) {
+            const duration = now - playbackStartTimeRef.current
+            accumulatedPlayTimeRef.current += duration
+            playbackStartTimeRef.current = null
           }
+          checkPlayCount()
+          clearPlayTimer()
+        }}
+        onEnded={() => {
+          handleNext(false)
+          const now = Date.now()
+          if (playbackStartTimeRef.current) {
+            const duration = now - playbackStartTimeRef.current
+            accumulatedPlayTimeRef.current += duration
+            playbackStartTimeRef.current = null
+          }
+          checkPlayCount()
+          clearPlayTimer()
         }}
       />
     </div>

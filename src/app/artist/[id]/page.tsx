@@ -7,7 +7,9 @@ import flattenObject from '@/helpers/flattenObject'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
-
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Artist = {
   biography: string
   id: number
@@ -63,7 +65,19 @@ export default function Home({ params }: { params: { id: string } }) {
     user,
     isLove,
     setIsLove,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setColorTheme: store.setColorTheme,
+      setIsLove: store.setIsLove,
+      isLove: store.isLove,
+      user: store.user,
+    }))
+  )
   const { id } = params
   const [artist, setArtist] = useState<Artist>({
     biography: '',
@@ -76,24 +90,23 @@ export default function Home({ params }: { params: { id: string } }) {
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   useEffect(() => {
     const fetchAlbum = async () => {
-      try {
-        const response = await fetch(`/api/artist?id=${id}`)
-        const data = await response.json()
-        setArtist(data)
-        const newData = data.song_artists.map((song: any) => ({
-          ...flattenObject(song.songs),
-        }))
-        getLove(newData)
-
-        setColorTheme(data.image_url)
-      } catch (error) {
-        console.error('Error fetching artist:', error)
-      } finally {
-        setLoading(false)
-      }
+      const data = await Fetch(`/api/artist?id=${id}`)
+      setArtist(data)
+      const newData = data.song_artists.map((song: any) => ({
+        ...flattenObject(song.songs),
+      }))
+      getLove(newData)
+      setColorTheme(data.image_url)
+      setLoading(false)
     }
     fetchAlbum()
-  }, [id, isLove])
+  }, [id])
+
+  useEffect(() => {
+    if (curSingleList.length > 0) {
+      getLove(curSingleList)
+    }
+  }, [isLove])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -111,57 +124,45 @@ export default function Home({ params }: { params: { id: string } }) {
     }
   }, [currentId])
   // 喜欢歌曲
-  const handleLove = (id: number) => {
-    fetch('/api/love', {
+  const handleLove = async (id: number) => {
+    const res = await Fetch('/api/love', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id: id,
         user_id: user.id,
-      }),
+      },
+      loading: false,
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setCurSingleList(
-            curSingleList.map((item) => {
-              if (item.id === id) {
-                if (id === currentId) {
-                  setIsLove(!isLove)
-                }
-                return { ...item, isLove: res.value }
-              } else {
-                return item
-              }
-            })
-          )
+
+    setCurSingleList(
+      curSingleList.map((item) => {
+        if (item.id === id) {
+          if (id === currentId) {
+            setIsLove(!isLove)
+          }
+          return { ...item, isLove: res.value }
+        } else {
+          return item
         }
       })
+    )
   }
   // 批量获取喜欢状态
   const getLove = async (contentData: SongList[]) => {
-    const response = await fetch('/api/love/batch', {
+    const res = await Fetch('/api/love/batch', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
-      }),
+      },
+      loading: false,
     })
-    const res = await response.json()
-    if (res.code === 200) {
-      const updatedList = contentData.map((item, index) => ({
-        ...item,
-        isLove: res.values[index],
-      }))
-      setCurSingleList(updatedList)
-    }
-    return contentData.map((item, index) => ({
+
+    const updatedList = contentData.map((item, index) => ({
       ...item,
-      isLove: false,
-    })) // 如果请求失败，保持原始数据不变
+      isLove: res.values[index],
+    }))
+    setCurSingleList(updatedList)
   }
   const columns = [
     {
@@ -245,9 +246,11 @@ export default function Home({ params }: { params: { id: string } }) {
         <>
           <div className="flex w-[700px] items-end gap-8">
             <div className="h-56 w-56 overflow-hidden rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
-              <img
+              <Image
                 src={artist.image_url}
-                alt=""
+                alt="艺人"
+                width={224}
+                height={224}
                 className="cover-animation h-56 object-cover"
               />
             </div>

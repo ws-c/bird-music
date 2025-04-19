@@ -26,8 +26,7 @@ export default async function handler(
       ])
       res.status(200).json(deletedSong)
     } catch (error) {
-      console.error('Error deleting songs from playlist:', error)
-      res.status(500).json({ error: 'Failed to delete songs from playlist' })
+      res.status(500).json({ error })
     }
   } else {
     res.setHeader('Allow', ['DELETE'])

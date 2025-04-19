@@ -15,7 +15,7 @@ export default async function handler(
       })
       res.status(200).json({ msg: '收藏成功', code: 200 })
     } catch (error) {
-      res.status(400).json({ msg: '歌单已存在该歌曲', code: 400 })
+      res.status(400).json({ msg: '歌单已存在该歌曲', code: 400, error })
     }
   } else {
     res.setHeader('Allow', ['POST'])

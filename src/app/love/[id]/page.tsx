@@ -3,16 +3,18 @@ import { useEffect, useState } from 'react'
 import useStore from '@/store/useStore'
 import { formatTime } from '@/helpers/formatTime'
 import { useRouter } from 'next/navigation'
-import { Spin, Button, Table, Avatar } from 'antd'
+import { Spin, Button, Table, Avatar, message } from 'antd'
 import React from 'react'
 import { UserOutlined } from '@ant-design/icons'
 import { SongList } from '@/types'
 import Link from 'next/link'
 import Icons from '@/components/Icons'
-
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Playlist = {
   author: string
-  createTime: string
+  create_time: string
   desc: string
   id: number
   isPrivate: string
@@ -31,21 +33,34 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     currentId,
     setIsPlaying,
     setSingleList,
-    refreshCount,
     setColorTheme,
     isLove,
     setIsLove,
-  } = useStore()
+    refreshCount
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      refreshCount: store.refreshCount,
+      setColorTheme: store.setColorTheme,
+      isLove: store.isLove,
+      setIsLove: store.setIsLove,
+    }))
+  )
   const router = useRouter()
 
   if (user.id !== +id) {
-    alert('你没有权限访问此页面')
+    message.error('你没有权限访问此页面')
     router.push('/')
   }
 
   const [playList] = useState<Playlist>({
     author: user.username,
-    createTime: '',
+    create_time: '',
     desc: '',
     id: user.id,
     img: user.cover,
@@ -63,50 +78,41 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   }, [refreshCount])
   const fetchAllData = async () => {
     setLoading(true)
-    try {
-      const res = await fetch(`/api/love/getList?id=${id}`)
-      const Data = await res.json()
-      const updatedList = Data.map((item: any) => ({
-        ...item,
-        isLove: true,
-      }))
-      console.log(updatedList)
-      setColorTheme(updatedList[0]?.cover ?? '')
-      setCurSingleList(updatedList)
-    } catch (error) {
-      console.error('Failed to fetch data:', error)
-    } finally {
-      setLoading(false)
-    }
+    const data = await Fetch(`/api/love/getList?id=${id}`)
+    const updatedList = data.map((item: any) => ({
+      ...item,
+      isLove: true,
+    }))
+    setColorTheme(updatedList[0]?.cover ?? 'https://temp.im/300x300')
+    setCurSingleList(updatedList)
+    setLoading(false)
   }
   useEffect(() => {
     if (currentId) {
       setOnClicked(currentId)
     }
   }, [currentId])
+
+
   // 喜欢歌曲
   const handleLove = (id: number) => {
-    fetch('/api/love', {
+    Fetch('/api/love', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id: id,
         user_id: user.id,
-      }),
+      },
+      loading: false,
+    }).then(() => {
+      setCurSingleList(
+        curSingleList.filter((item) => {
+          if (item.id === id && id === currentId) {
+            setIsLove(!isLove)
+          }
+          return item.id !== id
+        })
+      )
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setCurSingleList(
-            curSingleList.filter((item) => {
-              if (item.id === id && id === currentId) {
-                setIsLove(!isLove)
-              }
-              return item.id !== id
-            })
-          )
-        }
-      })
   }
 
   const columns = [
@@ -132,7 +138,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
       render: (text: SongList[]) =>
         text.map((item: SongList, index) => {
           return (
-            <>
+            <React.Fragment key={item.artist_id || index}>
               <Link
                 href={`/artist/${item.artist_id}`}
                 onClick={(e) => e.stopPropagation()}
@@ -140,7 +146,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                 {item.artists.name}
               </Link>
               {index < text.length - 1 && <span className="mx-1">/</span>}
-            </>
+            </React.Fragment>
           )
         }),
     },
@@ -191,9 +197,11 @@ const PlayList = ({ params }: { params: { id: string } }) => {
         <>
           <div className="flex w-[768px] items-end gap-8">
             <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)]">
-              <img
+              <Image
                 src={curSingleList[0]?.cover ?? 'https://temp.im/300x300'}
-                alt=""
+                alt="歌曲"
+                height={224}
+                width={224}
                 className="cover-animation h-56 transform rounded-lg object-cover"
               />
               <Icons
@@ -207,7 +215,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
               <h2 className="m-0 text-2xl font-semibold tracking-wide">
                 我喜欢的音乐
               </h2>
-              <p className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
+              <div className="h-18 mb-6 mt-3 w-96 overflow-hidden text-sm text-gray-500">
                 <div className="flex items-center gap-3">
                   <Avatar
                     src={playList.cover}
@@ -216,7 +224,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   />
                   <span>{playList.author}</span>
                 </div>
-              </p>
+              </div>
 
               <div className="flex gap-2">
                 <Button

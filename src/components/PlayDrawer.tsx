@@ -2,6 +2,7 @@ import { Drawer } from 'antd'
 import { formatTime } from '@/helpers/formatTime'
 import { FC } from 'react'
 import styles from './PlayDrawer.module.css'
+import Image from 'next/image'
 type Props = {
   open: boolean
   onClose: () => void
@@ -75,9 +76,11 @@ const PlayDrawer: FC<Props> = ({
               </div>
             )}
             <div className="flex-shrink-0">
-              <img
+              <Image
+                width={40}
+                height={40}
                 src={item.cover}
-                className="relative h-[40px] w-[40px] rounded-[4px]"
+                className="relative rounded-[4px]"
                 alt={item.song_title}
               />
             </div>

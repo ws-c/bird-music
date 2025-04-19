@@ -35,8 +35,7 @@ export default async function handler(
       // 返回合并后的结果
       res.status(200).json({ cover, ...playlist })
     } catch (error) {
-      console.error('Error fetching playlist:', error)
-      res.status(500).json({ error: 'Failed to fetch playlist' })
+      res.status(500).json({ error })
     }
   } else {
     res.setHeader('Allow', ['GET'])

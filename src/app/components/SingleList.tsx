@@ -5,7 +5,9 @@ import { SongList } from '@/types'
 import { FaPauseCircle, FaPlayCircle } from 'react-icons/fa'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRouter } from 'next/navigation'
-
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 const SingleList = () => {
   const nav = useRouter()
   const {
@@ -15,20 +17,24 @@ const SingleList = () => {
     setCurrentId,
     currentId,
     setShowPlayer,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      isPlaying: store.isPlaying,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setCurrentId: store.setCurrentId,
+      currentId: store.currentId,
+      setShowPlayer: store.setShowPlayer,
+    }))
+  )
 
   const [curSingleList, setCurSingleList] = useState<SongList[]>([])
   const [onClicked, setOnClicked] = useState(0)
 
   useEffect(() => {
     const fetchPlaylist = async () => {
-      try {
-        const response = await fetch('/api/home/singleList')
-        const data = await response.json()
-        setCurSingleList(data)
-      } catch (error) {
-        console.error('Error fetching SingleList:', error)
-      }
+      const data = await Fetch('/api/home/singleList')
+      setCurSingleList(data)
     }
 
     fetchPlaylist()
@@ -88,10 +94,12 @@ const SingleList = () => {
                   )}
 
                   <div className="flex items-center gap-4">
-                    <img
+                    <Image
                       src={item.cover}
-                      alt=""
-                      className="h-10 w-10 rounded-lg group-hover:brightness-75"
+                      alt="歌曲"
+                      height={40}
+                      width={40}
+                      className="rounded-lg group-hover:brightness-75"
                     />
                     <div className="flex flex-col gap-1">
                       <span className="text-gray-900 dark:text-gray-100">

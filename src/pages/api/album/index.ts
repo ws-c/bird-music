@@ -48,7 +48,7 @@ export default async function handler(
       const newAlbum = { ...rest, songs: newSongs }
       res.status(200).json(newAlbum)
     } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch album' })
+      res.status(500).json({ msg: 'Failed to fetch album', error })
     }
   } else {
     res.setHeader('Allow', ['GET'])

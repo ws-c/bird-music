@@ -21,10 +21,12 @@ import Link from 'next/link'
 import type { TableRowSelection } from 'antd/es/table/interface'
 import { useRouter } from 'next/navigation'
 import { typeOptionsMap } from '@/lib/const'
-
+import { Fetch } from '@/lib/request'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
 export type Playlist = {
   author: string
-  createTime: string
+  create_time: string
   desc: string
   id: number
   user_id: number
@@ -53,11 +55,27 @@ const PlayList = ({ params }: { params: { id: string } }) => {
     isLove,
     myPlayList,
     setCollectPlayList,
-  } = useStore()
+  } = useStore(
+    useShallow((store) => ({
+      user: store.user,
+      setCurrentId: store.setCurrentId,
+      setShowPlayer: store.setShowPlayer,
+      currentId: store.currentId,
+      setIsPlaying: store.setIsPlaying,
+      setSingleList: store.setSingleList,
+      setColorTheme: store.setColorTheme,
+      refreshCount: store.refreshCount,
+      collectPlayList: store.collectPlayList,
+      setIsLove: store.setIsLove,
+      isLove: store.isLove,
+      myPlayList: store.myPlayList,
+      setCollectPlayList: store.setCollectPlayList,
+    }))
+  )
 
   const [playList, setPlayList] = useState<Playlist>({
     author: '',
-    createTime: '',
+    create_time: '',
     desc: '',
     id: 0,
     img: '',
@@ -76,27 +94,19 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   }, [refreshCount])
   // 批量获取喜欢状态
   const getLove = async (contentData: SongList[]) => {
-    const response = await fetch('/api/love/batch', {
+    const res = await Fetch('/api/love/batch', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         user_id: user.id,
         song_ids: contentData.map((item) => item.id),
-      }),
+      },
+      loading: false,
     })
-    const res = await response.json()
-    if (res.code === 200) {
-      return contentData.map((item, index) => ({
-        ...item,
-        isLove: res.values[index],
-      }))
-    }
-    return contentData.map((item) => ({
+
+    return contentData.map((item, index) => ({
       ...item,
-      isLove: false,
-    })) // 如果请求失败，保持原始数据不变
+      isLove: res.values[index],
+    }))
   }
   useEffect(() => {
     const updateLoveStatus = async () => {
@@ -107,22 +117,17 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   }, [isLove])
   const fetchAllData = async () => {
     setLoading(true)
-    try {
-      const [playlistRes, contentRes] = await Promise.all([
-        fetch(`/api/playlist/get/${id}`),
-        fetch(`/api/playlist_content?id=${id}`),
-      ])
-      const playlistData = await playlistRes.json()
-      const contentData = await contentRes.json()
-      const finalData = await getLove(contentData)
-      setPlayList(playlistData)
-      setColorTheme(playlistData.img)
-      setCurSingleList(finalData)
-    } catch (error) {
-      console.error('Failed to fetch data:', error)
-    } finally {
-      setLoading(false)
-    }
+
+    const [playlistData, contentData] = await Promise.all([
+      Fetch(`/api/playlist/get/${id}`),
+      Fetch(`/api/playlist_content?id=${id}`),
+    ])
+    const finalData = await getLove(contentData)
+    setPlayList(playlistData)
+    setColorTheme(playlistData.img)
+    setCurSingleList(finalData)
+
+    setLoading(false)
   }
   useEffect(() => {
     if (currentId) {
@@ -139,58 +144,45 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   const handleCollect = async (id: string) => {
     // 收藏的歌单
     const getCollectPlayList = async () => {
-      const res = await fetch(`/api/playlist/collect/get?id=${user.id}`)
-      const data = await res.json()
+      const data = await Fetch(`/api/playlist/collect/get?id=${user.id}`)
       setCollectPlayList(data)
     }
-    const res = await fetch('/api/playlist/collect/add', {
+    const res = await Fetch('/api/playlist/collect/add', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         userId: user.id,
         playlistId: +id,
-      }),
+      },
     })
-    res.json().then((res) => {
-      if (res.code == 200) {
-        notification.success({
-          message: res.message,
-        })
-        getCollectPlayList()
-      } else {
-        notification.error({
-          message: res.error,
-        })
-      }
+
+    notification.success({
+      message: res.message,
     })
+    getCollectPlayList()
   }
   // 喜欢歌曲
-  const handleLove = (id: number) => {
-    fetch('/api/love', {
+  const handleLove = async (id: number) => {
+    const res = await Fetch('/api/love', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id: id,
         user_id: user.id,
-      }),
+      },
+      loading: false,
     })
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.code == 200) {
-          setCurSingleList(
-            curSingleList.map((item) => {
-              if (item.id === id) {
-                if (id === currentId) {
-                  setIsLove(!isLove)
-                }
-                return { ...item, isLove: res.value }
-              } else {
-                return item
-              }
-            })
-          )
+
+    setCurSingleList(
+      curSingleList.map((item) => {
+        if (item.id === id) {
+          if (id === currentId) {
+            setIsLove(!isLove)
+          }
+          return { ...item, isLove: res.value }
+        } else {
+          return item
         }
       })
+    )
   }
 
   // 在组件内部添加状态
@@ -279,37 +271,28 @@ const PlayList = ({ params }: { params: { id: string } }) => {
   ]
   // 删除歌单里的歌曲
   const handleDeleteSong = async (selectedRowKeys: any[]) => {
-    const res = await fetch('/api/playlist_content/delete', {
+    await Fetch('/api/playlist_content/delete', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         song_id_list: selectedRowKeys,
         playlist_id: +id,
-      }),
+      },
     })
 
-    if (res.ok) {
-      fetchAllData()
-      setSelectedRowKeys([])
-    }
+    fetchAllData()
+    setSelectedRowKeys([])
   }
   // 取消收藏
   const delCollect = async (id: number) => {
-    const res = await fetch('/api/playlist/collect/del', {
+    await Fetch('/api/playlist/collect/del', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         user_id: user.id,
         playlist_id: +id,
-      }),
+      },
     })
-
-    if (res.ok) {
-      message.success('取消收藏成功')
-      nav.push('/')
-    } else {
-      message.error('取消收藏失败')
-    }
+    message.success('取消收藏成功')
+    nav.push('/')
   }
   return (
     <div className="mt-8">
@@ -326,9 +309,11 @@ const PlayList = ({ params }: { params: { id: string } }) => {
           />
           <div className="flex w-[768px] items-end gap-8">
             <div className="relative h-56 overflow-hidden rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.15),_0_5px_15px_rgba(0,0,0,0.1)] shadow-lg">
-              <img
+              <Image
                 src={playList.img}
-                alt=""
+                alt="歌单图片"
+                height={224}
+                width={224}
                 className="cover-animation h-56 w-56 rounded-lg object-cover"
                 style={
                   playList.isPrivate === '1'
@@ -389,7 +374,7 @@ const PlayList = ({ params }: { params: { id: string } }) => {
                   )}
                   <span>
                     创建于
-                    {dayjs(playList.createTime).format('YYYY-MM-DD')}
+                    {dayjs(playList.create_time).format('YYYY-MM-DD')}
                   </span>
                 </div>
               </div>

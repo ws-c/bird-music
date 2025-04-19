@@ -29,6 +29,8 @@ interface StoreState {
   collectPlayList: PlayList[] // 收藏歌单
   colorTheme: string // 颜色主题
   refreshCount: number // 用于触发刷新的计数器
+  currentCategoryId: number // 当前分类id
+  showSidebar: boolean // 是否显示侧边栏
   setMyPlayList: (list: PlayList[]) => void
   setCollectPlayList: (list: PlayList[]) => void
   setInputValue: (value: string) => void
@@ -41,6 +43,8 @@ interface StoreState {
   triggerRefresh: () => void
   setColorTheme: (theme: string) => void
   setIsLove: (love: boolean) => void
+  setCurrentCategoryId: (id: number) => void
+  setShowSidebar: (show: boolean) => void
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -75,6 +79,8 @@ const useStore = create<StoreState>((set) => ({
   refreshCount: 0,
   colorTheme: '',
   isLove: false,
+  currentCategoryId: 0,
+  showSidebar: false,
   // 更新我创建的歌单
   setMyPlayList: (list: PlayList[]) => {
     set({ myPlayList: list })
@@ -124,11 +130,16 @@ const useStore = create<StoreState>((set) => ({
       localStorage.setItem('user', JSON.stringify(newUser))
     }
   },
+  // 更新当前 ID 并存储到 localStorage
+  setCurrentCategoryId: (id: number) => {
+    set({ currentCategoryId: id })
+  },
   // 刷新
   triggerRefresh: () =>
     set((state) => ({ refreshCount: state.refreshCount + 1 })), // 每次调用增加计数
   // 更新主题颜色
   setColorTheme: (theme: string) => set({ colorTheme: theme }),
+  setShowSidebar: (show: boolean) => set({ showSidebar: show }),
 }))
 
 export default useStore

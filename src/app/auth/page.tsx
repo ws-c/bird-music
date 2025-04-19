@@ -3,14 +3,29 @@ import { useEffect, useState } from 'react'
 import { Form, Input, Button, notification, Tabs, Flex } from 'antd'
 import useStore from '@/store/useStore'
 import Icons from '@/components/Icons'
+import { Fetch } from '@/lib/request'
+import { useShallow } from 'zustand/react/shallow'
 
 export default function Auth() {
-  const { setShowPlayer, setUser } = useStore()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const { setShowPlayer, setUser } = useStore(
+    useShallow((store) => ({
+      setShowPlayer: store.setShowPlayer,
+      setUser: store.setUser,
+    }))
+  )
   const [activeTabKey, setActiveTabKey] = useState('1')
   const [returnUrl, setReturnUrl] = useState('/')
+  const [loginForm] = Form.useForm()
+  const [registerForm] = Form.useForm()
+  // 切换选项卡时重置表单
+  const handleTabChange = (key: string) => {
+    if (key === '1') {
+      loginForm.resetFields()
+    } else {
+      registerForm.resetFields()
+    }
+    setActiveTabKey(key)
+  }
 
   useEffect(() => {
     const queryString = window.location.search
@@ -25,21 +40,14 @@ export default function Auth() {
     password: string
   }) => {
     const { username, password } = values
-    setError('')
 
-    const res = await fetch('/api/login', {
+    const res = await Fetch('/api/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: { username, password },
     })
 
-    const resData = await res.json()
-    if (resData.code === 200) {
-      setUser(resData.data)
-      window.location.href = returnUrl
-    } else {
-      setError(resData.message || '登录失败')
-    }
+    setUser(res.data)
+    window.location.href = returnUrl
   }
 
   const handleRegisterSubmit = async (values: {
@@ -47,25 +55,14 @@ export default function Auth() {
     password: string
   }) => {
     const { username, password } = values
-    setError('')
 
-    const res = await fetch('/api/register', {
+    await Fetch('/api/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
+      body: { username, password },
     })
 
-    if (res.ok) {
-      notification.success({ message: '注册成功' })
-      setActiveTabKey('1')
-    } else {
-      const data = await res.json()
-      setError(data.message || '注册失败')
-      notification.error({
-        message: '注册失败',
-        description: data.message || '请重试',
-      })
-    }
+    notification.success({ message: '注册成功' })
+    handleTabChange('1')
   }
 
   const tabsItems = [
@@ -75,34 +72,25 @@ export default function Auth() {
       children: (
         <Form
           onFinish={handleLoginSubmit}
-          initialValues={{ username, password }}
           layout="vertical"
+          form={loginForm}
+          autoComplete="new-password"
+          validateTrigger="onSubmit"
         >
           <Form.Item
             label="用户名"
             name="username"
             rules={[{ required: true, message: '请输入用户名' }]}
           >
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mb-6"
-            />
+            <Input className="mb-6" />
           </Form.Item>
           <Form.Item
             label="密码"
             name="password"
             rules={[{ required: true, message: '请输入密码' }]}
           >
-            <Input.Password
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mb-6"
-            />
+            <Input.Password className="mb-6" />
           </Form.Item>
-          {error && (
-            <p className="mt-2.5 text-center text-sm text-red-500">{error}</p>
-          )}
           <Form.Item>
             <Button
               type="primary"
@@ -122,8 +110,10 @@ export default function Auth() {
       children: (
         <Form
           onFinish={handleRegisterSubmit}
-          initialValues={{ username, password }}
           layout="vertical"
+          form={registerForm}
+          autoComplete="new-password"
+          validateTrigger="onSubmit"
         >
           <Form.Item
             label="用户名"
@@ -133,26 +123,33 @@ export default function Auth() {
               { max: 16, message: '用户名不能超过16个字符' },
             ]}
           >
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mb-6"
-            />
+            <Input className="mb-6" />
           </Form.Item>
           <Form.Item
             label="密码"
             name="password"
             rules={[{ required: true, message: '请输入密码' }]}
           >
-            <Input.Password
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mb-6"
-            />
+            <Input.Password />
           </Form.Item>
-          {error && (
-            <p className="mt-2.5 text-center text-sm text-red-500">{error}</p>
-          )}
+          <Form.Item
+            label="确认密码"
+            name="confirmPassword"
+            dependencies={['password']}
+            rules={[
+              { required: true, message: '请再次输入密码' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve()
+                  }
+                  return Promise.reject(new Error('两次输入的密码不一致'))
+                },
+              }),
+            ]}
+          >
+            <Input.Password className="mb-6" />
+          </Form.Item>
           <Form.Item>
             <Button
               type="primary"
@@ -183,7 +180,7 @@ export default function Auth() {
         <div className="w-full max-w-[420px] animate-fadeIn rounded-xl bg-white p-4 shadow-lg">
           <Tabs
             activeKey={activeTabKey}
-            onChange={setActiveTabKey}
+            onChange={handleTabChange}
             items={tabsItems.map((item) => ({
               ...item,
               children: (

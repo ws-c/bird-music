@@ -19,7 +19,9 @@ import { UploadChangeParam } from 'antd/es/upload'
 import type { Playlist } from './page'
 import { useRouter } from 'next/navigation'
 import { typeOptions } from '@/lib/const'
-
+import { Fetch } from '@/lib/request'
+import ImgCrop from 'antd-img-crop'
+import { toWebP } from '@/helpers/toWebp'
 type props = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -34,41 +36,26 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
   const [confirmLoading, setConfirmLoading] = useState(false)
 
   const handleOk = async () => {
-    try {
-      const values = await form.validateFields() // 确保字段验证通过
-      const data = {
-        ...values,
-        isPrivate: values.isPrivate ? '1' : '0',
-        img: fileList[0]?.url || fileList[0]?.response?.data.url || '',
-        author: name,
-        id: playList.id,
-      }
-      console.log('表单数据：', data)
-      setConfirmLoading(true)
-
-      // 发送请求
-      const response = await fetch('/api/playlist/update', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      const res = await response.json()
-      console.log('响应数据：', res)
-      if (res.code === 200) {
-        fetchAllData()
-        message.success(res.msg)
-        setOpen(false)
-      } else {
-        message.error(res.msg)
-      }
-    } catch (e) {
-      message.error('请检查填写内容是否完整')
-    } finally {
-      setConfirmLoading(false)
+    const values = await form.validateFields() // 确保字段验证通过
+    const data = {
+      ...values,
+      isPrivate: values.isPrivate ? '1' : '0',
+      img: fileList[0]?.url || fileList[0]?.response?.data.url || '',
+      author: name,
+      id: playList.id,
     }
+    setConfirmLoading(true)
+
+    // 发送请求
+    const res = await Fetch('/api/playlist/update', {
+      method: 'POST',
+      body: data,
+    })
+
+    fetchAllData()
+    message.success(res.msg)
+    setOpen(false)
+    setConfirmLoading(false)
   }
 
   const handleCancel = () => {
@@ -86,18 +73,20 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
     action: '/api/common/upload_playlist',
     listType: 'picture-card' as const,
     maxCount: 1,
-    beforeUpload: (file: { type: string; size: number }) => {
-      const isImage = file.type.startsWith('image/')
-      if (!isImage) {
+    beforeUpload: async (file) => {
+      if (!file.type.startsWith('image/')) {
         message.error('只能上传图片')
         return Upload.LIST_IGNORE
       }
-      const isWithinSizeLimit = file.size / 1024 <= 300 // 限制文件大小为 300KB
-      if (!isWithinSizeLimit) {
-        message.error('图片大小不能超过300KB')
+      // 转换为 WebP
+      const webpFile = await toWebP(file)
+      // 检查转换后的文件大小
+      if (webpFile.size / 1024 > 150) {
+        message.error('图片大小不能超过150KB')
         return Upload.LIST_IGNORE
       }
-      return true // 文件符合要求
+
+      return webpFile
     },
     onChange: (info: UploadChangeParam) => {
       setFileList(info.fileList) // 更新文件列表
@@ -120,16 +109,12 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
     },
   }
   const confirmDelete = async () => {
-    const res = await fetch('/api/playlist/delete', {
+    await Fetch('/api/playlist/delete', {
       method: 'DELETE',
-      body: JSON.stringify({ id: +playList.id }),
-      headers: { 'Content-Type': 'application/json' },
+      body: { id: +playList.id },
     })
-    if (res.ok) {
-      nav.push('/')
-    } else {
-      message.error('删除失败')
-    }
+
+    nav.push('/')
   }
   return (
     <Modal
@@ -181,22 +166,25 @@ const Edit: FC<props> = ({ open, setOpen, name, fetchAllData, playList }) => {
           rules={[{ required: true, message: '歌单标题不能为空' }]}
         >
           <Input
-            placeholder="输入歌单标题 (最多输入20个字)"
+            placeholder="输入歌单标题 (最多输入30个字)"
             maxLength={20}
           ></Input>
         </Form.Item>
         <Form.Item label="歌单封面">
-          <Upload {...uploadProps} fileList={fileList} accept="image/*">
-            {fileList.length < 1 && (
-              <a>
-                <UploadOutlined />
-                上传图片
-              </a>
-            )}
-          </Upload>
+          <ImgCrop>
+            <Upload {...uploadProps} fileList={fileList} accept="image/*">
+              {fileList.length < 1 && (
+                <a>
+                  <UploadOutlined />
+                  上传图片
+                </a>
+              )}
+            </Upload>
+          </ImgCrop>
         </Form.Item>
         {previewImage && (
           <Image
+            alt="歌单图片"
             wrapperStyle={{ display: 'none' }}
             preview={{
               visible: previewOpen,

@@ -4,7 +4,7 @@ import { FaPlayCircle } from 'react-icons/fa'
 import dayjs from 'dayjs'
 import { useRouter } from 'next/navigation'
 import type { AlbumList_ } from '../page'
-
+import Image from 'next/image'
 type AlbumListProps = {
   albumList: AlbumList_[]
 }
@@ -21,9 +21,11 @@ const AlbumList: FC<AlbumListProps> = ({ albumList }) => {
           onClick={() => route.push(`/album/${item.id}`)}
         >
           <div className="relative">
-            <img
-              src={item.cover}
-              alt={item.album_title}
+            <Image
+              src={item.cover!}
+              alt={item.album_title!}
+              width={168}
+              height={168}
               className="h-auto w-full rounded-lg"
             />
             <div className="absolute inset-0 flex opacity-0 transition-opacity duration-300 group-hover:opacity-100">

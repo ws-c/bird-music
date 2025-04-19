@@ -16,10 +16,9 @@ export default async function handler(
           },
         },
       })
-      console.log(result)
       res.status(200).json(result)
     } catch (error) {
-      res.status(500).json({ error: 'Failed' })
+      res.status(500).json({ error, msg: '取消失败' })
     }
   } else {
     res.setHeader('Allow', ['DELETE'])
