@@ -1,11 +1,6 @@
 技术栈：
     nextjs + zustand + prisma + antd5 + shadcn/ui
     
-亮点：
-    歌词滚动处理
-    封装fetch，全局loading+错误处理
-    文件上传转换webp
-
 开发进度：
     歌单播放量： 0%
     
