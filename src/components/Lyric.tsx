@@ -25,7 +25,10 @@ const Lyric: React.FC<LyricProps> = ({ lyricUrl, currentTime }) => {
 
   useEffect(() => {
     const fetchLyrics = async () => {
-      const text = await Fetch(lyricUrl, { responseType: 'text' })
+      const text = await Fetch(lyricUrl, {
+        responseType: 'text',
+        loading: false,
+      })
       const parsedLyrics = parseLRC(text)
       setLyrics(parsedLyrics)
     }
