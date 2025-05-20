@@ -16,7 +16,7 @@ import { Fetch } from '@/lib/request'
 import ImgCrop from 'antd-img-crop'
 import { toWebP } from '@/helpers/toWebp'
 import { useShallow } from 'zustand/react/shallow'
-
+import { useRouter } from 'next/navigation'
 interface UserSettingsProps {
   open: boolean
   setOpen: (open: boolean) => void
@@ -24,6 +24,7 @@ interface UserSettingsProps {
 }
 
 const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen, type }) => {
+  const router = useRouter()
   const { user, setUser } = useStore(
     useShallow((store) => ({
       setUser: store.setUser,
@@ -89,9 +90,10 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen, type }) => {
         method: 'PUT',
         body: data,
       })
-      if (!res.success) return
-      message.success(res.msg)
-      setUser(res.data)
+      if (res.code === 200) {
+        message.success(res.msg)
+        setUser(res.data)
+      }
     } else {
       const values = await passwordForm.validateFields()
       const data = {
@@ -102,7 +104,11 @@ const HeadSetting: React.FC<UserSettingsProps> = ({ open, setOpen, type }) => {
         method: 'PUT',
         body: data,
       })
-      message.success(res.msg)
+      if (res.code === 200) {
+        message.success(res.msg)
+        router.push('/auth')
+      }
+ 
     }
     setOpen(false)
   }
