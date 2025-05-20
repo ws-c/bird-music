@@ -24,7 +24,7 @@ export default async function handler(
       })
 
       if (!user) {
-        return res.status(401).json({ message: 'Invalid credentials' })
+        return res.status(401).json({ message: '用户不存在' })
       }
 
       // 检查密码是否匹配
@@ -52,7 +52,7 @@ export default async function handler(
         })
       } else {
         // 密码不匹配
-        return res.status(401).json({ message: 'Invalid credentials' })
+        return res.status(401).json({ message: '密码错误' })
       }
     } catch (error) {
       res.status(500).json({ message: 'Login failed', error })
