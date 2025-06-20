@@ -417,16 +417,25 @@ const Player = () => {
       clearPlayTimer()
     }
   }, [])
-
+  const fullRef = useRef<HTMLDivElement>(null)
   return (
     <div className="fixed bottom-0 z-[1000] w-screen border-t bg-[#fafafa] p-0 dark:bg-[#000]">
       {/* 全屏模式 */}
       {fullScreen && (
-        <div className="fixed inset-0 z-[998] bg-black">
+        <div
+          className="fixed inset-0 z-[998] animate-slide-up bg-black"
+          ref={fullRef}
+        >
           <div className="absolute left-5 top-5">
             <IoChevronDown
               size={24}
-              onClick={() => setFullScreen(false)}
+              onClick={() => {
+                fullRef.current?.classList.remove('animate-slide-up')
+                fullRef.current?.classList.add('animate-slide-down')
+                setTimeout(() => {
+                  setFullScreen(false)
+                }, 200)
+              }}
               className="transform cursor-pointer text-xl text-white transition-transform duration-300 ease-in-out hover:scale-110"
             />
           </div>

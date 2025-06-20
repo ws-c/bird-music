@@ -7,6 +7,7 @@ type FetchConfig = {
   responseType?: 'json' | 'text'
   silent?: boolean // 是否静默模式（不显示错误提示）
   loading?: boolean // 是否显示进度条
+  next?: any
 }
 
 // 全局计数器跟踪活跃请求数
@@ -21,6 +22,7 @@ export const Fetch = async <T = any>(
     silent = false,
     responseType = 'json',
     loading = true,
+    next,
   }: FetchConfig = {}
 ): Promise<T> => {
   try {
@@ -36,6 +38,7 @@ export const Fetch = async <T = any>(
       },
       ...headers,
       body: method !== 'GET' ? JSON.stringify(body) : undefined,
+      ...next,
     })
 
     const data =

@@ -29,12 +29,11 @@ export default async function handler(
 
       // 3. 更新密码
       const hashedPassword = await bcrypt.hash(newPassword, 10)
-      prisma.users.update({
+      await prisma.users.update({
         where: { id },
         data: {
           password: hashedPassword,
         },
-        select: { id: true, username: true, cover: true },
       })
 
       res.status(200).json({ msg: '更新成功', code: 200 })
