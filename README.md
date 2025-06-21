@@ -3,7 +3,7 @@
     
 开发进度：
     歌单播放量： 0%
-    
-待解决：
-    最近播放页面：表格变动频繁，应该在重新加载页面的时候表格数据顺序才变化
 
+tips: 阿里云数据库太贵了~ 现在线上访问没了。
+![image](https://github.com/user-attachments/assets/eb842e77-8c18-4d66-a259-e26400136e03)
+![image](https://github.com/user-attachments/assets/d7011b32-b738-4f56-bbfd-9590c3889aea)
